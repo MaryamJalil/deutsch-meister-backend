@@ -1,0 +1,113 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User{
+  id Int @default (autoincrement()) @id
+  email String @unique
+  name String?
+  currentLevel  String ?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  progress      Progress[]
+  quizAttempts  UserQuizAttempt[]
+}
+
+model Level {
+  id          Int      @id @default(autoincrement())
+  slug        String   @unique // e.g. "A1.1"
+  title       String
+  order       Int
+  courses     Course[]
+  lessons     Lesson[] @relation("LevelLessons")
+  quiz        Quiz?
+  progresses Progress[]  
+}
+
+model Course {
+  id        Int     @id @default(autoincrement())
+  title     String
+  levelId   Int
+  level     Level   @relation(fields: [levelId], references: [id])
+  lessons   Lesson[]
+  createdAt DateTime @default(now())
+}
+
+
+model Lesson {
+  id          Int      @id @default(autoincrement())
+  title       String
+  content     String   // markdown or HTML
+  courseId    Int
+  course      Course   @relation(fields: [courseId], references: [id])
+  levelId   Int?     // foreign key to Level
+  level     Level?   @relation("LevelLessons", fields: [levelId], references: [id])
+  order       Int
+  audioId     Int? 
+  audio       Audio?   @relation(fields: [audioId], references: [id])
+  createdAt   DateTime @default(now())
+  progresses  Progress[] 
+}
+
+model Quiz {
+  id        Int      @id @default(autoincrement())
+  levelId   Int      @unique
+  level     Level    @relation(fields: [levelId], references: [id])
+  questions  Question[]   
+  attempts   UserQuizAttempt[]
+}
+
+model Question {
+  id        Int     @id @default(autoincrement())
+  quizId    Int
+  quiz      Quiz    @relation(fields: [quizId], references: [id])
+  text      String
+  type      String  // MCQ, fill-in, audio, etc.
+  options   Json?   // for MCQ
+  answer    String
+}
+
+model Progress {
+  id         Int     @id @default(autoincrement())
+  userId     Int
+  user       User    @relation(fields: [userId], references: [id])
+  levelId    Int
+  level      Level   @relation(fields: [levelId], references: [id])
+  lessonId   Int?
+  lesson     Lesson? @relation(fields: [lessonId], references: [id])
+  completed  Boolean @default(false)
+  score      Int?
+  updatedAt  DateTime @updatedAt
+}
+
+model UserQuizAttempt {
+  id         Int     @id @default(autoincrement())
+  userId     Int
+  user       User    @relation(fields: [userId], references: [id])
+  quizId     Int
+  quiz       Quiz    @relation(fields: [quizId], references: [id])
+  score      Int
+  passed     Boolean
+  createdAt  DateTime @default(now())
+}
+
+model Audio {
+  id        Int     @id @default(autoincrement())
+  filename  String
+  s3Key     String  @unique
+  url       String
+  createdAt DateTime @default(now())
+  lessons   Lesson[]
+}
