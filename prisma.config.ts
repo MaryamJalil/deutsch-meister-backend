@@ -1,6 +1,3 @@
-import * as dotenv from 'dotenv';
-dotenv.config(); // ✅ Load .env before Prisma runs
-
 import { defineConfig, env } from "prisma/config";
 
 export default defineConfig({

@@ -32,3 +32,21 @@
 
       Display Prisma debug info
       $ prisma debug
+      
+      Then, generate the GraphQL schema:
+      graphql get-schema
+
+
+# Generate Prisma Client
+npx prisma generate
+
+# Create migration (after making schema changes)
+npx prisma migrate dev --name init
+
+# Push schema to database (alternative to migrate)
+npx prisma db push
+
+export DATABASE_URL="postgresql://postgres:maryam@localhost:5432/deutsch-meister?schema=public"
+
+
+px prisma db push --force-reset
