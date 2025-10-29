@@ -21,14 +21,24 @@ type AuthPayload {
   user: UserModel!
 }
 
+type CourseModel {
+  id: Int!
+  title: String!
+  levelId: Int!
+  createdAt: DateTime!
+}
+
 type Query {
   user(email: String!): UserModel
   userById(id: Int!): UserModel
+  courses: [CourseModel!]!
+  courseById(id: Int!): CourseModel
 }
 
 type Mutation {
   createUser(input: CreateUserInput!): UserModel!
   login(input: LoginInput!): AuthPayload!
+  createCourse(input: CreateCourseInput!): CourseModel!
 }
 
 input CreateUserInput {
@@ -41,4 +51,9 @@ input CreateUserInput {
 input LoginInput {
   email: String!
   password: String!
+}
+
+input CreateCourseInput {
+  title: String!
+  levelId: Int!
 }

@@ -34,7 +34,6 @@ export class UsersService {
         currentLevel: input.currentLevel,
       },
     });
-console.log(user,"bbjhjj")
     return this.stripPassword(user);
   }
 
