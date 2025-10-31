@@ -5,6 +5,8 @@ import { join } from 'path';
 import { PrismaModule } from 'prisma/prisma.module';
 import { UsersModule } from './users/users.module';
 import { CourseModule } from './course/course.module';
+import { LevelModule } from './level/level.module';
+import { LessonsModule } from './lessons/lessons.module';
 
 
 @Module({
@@ -17,6 +19,8 @@ import { CourseModule } from './course/course.module';
     PrismaModule,
     UsersModule,
     CourseModule,
+    LevelModule,
+    LessonsModule
   ],
 })
 export class AppModule {}
