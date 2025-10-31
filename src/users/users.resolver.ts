@@ -1,6 +1,6 @@
 import { Resolver, Mutation, Args, Query, Int } from '@nestjs/graphql';
 import { UsersService } from './users.service';
-import { UserModel } from './user.model';
+import { UserModel } from '../models/user.model';
 import { CreateUserInput } from './create-user.input';
 import { AuthPayload } from './auth-payload.model';
 import { LoginInput } from './login.input';
