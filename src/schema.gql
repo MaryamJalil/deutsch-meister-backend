@@ -21,10 +21,79 @@ type AuthPayload {
   user: UserModel!
 }
 
+type ProgressModel {
+  id: Int!
+  userId: Int!
+  user: UserModel
+  courseId: Int
+  course: CourseModel
+  lessonId: Int
+  lesson: LessonModel
+  levelId: Int
+  level: LevelModel
+  xp: Int!
+  completedAt: DateTime
+}
+
+type QuestionModel {
+  id: Int!
+  question: String!
+  options: [String!]!
+  correct: String!
+  quizId: Int!
+  quiz: QuizModel
+}
+
+type QuizModel {
+  id: Int!
+  title: String!
+  levelId: Int!
+  level: LevelModel
+  questions: [QuestionModel!]
+  createdAt: DateTime!
+}
+
+type LevelModel {
+  id: Int!
+  slug: String!
+  title: String!
+  order: Int!
+  courses: [CourseModel!]
+  lessons: [LessonModel!]
+  quiz: QuizModel
+  progresses: [ProgressModel!]
+}
+
+type AudioModel {
+  id: Int!
+  title: String!
+  url: String!
+  duration: Int
+  lesson: LessonModel
+  createdAt: DateTime!
+}
+
+type LessonModel {
+  id: Int!
+  title: String!
+  content: String!
+  order: Int!
+  courseId: Int!
+  course: CourseModel
+  levelId: Int
+  level: LevelModel
+  audio: AudioModel
+  progresses: [ProgressModel!]
+  createdAt: DateTime!
+}
+
 type CourseModel {
   id: Int!
   title: String!
   levelId: Int!
+  level: LevelModel
+  lessons: [LessonModel!]
+  progresses: [ProgressModel!]
   createdAt: DateTime!
 }
 
@@ -33,12 +102,16 @@ type Query {
   userById(id: Int!): UserModel
   courses: [CourseModel!]!
   courseById(id: Int!): CourseModel
+  levels: [LevelModel!]!
+  levelById(id: Int!): LevelModel
 }
 
 type Mutation {
   createUser(input: CreateUserInput!): UserModel!
   login(input: LoginInput!): AuthPayload!
   createCourse(input: CreateCourseInput!): CourseModel!
+  createLevel(input: CreateLevelInput!): LevelModel!
+  updateLevel(input: UpdateLevelInput!): LevelModel!
 }
 
 input CreateUserInput {
@@ -56,4 +129,17 @@ input LoginInput {
 input CreateCourseInput {
   title: String!
   levelId: Int!
+}
+
+input CreateLevelInput {
+  slug: String!
+  title: String!
+  order: Int!
+}
+
+input UpdateLevelInput {
+  id: Int!
+  slug: String
+  title: String
+  order: Int
 }
