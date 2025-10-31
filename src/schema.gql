@@ -103,7 +103,8 @@ type Query {
   courses: [CourseModel!]!
   courseById(id: Int!): CourseModel
   levels: [LevelModel!]!
-  levelById(id: Int!): LevelModel
+  levelById(id: Int!): LessonModel
+  lessons: [LessonModel!]!
 }
 
 type Mutation {
@@ -112,6 +113,8 @@ type Mutation {
   createCourse(input: CreateCourseInput!): CourseModel!
   createLevel(input: CreateLevelInput!): LevelModel!
   updateLevel(input: UpdateLevelInput!): LevelModel!
+  createLesson(input: CreateLessonInput!): LessonModel!
+  updateLesson(input: UpdateLessonInput!): LessonModel!
 }
 
 input CreateUserInput {
@@ -142,4 +145,23 @@ input UpdateLevelInput {
   slug: String
   title: String
   order: Int
+}
+
+input CreateLessonInput {
+  title: String!
+  content: String!
+  courseId: Int!
+  levelId: Int
+  order: Int!
+  audioId: Int
+}
+
+input UpdateLessonInput {
+  id: Int!
+  title: String
+  content: String
+  courseId: Int
+  levelId: Int
+  order: Int
+  audioId: Int
 }
