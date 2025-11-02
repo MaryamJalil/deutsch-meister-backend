@@ -11,7 +11,6 @@ export class CourseResolver {
   async createCourse(@Args('input') input: CreateCourseInput) {
     return this.courseService.createCourse(input);
   }
-
   @Query(() => [CourseModel])
   async courses() {
     return this.courseService.findCourses();

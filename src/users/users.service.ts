@@ -9,7 +9,6 @@ import { JwtService } from '@nestjs/jwt';
 import { CreateUserInput } from './create-user.input';
 import { LoginInput } from './login.input';
 
-
 @Injectable()
 export class UsersService {
   constructor(
@@ -22,7 +21,8 @@ export class UsersService {
     const email = input.email.toLowerCase();
     const existing = await this.prisma.user.findUnique({ where: { email } });
 
-    if (existing) throw new ConflictException('User with this email already exists');
+    if (existing)
+      throw new ConflictException('User with this email already exists');
 
     const hashedPassword = await bcrypt.hash(input.password, 10);
 
@@ -30,31 +30,27 @@ export class UsersService {
       data: {
         email,
         password: hashedPassword,
-        name:input.name,
+        name: input.name,
         currentLevel: input.currentLevel,
       },
     });
     return this.stripPassword(user);
   }
 
-  // ✅ New login method
   async login(input: LoginInput) {
-    const user = await this.prisma.user.findUnique({
-      where: { email: input.email.toLowerCase() },
-    });
+    const { email, password } = input;
+    const user = await this.prisma.user.findUnique({ where: { email } });
 
-    if (!user || !(await bcrypt.compare(input.password, user.password))) {
+    if (!user) throw new UnauthorizedException('User not found');
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+    if (!isPasswordValid)
       throw new UnauthorizedException('Invalid credentials');
-    }
 
-    const token = await this.jwtService.signAsync(
-      { userId: user.id, email: user.email },
-      { expiresIn: '1d' },
-    );
+    const payload = { sub: user.id, email: user.email };
+    const token = await this.jwtService.signAsync(payload);
 
-    return { token, user: this.stripPassword(user),name: user.name };
+    return { token };
   }
-
   async findUserByEmail(email: string) {
     const user = await this.prisma.user.findUnique({
       where: { email: email.toLowerCase() },
