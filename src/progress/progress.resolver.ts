@@ -31,4 +31,10 @@ export class ProgressResolver {
   async progressById(@Args('id', { type: () => Int }) id: number) {
     return this.progressService.findProgressById(id);
   }
+
+    @Query(() => ProgressModel, { nullable: true })
+  async progressByCourse(@Args('courseId', { type: () => Int }) courseId: number) {
+    return this.progressService.findProgressByCourseId(courseId);
+  }
+  
 }

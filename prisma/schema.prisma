@@ -36,13 +36,20 @@ model Level {
   progresses Progress[]  
 }
 
+// prisma/schema.prisma
 model Course {
-  id        Int     @id @default(autoincrement())
-  title     String
-  levelId   Int
-  level     Level   @relation(fields: [levelId], references: [id])
-  lessons   Lesson[]
-  createdAt DateTime @default(now())
+  id          Int      @id @default(autoincrement())
+  title       String
+  description String?   // Add this
+  hours       Int?      // Add this
+  lessonCount Int?      // Add this
+  features    String[]  // Add this
+  levelId     Int
+  level       Level     @relation(fields: [levelId], references: [id])
+  lessons     Lesson[]
+  progress    Progress[]
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
 }
 
 
@@ -83,6 +90,8 @@ model Progress {
   id         Int     @id @default(autoincrement())
   userId     Int
   user       User    @relation(fields: [userId], references: [id])
+  courseId  Int?
+  course    Course?  @relation(fields: [courseId], references: [id], onDelete: Cascade)
   levelId    Int
   level      Level   @relation(fields: [levelId], references: [id])
   lessonId   Int?

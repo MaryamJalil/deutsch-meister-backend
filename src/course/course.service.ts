@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'prisma/prisma.service';
 import { CreateCourseInput } from './create-course.input';
 
@@ -15,13 +15,40 @@ export class CourseService {
     });
   }
 
-  async findCourseById(id: number) {
-    return this.prisma.course.findUnique({ where: { id } });
+// src/course/course.service.ts
+async findCourses() {
+  return this.prisma.course.findMany({
+    include: {
+      level: true,
+      lessons: {
+        orderBy: {
+          order: 'asc',
+        },
+      },
+    },
+    orderBy: {
+      createdAt: 'asc',
+    },
+  });
+}
+
+async findCourseById(id: number) {
+  const course = await this.prisma.course.findUnique({
+    where: { id },
+    include: {
+      level: true,
+      lessons: {
+        orderBy: {
+          order: 'asc',
+        },
+      },
+    },
+  });
+
+  if (!course) {
+    throw new NotFoundException(`Course with ID ${id} not found`);
   }
 
-  async findCourses() {
-    return this.prisma.course.findMany({
-      include: { level: true }, // optional: include related Level data
-    });
-  }
+  return course;
+}
 }

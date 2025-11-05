@@ -49,4 +49,4 @@ npx prisma db push
 export DATABASE_URL="postgresql://postgres:maryam@localhost:5432/deutsch-meister?schema=public"
 
 
-px prisma db push --force-reset
+ prisma db push --force-reset

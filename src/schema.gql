@@ -90,6 +90,10 @@ type LessonModel {
 type CourseModel {
   id: Int!
   title: String!
+  description: String
+  hours: Int
+  lessonCount: Int
+  features: [String!]
   levelId: Int!
   level: LevelModel
   lessons: [LessonModel!]
@@ -100,6 +104,7 @@ type CourseModel {
 type Query {
   progresses: [ProgressModel!]!
   progressById(id: Int!): ProgressModel
+  progressByCourse(courseId: Int!): ProgressModel
   user(email: String!): UserModel
   userById(id: Int!): UserModel
   courses: [CourseModel!]!
@@ -111,6 +116,7 @@ type Query {
 
 type Mutation {
   createProgress(input: CreateProgressInput!): ProgressModel!
+  updateProgress(input: UpdateProgressInput!): ProgressModel!
   createUser(input: CreateUserInput!): UserModel!
   login(input: LoginInput!): AuthPayload!
   createCourse(input: CreateCourseInput!): CourseModel!
@@ -121,6 +127,14 @@ type Mutation {
 }
 
 input CreateProgressInput {
+  lessonId: Int
+  levelId: Int
+  completed: Boolean! = false
+  score: Int
+}
+
+input UpdateProgressInput {
+  id: Int!
   lessonId: Int
   levelId: Int
   completed: Boolean! = false
@@ -141,6 +155,10 @@ input LoginInput {
 
 input CreateCourseInput {
   title: String!
+  description: String
+  hours: Int
+  lessonCount: Int
+  features: [String!]
   levelId: Int!
 }
 
