@@ -29,6 +29,24 @@ export class ProgressService {
     return this.prisma.course.findUnique({ where: { id } });
   }
 
+  async findProgressByCourseId(courseId: number) {
+    return this.prisma.progress.findMany({
+      where: {
+        lesson: {
+          courseId: courseId, // ✅ navigate through the lesson relation
+        },
+      },
+      include: {
+        user: true,
+        lesson: {
+          include: {
+            course: true, // ✅ include course info if needed
+          },
+        },
+      },
+    });
+  }
+
   async findProgress() {
     return this.prisma.progress.findMany({
       include: {

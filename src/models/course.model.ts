@@ -11,6 +11,18 @@ export class CourseModel {
   @Field()
   title: string;
 
+  @Field({ nullable: true }) // Add this field
+  description?: string;
+
+  @Field(() => Int, { nullable: true }) // Add this field
+  hours?: number;
+
+  @Field(() => Int, { nullable: true }) // Add this field
+  lessonCount?: number;
+
+  @Field(() => [String], { nullable: true }) // Add this field
+  features?: string[];
+
   @Field(() => Int)
   levelId: number;
 
