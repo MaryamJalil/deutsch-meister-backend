@@ -11,7 +11,7 @@ export class CreateCourseInput {
   @Field({ nullable: true })
   @IsOptional()
   @IsString()
-  description?: string;
+  description: string;
 
   @Field(() => Int, { nullable: true })
   @IsOptional()

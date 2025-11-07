@@ -6,116 +6,114 @@
 
 generator client {
   provider = "prisma-client-js"
-  output   = "../generated/prisma"
 }
 
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
-model User{
-  id Int @default (autoincrement()) @id
-  email String @unique
-  password String
-  name String
-  currentLevel  String?
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
-  progress      Progress[]
-  quizAttempts  UserQuizAttempt[]
+
+model User {
+  id           Int               @id @default(autoincrement())
+  email        String            @unique
+  password     String
+  name         String
+  currentLevel String?
+  createdAt    DateTime          @default(now())
+  updatedAt    DateTime          @updatedAt
+  progress     Progress[]
+  quizAttempts UserQuizAttempt[]
 }
 
 model Level {
-  id          Int      @id @default(autoincrement())
-  slug        String   @unique // e.g. "A1.1"
-  title       String
-  order       Int
-  courses     Course[]
-  lessons     Lesson[] @relation("LevelLessons")
-  quiz        Quiz?
-  progresses Progress[]  
+  id         Int        @id @default(autoincrement())
+  slug       String     @unique // e.g. "A1.1"
+  title      String
+  order      Int
+  courses    Course[]
+  lessons    Lesson[]   @relation("LevelLessons")
+  quiz       Quiz?
+  progresses Progress[]
 }
 
-// prisma/schema.prisma
 model Course {
-  id          Int      @id @default(autoincrement())
+  id          Int        @id @default(autoincrement())
   title       String
-  description String?   // Add this
-  hours       Int?      // Add this
-  lessonCount Int?      // Add this
-  features    String[]  // Add this
+  description String? // Add this
+  hours       Int? // Add this
+  lessonCount Int? // Add this
+  features    String[] // Add this
   levelId     Int
-  level       Level     @relation(fields: [levelId], references: [id])
+  level       Level      @relation(fields: [levelId], references: [id])
   lessons     Lesson[]
   progress    Progress[]
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
 }
 
-
 model Lesson {
-  id          Int      @id @default(autoincrement())
-  title       String
-  content     String   // markdown or HTML
-  courseId    Int
-  course      Course   @relation(fields: [courseId], references: [id])
-  levelId   Int?     // foreign key to Level
-  level     Level?   @relation("LevelLessons", fields: [levelId], references: [id])
-  order       Int
-  audioId     Int? 
-  audio       Audio?   @relation(fields: [audioId], references: [id])
-  createdAt   DateTime @default(now())
-  progresses  Progress[] 
+  id         Int        @id @default(autoincrement())
+  title      String
+  content    String // markdown or HTML
+  courseId   Int
+  course     Course     @relation(fields: [courseId], references: [id])
+  levelId    Int? // foreign key to Level
+  level      Level?     @relation("LevelLessons", fields: [levelId], references: [id])
+  order      Int
+  audioId    Int?
+  audio      Audio?     @relation(fields: [audioId], references: [id])
+  createdAt  DateTime   @default(now())
+  progresses Progress[]
 }
 
 model Quiz {
-  id        Int      @id @default(autoincrement())
-  levelId   Int      @unique
-  level     Level    @relation(fields: [levelId], references: [id])
-  questions  Question[]   
-  attempts   UserQuizAttempt[]
+  id        Int               @id @default(autoincrement())
+  levelId   Int               @unique
+  level     Level             @relation(fields: [levelId], references: [id])
+  questions Question[]
+  attempts  UserQuizAttempt[]
 }
 
 model Question {
-  id        Int     @id @default(autoincrement())
-  quizId    Int
-  quiz      Quiz    @relation(fields: [quizId], references: [id])
-  text      String
-  type      String  // MCQ, fill-in, audio, etc.
-  options   Json?   // for MCQ
-  answer    String
+  id      Int    @id @default(autoincrement())
+  quizId  Int
+  quiz    Quiz   @relation(fields: [quizId], references: [id])
+  text    String
+  type    String // MCQ, fill-in, audio, etc.
+  options Json? // for MCQ
+  answer  String
 }
 
 model Progress {
-  id         Int     @id @default(autoincrement())
-  userId     Int
-  user       User    @relation(fields: [userId], references: [id])
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id])
   courseId  Int?
   course    Course?  @relation(fields: [courseId], references: [id], onDelete: Cascade)
-  levelId    Int
-  level      Level   @relation(fields: [levelId], references: [id])
-  lessonId   Int?
-  lesson     Lesson? @relation(fields: [lessonId], references: [id])
-  completed  Boolean @default(false)
-  score      Int?
-  updatedAt  DateTime @updatedAt
+  levelId   Int
+  level     Level    @relation(fields: [levelId], references: [id])
+  lessonId  Int?
+  lesson    Lesson?  @relation(fields: [lessonId], references: [id])
+  completed Boolean  @default(false)
+  score     Int?
+  updatedAt DateTime @updatedAt
 }
 
 model UserQuizAttempt {
-  id         Int     @id @default(autoincrement())
-  userId     Int
-  user       User    @relation(fields: [userId], references: [id])
-  quizId     Int
-  quiz       Quiz    @relation(fields: [quizId], references: [id])
-  score      Int
-  passed     Boolean
-  createdAt  DateTime @default(now())
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id])
+  quizId    Int
+  quiz      Quiz     @relation(fields: [quizId], references: [id])
+  score     Int
+  passed    Boolean
+  createdAt DateTime @default(now())
 }
 
 model Audio {
-  id        Int     @id @default(autoincrement())
+  id        Int      @id @default(autoincrement())
   filename  String
-  s3Key     String  @unique
+  s3Key     String   @unique
   url       String
   createdAt DateTime @default(now())
   lessons   Lesson[]

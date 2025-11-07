@@ -99,6 +99,7 @@ type CourseModel {
   lessons: [LessonModel!]
   progresses: [ProgressModel!]
   createdAt: DateTime!
+  updatedAt: DateTime!
 }
 
 type Query {
