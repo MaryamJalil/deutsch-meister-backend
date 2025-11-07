@@ -37,4 +37,7 @@ export class CourseModel {
 
   @Field()
   createdAt: Date;
+
+    @Field()
+  updatedAt: Date;
 }

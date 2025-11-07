@@ -37,20 +37,24 @@ export class UsersService {
     return this.stripPassword(user);
   }
 
-  async login(input: LoginInput) {
-    const { email, password } = input;
-    const user = await this.prisma.user.findUnique({ where: { email } });
+async login(input: LoginInput) {
+  const user = await this.prisma.user.findUnique({
+    where: { email: input.email },
+  });
 
-    if (!user) throw new UnauthorizedException('User not found');
-    const isPasswordValid = await bcrypt.compare(password, user.password);
-    if (!isPasswordValid)
-      throw new UnauthorizedException('Invalid credentials');
+  if (!user) throw new UnauthorizedException('Invalid email or password');
 
-    const payload = { sub: user.id, email: user.email };
-    const token = await this.jwtService.signAsync(payload);
+  const isPasswordValid = await bcrypt.compare(input.password, user.password);
+  if (!isPasswordValid) throw new UnauthorizedException('Invalid credentials');
 
-    return { token };
-  }
+  const token = this.jwtService.sign({ userId: user.id });
+
+  return {
+    token,
+    user, // ✅ Ensure you return the actual user object
+  };
+}
+
   async findUserByEmail(email: string) {
     const user = await this.prisma.user.findUnique({
       where: { email: email.toLowerCase() },
