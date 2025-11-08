@@ -39,4 +39,16 @@ export class LessonsService {
   async findLessonById(id: number) {
     return this.prisma.lesson.findUnique({ where: { id } });
   }
+
+  async getLessonsByCourse(courseId: number) {
+  return this.prisma.lesson.findMany({
+    where: { courseId },
+    include: {
+      level: true,
+      audio: true,
+    },
+    orderBy: { order: 'asc' },
+  });
+}
+
 }

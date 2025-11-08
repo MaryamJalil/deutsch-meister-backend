@@ -64,15 +64,6 @@ type LevelModel {
   progresses: [ProgressModel!]
 }
 
-type AudioModel {
-  id: Int!
-  title: String!
-  url: String!
-  duration: Int
-  lesson: LessonModel
-  createdAt: DateTime!
-}
-
 type LessonModel {
   id: Int!
   title: String!
@@ -82,7 +73,6 @@ type LessonModel {
   course: CourseModel
   levelId: Int
   level: LevelModel
-  audio: AudioModel
   progresses: [ProgressModel!]
   createdAt: DateTime!
 }
@@ -110,9 +100,11 @@ type Query {
   userById(id: Int!): UserModel
   courses: [CourseModel!]!
   courseById(id: Int!): CourseModel
+  courseByLevel(slug: String!): CourseModel
   levels: [LevelModel!]!
   levelById(id: Int!): LessonModel
   lessons: [LessonModel!]!
+  lessonsByCourse(courseId: Int!): [LessonModel!]!
 }
 
 type Mutation {

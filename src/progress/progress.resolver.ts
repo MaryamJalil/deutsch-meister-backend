@@ -13,7 +13,6 @@ export class ProgressResolver {
     @Args('input') input: CreateProgressInput,
     @CurrentUserId() userId: number,
   ) {
-    console.log(userId, 'userId');
     if (!userId) throw new Error('User not authorized');
     return this.progressService.createProgress(input, userId);
   }

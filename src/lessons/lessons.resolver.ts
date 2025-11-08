@@ -26,4 +26,11 @@ export class LessonsResolver {
   async levelById(@Args('id', { type: () => Int }) id: number) {
     return this.lessonService.findLessonById(id);
   }
+
+  @Query(() => [LessonModel])
+  async lessonsByCourse(
+    @Args('courseId', { type: () => Int }) courseId: number,
+  ): Promise<LessonModel[]> {
+    return this.lessonService.getLessonsByCourse(courseId);
+  }
 }

@@ -60,4 +60,17 @@ async createCourse(input: CreateCourseInput) {
 
     return course;
   }
+  async getCourseByLevel(slug: string) {
+  return this.prisma.course.findFirst({
+    where: { level: { slug: slug } },
+    include: {
+      level: true,
+      lessons: {
+        include: { audio: true },
+        orderBy: { order: 'asc' },
+      },
+    },
+  });
+}
+
 }
