@@ -20,4 +20,9 @@ export class CourseResolver {
   async courseById(@Args('id', { type: () => Int }) id: number) {
     return this.courseService.findCourseById(id);
   }
+
+  @Query(() => CourseModel, { nullable: true })
+  async courseByLevel(@Args('slug') slug: string) {
+    return this.courseService.getCourseByLevel(slug);
+  }
 }
