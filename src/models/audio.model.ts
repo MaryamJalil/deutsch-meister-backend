@@ -1,5 +1,4 @@
 import { ObjectType, Field, Int } from '@nestjs/graphql';
-import { LessonModel } from './lesson.model';
 
 @ObjectType()
 export class AudioModel {
@@ -15,8 +14,8 @@ export class AudioModel {
   @Field(() => Int, { nullable: true })
   duration?: number;
 
-  @Field(() => LessonModel, { nullable: true })
-  lesson?: LessonModel;
+  @Field(() => require('./lesson.model.js').LessonModel, { nullable: true })
+  lesson?: any;
 
   @Field()
   createdAt: Date;

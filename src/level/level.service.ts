@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { PrismaService } from 'prisma/prisma.service';
-import { CreateLevelInput, UpdateLevelInput } from './level.input';
+import { PrismaService } from '../../prisma/prisma.service.js';
+import { CreateLevelInput, UpdateLevelInput } from './level.input.js';
 
 @Injectable()
 export class LevelService {

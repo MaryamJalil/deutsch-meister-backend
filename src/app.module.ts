@@ -2,29 +2,30 @@ import { Module } from '@nestjs/common';
 import { GraphQLModule } from '@nestjs/graphql';
 import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 import { join } from 'path';
-import { PrismaModule } from 'prisma/prisma.module';
-import { UsersModule } from './users/users.module';
-import { CourseModule } from './course/course.module';
-import { LevelModule } from './level/level.module';
-import { LessonsModule } from './lessons/lessons.module';
-import { ProgressResolver } from './progress/progress.resolver';
-import { ProgressService } from './progress/progress.service';
-import { ProgressModule } from './progress/progress.module';
-
+import { PrismaModule } from '../prisma/prisma.module.js';
+import { UsersModule } from './users/users.module.js';
+import { ProgressResolver } from './progress/progress.resolver.js';
+import { ProgressService } from './progress/progress.service.js';
+import { CourseModule } from './course/course.module.js';
+import { LevelModule } from './level/level.module.js';
+import { LessonsModule } from './lessons/lessons.module.js';
+import { ProgressModule } from './progress/progress.module.js';
 
 @Module({
   imports: [
+    PrismaModule,
     GraphQLModule.forRoot<ApolloDriverConfig>({
       driver: ApolloDriver,
       autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
-      playground: true,
+      playground: process.env.NODE_ENV !== 'production',
+      sortSchema: true,
+      introspection: process.env.NODE_ENV !== 'production',
     }),
-    PrismaModule,
     UsersModule,
     CourseModule,
     LevelModule,
     LessonsModule,
-    ProgressModule
+    ProgressModule,
   ],
   providers: [ProgressResolver, ProgressService],
 })

@@ -1,6 +1,4 @@
 import { ObjectType, Field, Int } from '@nestjs/graphql';
-import { LevelModel } from './level.model';
-import { QuestionModel } from './question.model';
 
 @ObjectType()
 export class QuizModel {
@@ -13,11 +11,11 @@ export class QuizModel {
   @Field(() => Int)
   levelId: number;
 
-  @Field(() => LevelModel, { nullable: true })
-  level?: LevelModel;
+  @Field(() => require('./level.model.js').LevelModel, { nullable: true })
+  level?: any;
 
-  @Field(() => [QuestionModel], { nullable: true })
-  questions?: QuestionModel[];
+  @Field(() => [require('./question.model.js').QuestionModel], { nullable: true })
+  questions?: any[];
 
   @Field()
   createdAt: Date;

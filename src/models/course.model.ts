@@ -1,7 +1,5 @@
 import { ObjectType, Field, Int } from '@nestjs/graphql';
-import { LessonModel } from './lesson.model';
-import { LevelModel } from './level.model';
-import { ProgressModel } from './progress.model';
+import { ProgressModel } from './progress.model.js';
 
 @ObjectType()
 export class CourseModel {
@@ -26,11 +24,17 @@ export class CourseModel {
   @Field(() => Int)
   levelId: number;
 
-  @Field(() => LevelModel, { nullable: true })
-  level?: LevelModel;
+  @Field(() => {
+    const { LevelModel } = require('./level.model.js');
+    return LevelModel;
+  }, { nullable: true })
+  level?: any;
 
-  @Field(() => [LessonModel], { nullable: true })
-  lessons?: LessonModel[];
+  @Field(() => {
+    const { LessonModel } = require('./lesson.model.js');
+    return [LessonModel];
+  }, { nullable: true })
+  lessons?: any[];
 
   @Field(() => [ProgressModel], { nullable: true })
   progresses?: ProgressModel[];

@@ -1,5 +1,4 @@
 import { ObjectType, Field, Int } from '@nestjs/graphql';
-import { QuizModel } from './quiz.model';
 
 @ObjectType()
 export class QuestionModel {
@@ -18,6 +17,6 @@ export class QuestionModel {
   @Field(() => Int)
   quizId: number;
 
-  @Field(() => QuizModel, { nullable: true })
-  quiz?: QuizModel;
+  @Field(() => require('./quiz.model.js').QuizModel, { nullable: true })
+  quiz?: any;
 }

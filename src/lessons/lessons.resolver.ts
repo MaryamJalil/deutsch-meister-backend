@@ -1,7 +1,7 @@
 import { Args, Mutation, Resolver, Query, Int } from '@nestjs/graphql';
-import { LessonsService } from './lessons.service';
-import { LessonModel } from 'src/models/lesson.model';
-import { CreateLessonInput, UpdateLessonInput } from './lesson.input';
+import { LessonsService } from './lessons.service.js';
+import { LessonModel } from '../models/lesson.model.js';
+import { CreateLessonInput, UpdateLessonInput } from './lesson.input.js';
 
 @Resolver()
 export class LessonsResolver {

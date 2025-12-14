@@ -1,8 +1,8 @@
 import { Args, Context, Mutation, Resolver, Query, Int } from '@nestjs/graphql';
-import { ProgressService } from './progress.service';
-import { ProgressModel } from 'src/models/progress.model';
-import { CreateProgressInput, UpdateProgressInput } from './progress.input';
-import { CurrentUserId } from 'src/users/user.decorator';
+import { ProgressModel } from '../models/progress.model.js';
+import { CreateProgressInput, UpdateProgressInput } from './progress.input.js';
+import { CurrentUserId } from '../users/user.decorator.js';
+import { ProgressService } from './progress.service.js';
 
 @Resolver()
 export class ProgressResolver {

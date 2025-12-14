@@ -1,13 +1,13 @@
 import { Module } from '@nestjs/common';
-import { UsersService } from './users.service';
-import { UsersResolver } from './users.resolver';
 import { JwtModule } from '@nestjs/jwt';
-import { PrismaModule } from 'prisma/prisma.module';
+import { PrismaModule } from '../../prisma/prisma.module.js';
+import { UsersService } from './users.service.js';
+import { UsersResolver } from './users.resolver.js';
 
 @Module({
   imports: [
     JwtModule.register({
-      secret: 'maryam', // Hardcoded for now
+      secret: process.env.JWT_SECRET || 'maryam', // TODO: Move to env
       signOptions: { expiresIn: '1d' },
     }),
     PrismaModule,

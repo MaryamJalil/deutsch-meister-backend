@@ -45,8 +45,3 @@ npx prisma migrate dev --name init
 
 # Push schema to database (alternative to migrate)
 npx prisma db push
-
-export DATABASE_URL="postgresql://postgres:maryam@localhost:5432/deutsch-meister?schema=public"
-
-
- prisma db push --force-reset

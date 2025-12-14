@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { PrismaService } from 'prisma/prisma.service';
-import { CreateProgressInput, UpdateProgressInput } from './progress.input';
+import { PrismaService } from '../../prisma/prisma.service.js';
+import { CreateProgressInput, UpdateProgressInput } from './progress.input.js';
 
 @Injectable()
 export class ProgressService {

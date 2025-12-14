@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { PrismaService } from 'prisma/prisma.service';
-import { CreateLessonInput, UpdateLessonInput } from './lesson.input';
+import { PrismaService } from '../../prisma/prisma.service.js';
+import { CreateLessonInput, UpdateLessonInput } from './lesson.input.js';
 
 @Injectable()
 export class LessonsService {
