@@ -60,8 +60,7 @@ model Lesson {
   levelId    Int? // foreign key to Level
   level      Level?     @relation("LevelLessons", fields: [levelId], references: [id])
   order      Int
-  audioId    Int?
-  audio      Audio?     @relation(fields: [audioId], references: [id])
+  audio     Audio[]
   createdAt  DateTime   @default(now())
   progresses Progress[]
 }
@@ -111,10 +110,14 @@ model UserQuizAttempt {
 }
 
 model Audio {
-  id        Int      @id @default(autoincrement())
-  filename  String
-  s3Key     String   @unique
-  url       String
-  createdAt DateTime @default(now())
-  lessons   Lesson[]
+  id       Int     @id @default(autoincrement())
+  filename String
+  s3Key    String
+  url      String
+  title    String           // <-- required field
+  lesson   Lesson   @relation(fields: [lessonId], references: [id])
+  lessonId Int
 }
+
+
+
