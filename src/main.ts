@@ -1,6 +1,7 @@
 import { ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
+import { graphqlUploadExpress } from 'graphql-upload-ts';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -11,6 +12,8 @@ async function bootstrap() {
     allowedHeaders: ['Content-Type', 'Authorization'],
     methods: ['GET', 'POST', 'OPTIONS'],
   });
+  app.use(graphqlUploadExpress({ maxFileSize: 20_000_000, maxFiles:5 }));
+
   await app.listen(4000);
   console.log('Server running on http://localhost:4000/graphql');
 }

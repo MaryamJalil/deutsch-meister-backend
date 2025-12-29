@@ -1,42 +1,40 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { PrismaService } from 'prisma/prisma.service';
+import { PrismaService } from '../../prisma/prisma.service';
 import { CreateCourseInput } from './create-course.input';
+import { Prisma } from '@prisma/client';
 
 @Injectable()
 export class CourseService {
   constructor(private readonly prisma: PrismaService) {}
 
-async createCourse(input: CreateCourseInput) {
-  return this.prisma.course.create({
-    data: {
-      title: input.title,
-      description: input.description ?? null,
-      hours: input.hours ?? null,
-      lessonCount: input.lessonCount ?? null,
-      features: input.features ?? [],
-      levelId: input.levelId,
-    },
-    include: {
-      level: true,
-    },
-  });
-}
+  async createCourse(input: CreateCourseInput) {
+    return this.prisma.course.create({
+      data: {
+        title: input.title,
+        description: input.description ?? null,
+        hours: input.hours ?? 0, // Changed from null to 0
+        lessonCount: input.lessonCount ?? 0, // Changed from null to 0
+        features: input.features ?? [],
+        levelId: input.levelId,
+      },
+      include: {
+        level: true,
+      },
+    });
+  }
 
-
-
-  // src/course/course.service.ts
   async findCourses() {
     return this.prisma.course.findMany({
       include: {
         level: true,
         lessons: {
           orderBy: {
-            order: 'asc',
+            order: 'asc' as Prisma.SortOrder,
           },
         },
       },
       orderBy: {
-        createdAt: 'asc',
+        createdAt: 'asc' as Prisma.SortOrder,
       },
     });
   }
@@ -48,7 +46,7 @@ async createCourse(input: CreateCourseInput) {
         level: true,
         lessons: {
           orderBy: {
-            order: 'asc',
+            order: 'asc' as Prisma.SortOrder,
           },
         },
       },
@@ -60,17 +58,42 @@ async createCourse(input: CreateCourseInput) {
 
     return course;
   }
-  async getCourseByLevel(slug: string) {
-  return this.prisma.course.findFirst({
-    where: { level: { slug: slug } },
-    include: {
-      level: true,
-      lessons: {
-        include: { audio: true },
-        orderBy: { order: 'asc' },
-      },
-    },
-  });
-}
 
+  async getCourseByLevel(slug: string) {
+    const course = await this.prisma.course.findFirst({
+      where: { 
+        level: { 
+          slug: slug 
+        } 
+      },
+      include: {
+        level: true,
+        lessons: {
+          include: { 
+            audio: {
+              // If 'order' field doesn't exist, use 'createdAt' instead
+              orderBy: { createdAt: 'asc' as Prisma.SortOrder }
+            }
+          },
+          orderBy: { order: 'asc' as Prisma.SortOrder },
+        },
+      },
+    });
+
+    if (!course) {
+      return null;
+    }
+
+    // Map audio to audioFiles for GraphQL
+    return {
+      ...course,
+      lessons: course.lessons.map(lesson => ({
+        ...lesson,
+        audioFiles: lesson.audio.map(audio => ({
+          ...audio,
+          fileName: audio.filename,
+        })),
+      })),
+    };
+  }
 }

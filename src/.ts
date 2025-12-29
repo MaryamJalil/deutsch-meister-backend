@@ -13,7 +13,7 @@ import { UsersModule } from './users/users.module.js';
     PrismaModule,
     GraphQLModule.forRoot<ApolloDriverConfig>({
       driver: ApolloDriver,
-      autoSchemaFile: join(process.cwd(), 'src/schema.gql'), // ✅ auto-generate schema.gql
+      autoSchemaFile: join(process.cwd(), 'src/schema.gql'), 
       playground: true,  // ✅ enables http://localhost:3000/graphql UI
       sortSchema: true,
     }),
