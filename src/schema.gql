@@ -64,6 +64,19 @@ type LevelModel {
   progresses: [ProgressModel!]
 }
 
+type AudioModel {
+  id: Int!
+  title: String!
+  fileName: String!
+  url: String!
+  s3Key: String!
+  lessonId: Int
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  order: Int
+  description: String
+}
+
 type LessonModel {
   id: Int!
   title: String!
@@ -73,6 +86,7 @@ type LessonModel {
   course: CourseModel
   levelId: Int
   level: LevelModel
+  audioFiles: [AudioModel!]
   progresses: [ProgressModel!]
   createdAt: DateTime!
 }
@@ -91,6 +105,7 @@ type CourseModel {
   createdAt: DateTime!
   updatedAt: DateTime!
 }
+
 
 type Query {
   progresses: [ProgressModel!]!
@@ -117,6 +132,8 @@ type Mutation {
   updateLevel(input: UpdateLevelInput!): LevelModel!
   createLesson(input: CreateLessonInput!): LessonModel!
   updateLesson(input: UpdateLessonInput!): LessonModel!
+  uploadLessonAudio(input: uploadLessonAudioInput!): AudioModel!
+
 }
 
 input CreateProgressInput {
@@ -186,3 +203,9 @@ input UpdateLessonInput {
   order: Int
   audioId: Int
 }
+input uploadLessonAudioInput{
+  file: Upload!
+  lessonId: Int!
+  title: String!
+  level: String!
+  }

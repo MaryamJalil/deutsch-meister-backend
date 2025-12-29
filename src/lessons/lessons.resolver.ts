@@ -1,11 +1,16 @@
-import { Args, Mutation, Resolver, Query, Int } from '@nestjs/graphql';
+import { Args, Mutation, Resolver, Query, Int, ResolveField, Parent } from '@nestjs/graphql';
 import { LessonsService } from './lessons.service';
 import { LessonModel } from 'src/models/lesson.model';
 import { CreateLessonInput, UpdateLessonInput } from './lesson.input';
+import { PrismaService } from '../../prisma/prisma.service';
 
-@Resolver()
+
+@Resolver(() => LessonModel)
 export class LessonsResolver {
-  constructor(private readonly lessonService: LessonsService) {}
+  constructor(
+    private readonly lessonService: LessonsService,
+    private readonly prisma: PrismaService,
+  ) {}
 
   @Mutation(() => LessonModel)
   async createLesson(@Args('input') input: CreateLessonInput) {

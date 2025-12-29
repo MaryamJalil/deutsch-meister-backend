@@ -30,8 +30,8 @@ export class LessonModel {
   @Field(() => LevelModel, { nullable: true })
   level?: LevelModel;
 
-  // @Field(() => AudioModel, { nullable: true })
-  // audio?: AudioModel;
+  @Field(() => [AudioModel], { nullable: true })
+  audioFiles?: AudioModel[];
 
   @Field(() => [ProgressModel], { nullable: true })
   progresses?: ProgressModel[];

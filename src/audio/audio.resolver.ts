@@ -1,45 +1,33 @@
-import { Resolver, Mutation, Args } from '@nestjs/graphql';
+import { Resolver, Mutation, Args, Int, Query } from '@nestjs/graphql';
 import { GraphQLUpload, FileUpload } from 'graphql-upload-ts';
 import { AudioService } from './audio.service';
-import { AudioModel, CreateAudioInput } from 'src/models/audio.model';
+import { AudioModel } from 'src/models/audio.model';
+import { Scalar } from '@nestjs/graphql';
+import { Kind, GraphQLScalarType } from 'graphql';
 
 @Resolver(() => AudioModel)
 export class AudioResolver {
   constructor(private readonly audioService: AudioService) {}
 
   @Mutation(() => AudioModel)
-  async uploadAudio(
-    @Args({ name: 'file', type: () => GraphQLUpload }) file: FileUpload,
-    @Args('lessonId', { type: () => Number, nullable: true }) lessonId?: number,
-  ): Promise<AudioModel> {
-    const { createReadStream, filename, mimetype } = await file;
-  
-    const chunks: Buffer[] = [];
-    for await (const chunk of createReadStream()) {
-      chunks.push(Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk));
-    }
-  
-    const buffer = Buffer.concat(chunks);
-  
-    const { url, key } = await this.audioService.uploadAudioFile({
-      buffer,
-      originalname: filename,
-      mimetype,
-    });
-  
-    // ✅ DEFINE TITLE
-    const title = filename.replace(/\.[^/.]+$/, '');
-  
-    const input: CreateAudioInput = {
+  uploadLessonAudio(
+    @Args('title') title: string,
+    @Args('lessonId', { type: () => Int }) lessonId: number,
+    @Args('level') level: string,
+  @Args({ name: 'file', type: () => GraphQLUpload }) file: FileUpload,
+  ) {
+    return this.audioService.uploadLessonAudio(
       title,
-      filename,
-      s3Key: key,
-      url,
       lessonId,
-    };
-  
-    return this.audioService.saveAudioMetadata(input);
+      level,
+      file,
+    );
   }
-  
-  
+
+  @Query(() => [AudioModel])
+  audioByLesson(
+    @Args('lessonId', { type: () => Int }) lessonId: number,
+  ) {
+    return this.audioService.getAudioByLesson(lessonId);
+  }
 }
