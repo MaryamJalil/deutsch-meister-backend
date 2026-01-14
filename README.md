@@ -36,6 +36,7 @@
       Then, generate the GraphQL schema:
       graphql get-schema
 
+npx prisma migrate dev --name init
 
 # Generate Prisma Client
 npx prisma generate
@@ -50,3 +51,29 @@ export DATABASE_URL="postgresql://postgres:maryam@localhost:5432/deutsch-meister
 
 
  prisma db push --force-reset
+
+
+ Next, choose how you want to set up your database:
+CONNECT EXISTING DATABASE:
+  1. Configure your DATABASE_URL in prisma.config.ts
+  2. Run prisma db pull to introspect your database.
+CREATE NEW DATABASE:
+  Local: npx prisma dev (runs Postgres locally in your terminal)
+  Cloud: npx create-db (creates a free Prisma Postgres database)
+
+Then, define your models in prisma/schema.prisma and run prisma migrate dev to apply your schema.
+Learn more: https://pris.ly/getting-started
+ 
+ pnpm prisma migrate dev --name auth_fields
+pnpm prisma generate
+npx prisma migrate dev --name add_refresh_token
+
+
+# Install NestJS common module
+npm install @nestjs/common
+
+# Install Prisma Client
+npm install @prisma/client
+
+# Install Prisma CLI as dev dependency if not yet installed
+npm install -D prisma

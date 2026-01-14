@@ -4,113 +4,19 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
 }
 
 model User {
-  id           Int               @id @default(autoincrement())
-  email        String            @unique
+  id           Int      @id @default(autoincrement())
+  email        String   @unique
   password     String
-  name         String
-  currentLevel String?
-  createdAt    DateTime          @default(now())
-  updatedAt    DateTime          @updatedAt
-  progress     Progress[]
-  quizAttempts UserQuizAttempt[]
+  role         Role     @default(STUDENT)
+  refreshToken String?
+  createdAt    DateTime @default(now())
 }
 
-model Level {
-  id         Int        @id @default(autoincrement())
-  slug       String     @unique
-  title      String
-  order      Int
-  courses    Course[]
-  lessons    Lesson[]   @relation("LevelLessons")
-  progresses Progress[]
-  quiz       Quiz?
-}
-
-model Course {
-  id          Int        @id @default(autoincrement())
-  title       String
-  description String?
-  hours       Int?
-  lessonCount Int?
-  features    String[]
-  levelId     Int
-  createdAt   DateTime   @default(now())
-  updatedAt   DateTime   @updatedAt
-  level       Level      @relation(fields: [levelId], references: [id])
-  lessons     Lesson[]
-  progress    Progress[]
-}
-
-model Lesson {
-  id         Int        @id @default(autoincrement())
-  title      String
-  content    String
-  courseId   Int
-  levelId    Int?
-  order      Int
-  createdAt  DateTime   @default(now())
-  audio      Audio[]
-  course     Course     @relation(fields: [courseId], references: [id])
-  level      Level?     @relation("LevelLessons", fields: [levelId], references: [id])
-  progresses Progress[]
-}
-
-model Quiz {
-  id        Int               @id @default(autoincrement())
-  levelId   Int               @unique
-  questions Question[]
-  level     Level             @relation(fields: [levelId], references: [id])
-  attempts  UserQuizAttempt[]
-}
-
-model Question {
-  id      Int    @id @default(autoincrement())
-  quizId  Int
-  text    String
-  type    String
-  options Json?
-  answer  String
-  quiz    Quiz   @relation(fields: [quizId], references: [id])
-}
-
-model Progress {
-  id        Int      @id @default(autoincrement())
-  userId    Int
-  courseId  Int?
-  levelId   Int
-  lessonId  Int?
-  completed Boolean  @default(false)
-  score     Int?
-  updatedAt DateTime @updatedAt
-  course    Course?  @relation(fields: [courseId], references: [id], onDelete: Cascade)
-  lesson    Lesson?  @relation(fields: [lessonId], references: [id])
-  level     Level    @relation(fields: [levelId], references: [id])
-  user      User     @relation(fields: [userId], references: [id])
-}
-
-model UserQuizAttempt {
-  id        Int      @id @default(autoincrement())
-  userId    Int
-  quizId    Int
-  score     Int
-  passed    Boolean
-  createdAt DateTime @default(now())
-  quiz      Quiz     @relation(fields: [quizId], references: [id])
-  user      User     @relation(fields: [userId], references: [id])
-}
-
-model Audio {
-  id        Int      @id @default(autoincrement())
-  title     String
-  filename  String
-  url       String
-  s3Key     String
-  lessonId  Int?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  lesson    Lesson?  @relation(fields: [lessonId], references: [id])
+enum Role {
+  ADMIN
+  STUDENT
+  TEACHER
 }
