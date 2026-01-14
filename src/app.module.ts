@@ -2,37 +2,22 @@ import { Module } from '@nestjs/common';
 import { GraphQLModule } from '@nestjs/graphql';
 import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 import { join } from 'path';
-import { PrismaModule } from '../prisma/prisma.module';
-import { UsersModule } from './users/users.module';
-import { CourseModule } from './course/course.module';
-import { LevelModule } from './level/level.module';
-import { LessonsModule } from './lessons/lessons.module';
-import { ProgressResolver } from './progress/progress.resolver';
-import { ProgressService } from './progress/progress.service';
-import { ProgressModule } from './progress/progress.module';
-import { GraphQLUpload } from 'graphql-upload-ts';
-import { AudioModule } from './audio/audio.module';
-
+import { UsersModule } from './modules/users/users.module.js';
+import { ConfigModule } from '@nestjs/config/index.js';
+import { PrismaModule } from './prisma/prisma.module.js';
 
 @Module({
   imports: [
+        ConfigModule.forRoot({ isGlobal: true }), // <-- makes ConfigService global
+    PrismaModule,
+
+    UsersModule, // ✅ must include your modules with resolvers
     GraphQLModule.forRoot<ApolloDriverConfig>({
-      autoSchemaFile: true,
       driver: ApolloDriver,
-      // autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
+      autoSchemaFile: join(process.cwd(), 'schema.gql'),
+      sortSchema: true,
       playground: true,
     }),
-    PrismaModule,
-    UsersModule,
-    CourseModule,
-    LevelModule,
-    LessonsModule,
-    ProgressModule,
-    AudioModule
   ],
-  providers: [ {
-      provide: 'Upload',
-      useValue: GraphQLUpload,
-    },ProgressResolver, ProgressService],
 })
 export class AppModule {}
