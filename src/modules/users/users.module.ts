@@ -4,8 +4,7 @@ import { UsersResolver } from './users.resolver.js';
 import { PrismaModule } from '../../prisma/prisma.module.js';
 
 @Module({
-    imports: [PrismaModule],
-
+  imports: [PrismaModule],
   providers: [UsersResolver, UsersService],
 })
 export class UsersModule {}

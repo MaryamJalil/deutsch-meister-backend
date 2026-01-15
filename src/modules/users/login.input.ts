@@ -1,18 +1,12 @@
-import { ObjectType, Field, Int } from '@nestjs/graphql';
-import { $Enums, Role } from '@prisma/client';
+import { InputType, Field } from '@nestjs/graphql';
+import { IsEmail } from 'class-validator';
 
-
-@ObjectType()
-export class User {
-  @Field(() => Int)
-  id!: number;
-
+@InputType()
+export class LoginInput {
   @Field()
+  @IsEmail()
   email!: string;
 
- @Field(() => Role)
-role!: $Enums.Role;
-
   @Field()
-  createdAt!: Date;
+  password!: string;
 }
