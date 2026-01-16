@@ -6,6 +6,7 @@ import { UsersModule } from './modules/users/users.module.js';
 import { ConfigModule } from '@nestjs/config/index.js';
 import { PrismaModule } from './prisma/prisma.module.js';
 import { AuthModule } from './modules/auth/auth.module.js';
+import { Request } from 'express';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { AuthModule } from './modules/auth/auth.module.js';
     GraphQLModule.forRoot<ApolloDriverConfig>({
       driver: ApolloDriver,
       autoSchemaFile: join(process.cwd(), 'schema.gql'),
+      context: ({ req }: { req: Request }) => ({ req }),
       sortSchema: true,
       playground: true,
     }),
