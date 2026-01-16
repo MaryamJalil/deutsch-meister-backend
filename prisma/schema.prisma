@@ -1,10 +1,12 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
 generator client {
   provider = "prisma-client-js"
 }
 
-datasource db {
-  provider = "postgresql"
-}
 
 model User {
   id           Int      @id @default(autoincrement())
@@ -21,3 +23,68 @@ enum Role {
   TEACHER
 }
 
+model Course {
+  id        Int       @id @default(autoincrement())
+  title     String
+  language  String
+  levels    Level[]
+  createdAt DateTime  @default(now())
+  deletedAt DateTime?
+
+  @@index([deletedAt])
+}
+
+model Level {
+  id       Int       @id @default(autoincrement())
+  name     LevelName
+  code     LevelName
+  order    Int
+  courseId Int
+  course   Course    @relation(fields: [courseId], references: [id])
+  modules  Module[]
+
+  @@unique([courseId, name])
+  @@index([courseId])
+}
+
+model Module {
+  id        Int       @id @default(autoincrement())
+  title     String
+  order     Int
+  levelId   Int
+  level     Level     @relation(fields: [levelId], references: [id])
+  lessons   Lesson[]
+  deletedAt DateTime?
+
+  @@index([levelId])
+}
+
+model Lesson {
+  id        Int            @id @default(autoincrement())
+  title     String
+  order     Int
+  moduleId  Int
+  module    Module         @relation(fields: [moduleId], references: [id])
+  content   LessonContent?
+  deletedAt DateTime?
+
+  @@index([moduleId])
+}
+
+model LessonContent {
+  id         Int      @id @default(autoincrement())
+  lessonId   Int      @unique
+  lesson     Lesson   @relation(fields: [lessonId], references: [id])
+  grammar    String
+  vocabulary Json
+  audioUrl   String?
+  createdAt  DateTime @default(now())
+}
+
+enum LevelName {
+  A1
+  A2
+  B1
+  B2
+  C1
+}
