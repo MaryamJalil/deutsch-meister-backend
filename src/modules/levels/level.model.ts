@@ -13,6 +13,9 @@ export class Level {
   @Field(() => Int)
   order!: number;
 
+  @Field(() => Int)
+  courseId!: number;
+
   @Field(() => [Module])
   modules!: Module[];
 }

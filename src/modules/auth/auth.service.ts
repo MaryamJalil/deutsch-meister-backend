@@ -12,13 +12,14 @@ export class AuthService {
     private readonly jwtService: JwtService,
   ) {}
 
-  async register(email: string, password: string) {
+  async register(email: string, password: string, role: Role) {
     const hashedPassword = await bcrypt.hash(password, 10);
 
     return this.prisma.user.create({
       data: {
         email,
         password: hashedPassword,
+        role,
       },
     });
   }
@@ -66,29 +67,22 @@ export class AuthService {
     return this.generateTokens(user.id, user.role);
   }
 
-private async generateTokens(userId: number, role: Role) {
-  const payload: JwtPayload = {
-    sub: userId,
-    role,
-  };
+  private async generateTokens(userId: number, role: Role) {
+    const payload: JwtPayload = {
+      sub: userId,
+      role,
+    };
 
-  const accessToken = await this.jwtService.signAsync(
-    payload,
-    {
+    const accessToken = await this.jwtService.signAsync(payload, {
       secret: process.env.JWT_ACCESS_SECRET!,
       expiresIn: process.env.JWT_ACCESS_EXPIRES!,
-    } as JwtSignOptions,
-  );
+    } as JwtSignOptions);
 
-  const refreshToken = await this.jwtService.signAsync(
-    payload,
-    {
+    const refreshToken = await this.jwtService.signAsync(payload, {
       secret: process.env.JWT_REFRESH_SECRET!,
       expiresIn: process.env.JWT_REFRESH_EXPIRES!,
-    } as JwtSignOptions,
-  );
+    } as JwtSignOptions);
 
-  return { accessToken, refreshToken };
-}
-
+    return { accessToken, refreshToken };
+  }
 }

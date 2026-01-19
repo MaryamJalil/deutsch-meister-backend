@@ -85,20 +85,22 @@ npm install -D prisma
 pnpm prisma migrate dev --name courses_levels_lessons
 
 s npx prisma generate
-cd /Users/maryamjalil/Documents/deutsch-meister-backend && rm -rf node_modules 
+cd /Users/maryamjalil/Documents/deutsch-meister-backend && rm -rf node_modules
 package-lock.json pnpm-lock.yaml yarn.lock && npm install && npx prisma generate
 
 # Clear npm cache
+
 npm cache verify
 npm cache clean --force
+
 # Then reinstall and generate again
+
 rm -rf node_modules package-lock.json
 npm install
-export DATABASE_URL="postgresql://user:password@localhost:5432/dbname?schema=public"
 npx prisma generate
-
 
 nvm install 22
 nvm use 22
 node -v
+
 # should be >= 22.12.0

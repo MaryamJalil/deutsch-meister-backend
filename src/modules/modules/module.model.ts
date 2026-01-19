@@ -1,5 +1,4 @@
 import { ObjectType, Field, Int } from '@nestjs/graphql';
-import { Level } from '../levels/level.model.js';
 import { Lesson } from '../lessons/lesson.model.js';
 
 @ObjectType()
@@ -18,10 +17,10 @@ export class Module {
   order!: number;
 
   /**
-   * Relation: Module belongs to one Level
+   * Relation: Module belongs to one Level (exposed as levelId to avoid circular deps)
    */
-  @Field(() => Level)
-  level!: Level;
+  @Field(() => Int)
+  levelId!: number;
 
   /**
    * Relation: Module contains many Lessons

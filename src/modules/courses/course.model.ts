@@ -12,6 +12,6 @@ export class Course {
   @Field()
   language!: string;
 
-  @Field(() => [Level])
-  levels!: Level[];
+  @Field(() => [Level], { nullable: 'itemsAndList' })
+  levels?: Level[];
 }
