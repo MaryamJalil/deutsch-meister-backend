@@ -1,21 +1,21 @@
 import { ObjectType, Field, Int } from '@nestjs/graphql';
 import { Module } from '../modules/module.model.js';
-import { CEFRLevel } from '../..//common/enums/cefr-level.enum.js';
+import { LevelName } from '../../common/enums/levelName.enum.js';
 
 @ObjectType()
 export class Level {
   @Field(() => Int)
   id!: number;
 
-  @Field(() => CEFRLevel)
-  code!: CEFRLevel;
+  @Field(() => LevelName)
+  code!: LevelName;
 
   @Field(() => Int)
-  order!: number;
+  position!: number;
 
   @Field(() => Int)
   courseId!: number;
 
-  @Field(() => [Module])
-  modules!: Module[];
+  @Field(() => [Module], { nullable: 'itemsAndList' })
+  modules?: Module[];
 }

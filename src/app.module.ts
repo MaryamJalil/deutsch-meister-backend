@@ -8,6 +8,7 @@ import { PrismaModule } from './prisma/prisma.module.js';
 import { AuthModule } from './modules/auth/auth.module.js';
 import { CoursesModule } from './modules/courses/courses.module.js';
 import type { Request } from 'express';
+import { LevelModule } from './modules/levels/level.module.js';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import type { Request } from 'express';
     AuthModule,
     UsersModule,
     CoursesModule,
+    LevelModule,
     GraphQLModule.forRoot<ApolloDriverConfig>({
       driver: ApolloDriver,
       autoSchemaFile: join(process.cwd(), 'schema.gql'),
