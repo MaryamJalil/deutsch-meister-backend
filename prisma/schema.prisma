@@ -7,7 +7,6 @@ generator client {
   provider = "prisma-client-js"
 }
 
-
 model User {
   id           Int      @id @default(autoincrement())
   email        String   @unique
@@ -35,16 +34,27 @@ model Course {
 }
 
 model Level {
-  id       Int       @id @default(autoincrement())
-  name     LevelName
-  code     LevelName
-  order    Int
-  courseId Int
-  course   Course    @relation(fields: [courseId], references: [id])
-  modules  Module[]
+  id        Int       @id @default(autoincrement())
+  code      LevelName
+  position  Int
+  courseId  Int
+  course    Course    @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  modules   Module[]
+  createdAt DateTime  @default(now()) @map("created_at")
+  deletedAt DateTime? @map("deleted_at")
 
-  @@unique([courseId, name])
+  @@unique([courseId, code, deletedAt])
   @@index([courseId])
+  @@index([courseId, position])
+}
+
+enum LevelName {
+  A1
+  A2
+  B1
+  B2
+  C1
+  C2
 }
 
 model Module {
@@ -79,12 +89,4 @@ model LessonContent {
   vocabulary Json
   audioUrl   String?
   createdAt  DateTime @default(now())
-}
-
-enum LevelName {
-  A1
-  A2
-  B1
-  B2
-  C1
 }

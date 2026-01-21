@@ -2,15 +2,6 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
-"""Common European Framework of Reference for Languages levels"""
-enum CEFRLevel {
-  A1
-  A2
-  B1
-  B2
-  C1
-}
-
 type Course {
   id: Int!
   language: String!
@@ -21,6 +12,12 @@ type Course {
 input CreateCourseInput {
   language: String!
   title: String!
+}
+
+input CreateLevelInput {
+  code: LevelName!
+  courseId: Int!
+  position: Int!
 }
 
 """
@@ -36,11 +33,19 @@ type Lesson {
 }
 
 type Level {
-  code: CEFRLevel!
+  code: LevelName!
   courseId: Int!
   id: Int!
-  modules: [Module!]!
-  order: Int!
+  modules: [Module]
+  position: Int!
+}
+
+enum LevelName {
+  A1
+  A2
+  B1
+  B2
+  C1
 }
 
 input LoginInput {
@@ -58,11 +63,18 @@ type Module {
 
 type Mutation {
   createCourse(input: CreateCourseInput!): Course!
+  createLevel(input: CreateLevelInput!): Level!
   login(input: LoginInput!): String!
   register(input: RegisterInput!): Boolean!
+  updateCourse(input: UpdateCourseInput!): Course!
+  updateLevel(input: UpdateLevelInput!): Level!
 }
 
 type Query {
+  course(id: Int!): Course!
+  courses: [Course!]!
+  level(id: Int!): Level!
+  levels: [Level!]!
   users: [User!]!
 }
 
@@ -76,6 +88,19 @@ enum Role {
   ADMIN
   STUDENT
   TEACHER
+}
+
+input UpdateCourseInput {
+  id: Int!
+  language: String
+  title: String
+}
+
+input UpdateLevelInput {
+  code: LevelName
+  courseId: Int
+  id: Int!
+  position: Int
 }
 
 type User {
