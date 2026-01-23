@@ -42,6 +42,7 @@ model Level {
   modules   Module[]
   createdAt DateTime  @default(now()) @map("created_at")
   deletedAt DateTime? @map("deleted_at")
+  lessons   Lesson[]
 
   @@unique([courseId, code, deletedAt])
   @@index([courseId])
@@ -70,23 +71,54 @@ model Module {
 }
 
 model Lesson {
-  id        Int            @id @default(autoincrement())
-  title     String
-  order     Int
-  moduleId  Int
-  module    Module         @relation(fields: [moduleId], references: [id])
-  content   LessonContent?
-  deletedAt DateTime?
+  id Int @id @default(autoincrement())
 
-  @@index([moduleId])
+  title       String
+  description String?
+  content     String // Markdown lesson content
+
+  order Int // Order inside a level
+
+  levelId Int
+  level   Level @relation(fields: [levelId], references: [id])
+
+  vocabulary Vocabulary[]
+  examples   Example[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  module    Module?  @relation(fields: [moduleId], references: [id])
+  moduleId  Int?
+
+  @@unique([levelId, order]) // No duplicate order in same level
+  @@index([levelId]) // Fast lookup by level
 }
 
-model LessonContent {
-  id         Int      @id @default(autoincrement())
-  lessonId   Int      @unique
-  lesson     Lesson   @relation(fields: [lessonId], references: [id])
-  grammar    String
-  vocabulary Json
-  audioUrl   String?
-  createdAt  DateTime @default(now())
+model Vocabulary {
+  id Int @id @default(autoincrement())
+
+  word    String
+  meaning String
+
+  lessonId Int
+  lesson   Lesson @relation(fields: [lessonId], references: [id])
+
+  createdAt DateTime @default(now())
+
+  @@unique([lessonId, word]) // No duplicate words per lesson
+  @@index([lessonId])
+}
+
+model Example {
+  id Int @id @default(autoincrement())
+
+  sentence    String
+  translation String
+
+  lessonId Int
+  lesson   Lesson @relation(fields: [lessonId], references: [id])
+
+  createdAt DateTime @default(now())
+
+  @@index([lessonId])
 }

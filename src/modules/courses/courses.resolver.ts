@@ -21,8 +21,8 @@ export class CoursesResolver {
   constructor(private coursesService: CourseService) {}
 
   @Mutation(() => Course)
-  @UseGuards(GqlAuthGuard, RolesGuard)
-  @Roles('ADMIN')
+  // @UseGuards(GqlAuthGuard, RolesGuard)
+  // @Roles('ADMIN')
   async createCourse(@Args('input') input: CreateCourseInput): Promise<Course> {
     const course = await this.coursesService.createCourse(
       input.title,
