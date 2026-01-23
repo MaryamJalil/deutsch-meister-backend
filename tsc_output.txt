@@ -1,0 +1,15 @@
+src/.ts(5,30): error TS2307: Cannot find module '../prisma/prisma.module.js' or its corresponding type declarations.
+src/.ts(6,29): error TS2307: Cannot find module './users/users.module.js' or its corresponding type declarations.
+src/app.controller.spec.ts(2,31): error TS2307: Cannot find module './app.controller' or its corresponding type declarations.
+src/app.controller.spec.ts(3,28): error TS2307: Cannot find module './app.service' or its corresponding type declarations.
+src/modules/auth/auth.service.spec.ts(2,29): error TS2307: Cannot find module './auth.service' or its corresponding type declarations.
+src/modules/auth/auth.service.spec.ts(3,31): error TS2307: Cannot find module '../../prisma/prisma.service' or its corresponding type declarations.
+src/modules/auth/auth.service.spec.ts(82,106): error TS2339: Property 'USER' does not exist on type '{ ADMIN: "ADMIN"; STUDENT: "STUDENT"; TEACHER: "TEACHER"; }'.
+src/modules/auth/auth.service.spec.ts(89,106): error TS2339: Property 'USER' does not exist on type '{ ADMIN: "ADMIN"; STUDENT: "STUDENT"; TEACHER: "TEACHER"; }'.
+src/modules/auth/auth.service.spec.ts(118,101): error TS2339: Property 'USER' does not exist on type '{ ADMIN: "ADMIN"; STUDENT: "STUDENT"; TEACHER: "TEACHER"; }'.
+src/modules/auth/auth.service.spec.ts(124,101): error TS2339: Property 'USER' does not exist on type '{ ADMIN: "ADMIN"; STUDENT: "STUDENT"; TEACHER: "TEACHER"; }'.
+src/modules/auth/auth.service.spec.ts(132,102): error TS2339: Property 'USER' does not exist on type '{ ADMIN: "ADMIN"; STUDENT: "STUDENT"; TEACHER: "TEACHER"; }'.
+src/modules/courses/courses.service.spec.ts(2,31): error TS2307: Cannot find module './courses.service' or its corresponding type declarations.
+src/modules/courses/courses.service.spec.ts(3,31): error TS2307: Cannot find module '../../prisma/prisma.service' or its corresponding type declarations.
+src/modules/users/users.resolver.spec.ts(2,31): error TS2307: Cannot find module './users.resolver' or its corresponding type declarations.
+src/modules/users/users.service.spec.ts(2,30): error TS2307: Cannot find module './users.service' or its corresponding type declarations.

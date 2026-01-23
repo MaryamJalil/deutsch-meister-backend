@@ -15,8 +15,8 @@ export class LevelResolver {
   constructor(private levelService: LevelService) {}
 
   @Mutation(() => Level)
-  @UseGuards(GqlAuthGuard, RolesGuard)
-  @Roles('ADMIN')
+  // @UseGuards(GqlAuthGuard, RolesGuard)
+  // @Roles('ADMIN')
   createLevel(@Args('input') input: CreateLevelInput) {
     return this.levelService.createLevel(input);
   }

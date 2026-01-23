@@ -106,3 +106,5 @@ node -v
 # should be >= 22.12.0
 
 npx prisma migrate dev --name update_level_schema
+
+npx tsc --noEmit

@@ -14,6 +14,14 @@ input CreateCourseInput {
   title: String!
 }
 
+input CreateLessonInput {
+  content: String
+  description: String
+  levelId: Int!
+  order: Int!
+  title: String!
+}
+
 input CreateLevelInput {
   code: LevelName!
   courseId: Int!
@@ -25,11 +33,21 @@ A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date
 """
 scalar DateTime
 
+type Example {
+  id: Int!
+  sentence: String!
+  translation: String!
+}
+
 type Lesson {
   content: String!
+  createdAt: DateTime!
+  description: String
+  examples: [Example!]!
   id: Int!
   order: Int!
   title: String!
+  vocabulary: [Vocabulary!]!
 }
 
 type Level {
@@ -63,6 +81,7 @@ type Module {
 
 type Mutation {
   createCourse(input: CreateCourseInput!): Course!
+  createLessonAtPosition(input: CreateLessonInput!): Lesson!
   createLevel(input: CreateLevelInput!): Level!
   login(input: LoginInput!): String!
   register(input: RegisterInput!): Boolean!
@@ -108,4 +127,10 @@ type User {
   email: String!
   id: Int!
   role: Role!
+}
+
+type Vocabulary {
+  id: Int!
+  meaning: String!
+  word: String!
 }
