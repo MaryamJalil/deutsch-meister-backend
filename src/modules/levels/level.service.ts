@@ -1,46 +1,48 @@
-import { Injectable } from '@nestjs/common';
-import { PrismaService } from '../../prisma/prisma.service.js';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import {
   CreateLevelInput,
   UpdateLevelInput,
 } from '../auth/dto/levels.input.js';
-import { Level } from './level.model.js';
-import { LevelName } from '../../common/enums/levelName.enum.js';
+import { db } from '../../database/drizzle.js';
+import { levels } from '../../database/schema/level.schema.js';
+import { eq } from 'drizzle-orm/index.js';
 
 @Injectable()
 export class LevelService {
-  constructor(private readonly prisma: PrismaService) {}
-
   async createLevel(input: CreateLevelInput) {
-    console.log('DEBUG input.code =', input); // 👈 ADD THIS
-
-    return this.prisma.level.create({
-      data: {
+    const [level] = await db
+      .insert(levels)
+      .values({
         code: input.code,
         position: input.position,
         courseId: input.courseId,
-      },
-    });
+      })
+      .returning();
+    return level;
   }
 
   async updateLevel(input: UpdateLevelInput) {
     const { id, ...data } = input;
 
-    if (data.code) {
-      data.code = data.code as LevelName;
-    }
-
-    return this.prisma.level.update({
-      where: { id },
-      data,
-    });
+    const updatedLevel = await db
+      .update(levels)
+      .set(data)
+      .where(eq(levels.id, id))
+      .returning();
+    return updatedLevel;
   }
   async getLevels() {
-    return this.prisma.level.findMany();
+    const allLevels = await db.select().from(levels);
+    if (!allLevels) {
+      throw new NotFoundException('Levels not found');
+    }
+    return levels;
   }
   async getLevel(id: number) {
-    return this.prisma.level.findUnique({
-      where: { id },
-    });
+    const level = await db.select().from(levels).where(eq(levels.id, id));
+    if (!level) {
+      throw new NotFoundException('Level not found');
+    }
+    return level;
   }
 }

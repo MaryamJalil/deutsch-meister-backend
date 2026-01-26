@@ -1,6 +1,10 @@
-import { InputType, Field } from '@nestjs/graphql';
-import { Role } from '../../../common/enums/role.enum.js';
+import { InputType, Field, registerEnumType } from '@nestjs/graphql';
 import { IsEmail, IsEnum, MinLength } from 'class-validator';
+import { Role } from '../../../common/enums/role.enum.js';
+
+registerEnumType(Role, {
+  name: 'Role',
+});
 
 @InputType()
 export class RegisterInput {

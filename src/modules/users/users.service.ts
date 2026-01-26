@@ -1,11 +1,10 @@
 import { Injectable } from '@nestjs/common';
-import { PrismaService } from '../../prisma/prisma.service.js';
+import { db } from '../../database/drizzle.js';
+import { users } from '../../database/schema/user.schema.js';
 
 @Injectable()
 export class UsersService {
-  constructor(private prisma: PrismaService) {}
-
-  findAll() {
-    return this.prisma.user.findMany();
+  async findAll() {
+    return db.select().from(users);
   }
 }

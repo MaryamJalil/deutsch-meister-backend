@@ -1,0 +1,40 @@
+"use strict";
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.LessonResolver = void 0;
+const graphql_1 = require("@nestjs/graphql");
+const lesson_model_js_1 = require("./lesson.model.js");
+const lesson_input_js_1 = require("../auth/dto/lesson.input.js");
+const lesson_service_js_1 = require("./lesson.service.js");
+let LessonResolver = class LessonResolver {
+    constructor(lessonService) {
+        this.lessonService = lessonService;
+    }
+    createLessonAtPosition(input) {
+        console.log('CREATE LESSON INPUT:', input);
+        return this.lessonService.createLessonAtPosition(input.title, input.order, input.levelId, input.description, input.content);
+    }
+};
+exports.LessonResolver = LessonResolver;
+__decorate([
+    (0, graphql_1.Mutation)(() => lesson_model_js_1.Lesson),
+    __param(0, (0, graphql_1.Args)('input')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [lesson_input_js_1.CreateLessonInput]),
+    __metadata("design:returntype", Promise)
+], LessonResolver.prototype, "createLessonAtPosition", null);
+exports.LessonResolver = LessonResolver = __decorate([
+    (0, graphql_1.Resolver)(),
+    __metadata("design:paramtypes", [lesson_service_js_1.LessonService])
+], LessonResolver);

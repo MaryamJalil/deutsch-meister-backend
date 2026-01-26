@@ -1,39 +1,48 @@
 import { Injectable } from '@nestjs/common';
-import { PrismaService } from '../../prisma/prisma.service.js';
+import { db } from '../../database/drizzle.js';
+
+import { lessons } from '../../database/schema/lesson.schema.js';
+import { eq, and, sql, gte } from 'drizzle-orm/index.js';
 
 @Injectable()
 export class LessonService {
-  constructor(private readonly prisma: PrismaService) {}
   async createLessonAtPosition(
     title: string,
     order: number,
     levelId: number,
     description?: string,
     content?: string,
-  ): Promise<any> {
-    // Insert new lesson
-    return this.prisma.$transaction(async (tx) => {
+  ) {
+    console.log(
+      'CREATE LESSON INPUT:',
+      title,
+      order,
+      levelId,
+      description,
+      content,
+    );
+    return db.transaction(async (tx) => {
       // 1️⃣ Shift existing lessons down
-      await tx.lesson.updateMany({
-        where: {
-          levelId: levelId,
-          order: { gte: order },
-        },
-        data: {
-          order: { increment: 1 },
-        },
-      });
+      await tx
+        .update(lessons)
+        .set({
+          order: sql`${lessons.order} + 1`,
+        })
+        .where(and(eq(lessons.levelId, levelId), gte(lessons.order, order)));
 
-      // 2️⃣ Insert new lesson
-      return tx.lesson.create({
-        data: {
-          title: title,
-          content: content || '',
-          order: order,
-          levelId: levelId,
-          description: description,
-        },
-      });
+      // 2️⃣ Insert the new lesson
+      const [lesson] = await tx
+        .insert(lessons)
+        .values({
+          title,
+          content: content ?? '',
+          order,
+          levelId,
+          description,
+        })
+        .returning();
+
+      return lesson;
     });
   }
 }
