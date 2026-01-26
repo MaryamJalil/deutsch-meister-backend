@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { UsersResolver } from './users.resolver';
+import { UsersResolver } from './users.resolver.js';
 
 describe('UsersResolver', () => {
   let resolver: UsersResolver;
