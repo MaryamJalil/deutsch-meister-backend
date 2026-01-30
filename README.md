@@ -108,3 +108,11 @@ node -v
 npx prisma migrate dev --name update_level_schema
 
 npx tsc --noEmit
+
+
+docker compose down -v
+docker compose up -d
+
+rm -rf drizzle
+npm run drizzle:generate
+npm run drizzle:migrate

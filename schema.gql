@@ -23,7 +23,7 @@ input CreateLessonInput {
 }
 
 input CreateLevelInput {
-  code: LevelName!
+  code: LevelCode!
   courseId: Int!
   position: Int!
 }
@@ -51,21 +51,19 @@ type Lesson {
 }
 
 type Level {
-  code: LevelName!
+  code: LevelCode!
   courseId: Int!
   id: Int!
   modules: [Module]
   position: Int!
 }
 
-"""German language proficiency levels"""
-enum LevelName {
+enum LevelCode {
   A1
   A2
   B1
   B2
   C1
-  C2
 }
 
 input LoginInput {
@@ -118,7 +116,7 @@ input UpdateCourseInput {
 }
 
 input UpdateLevelInput {
-  code: LevelName
+  code: LevelCode
   courseId: Int
   id: Int!
   position: Int

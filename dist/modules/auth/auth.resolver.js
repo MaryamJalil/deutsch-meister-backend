@@ -26,7 +26,6 @@ let AuthResolver = class AuthResolver {
         return true;
     }
     async login(input) {
-        console.log('LOGIN INPUT:', input); // 🔍 TEMP DEBUG
         const { accessToken } = await this.authService.login(input.email, input.password);
         return accessToken;
     }

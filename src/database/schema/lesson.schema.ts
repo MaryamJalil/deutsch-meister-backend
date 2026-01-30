@@ -8,8 +8,8 @@ import {
   uniqueIndex,
   index,
 } from 'drizzle-orm/pg-core';
-import { levels } from './level.schema.js';
-import { modules } from './module.schema.js';
+import { levels } from './level.schema';
+import { modules } from './module.schema';
 
 export const lessons = pgTable(
   'lessons',

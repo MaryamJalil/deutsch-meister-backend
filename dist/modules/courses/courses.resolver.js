@@ -17,10 +17,6 @@ const index_js_1 = require("@nestjs/graphql/dist/index.js");
 const course_model_js_1 = require("./course.model.js");
 const courses_service_js_1 = require("./courses.service.js");
 const course_input_js_1 = require("../auth/dto/course.input.js");
-const roles_guard_js_1 = require("../auth/guards/roles.guard.js");
-const roles_decorator_js_1 = require("../auth/decorators/roles.decorator.js");
-const common_1 = require("@nestjs/common");
-const gql_auth_guard_js_1 = require("../auth/guards/gql-auth.guard.js");
 let CoursesResolver = class CoursesResolver {
     constructor(coursesService) {
         this.coursesService = coursesService;
@@ -31,6 +27,8 @@ let CoursesResolver = class CoursesResolver {
         const course = await this.coursesService.createCourse(input.title, input.language);
         return course;
     }
+    // @UseGuards(GqlAuthGuard, RolesGuard)
+    // @Roles('ADMIN')
     updateCourse(input) {
         return this.coursesService.updateCourse(input);
     }
@@ -53,9 +51,10 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], CoursesResolver.prototype, "createCourse", null);
 __decorate([
-    (0, index_js_1.Mutation)(() => course_model_js_1.Course),
-    (0, common_1.UseGuards)(gql_auth_guard_js_1.GqlAuthGuard, roles_guard_js_1.RolesGuard),
-    (0, roles_decorator_js_1.Roles)('ADMIN'),
+    (0, index_js_1.Mutation)(() => course_model_js_1.Course)
+    // @UseGuards(GqlAuthGuard, RolesGuard)
+    // @Roles('ADMIN')
+    ,
     __param(0, (0, index_js_1.Args)('input')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [course_input_js_1.UpdateCourseInput]),

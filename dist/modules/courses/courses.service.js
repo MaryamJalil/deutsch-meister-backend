@@ -48,7 +48,7 @@ let CourseService = class CourseService {
         if (!course) {
             throw new index_js_1.NotFoundException('Course not found');
         }
-        return course;
+        return course[0];
     }
 };
 exports.CourseService = CourseService;

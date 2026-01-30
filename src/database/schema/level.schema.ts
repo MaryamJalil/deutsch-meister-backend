@@ -6,8 +6,8 @@ import {
   uniqueIndex,
   index,
 } from 'drizzle-orm/pg-core';
-import { levelNameEnum } from './enums.js';
-import { courses } from './course.schema.js';
+import { levelNameEnum } from './enums';
+import { courses } from './course.schema';
 export const levels = pgTable(
   'levels',
   {

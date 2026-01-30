@@ -2,15 +2,15 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.levels = void 0;
 const pg_core_1 = require("drizzle-orm/pg-core");
-const enums_js_1 = require("./enums.js");
-const course_schema_js_1 = require("./course.schema.js");
+const enums_1 = require("./enums");
+const course_schema_1 = require("./course.schema");
 exports.levels = (0, pg_core_1.pgTable)('levels', {
     id: (0, pg_core_1.serial)('id').primaryKey(),
-    code: (0, enums_js_1.levelNameEnum)('code').notNull(),
+    code: (0, enums_1.levelNameEnum)('code').notNull(),
     position: (0, pg_core_1.integer)('position').notNull(),
     courseId: (0, pg_core_1.integer)('course_id')
         .notNull()
-        .references(() => course_schema_js_1.courses.id, { onDelete: 'cascade' }),
+        .references(() => course_schema_1.courses.id, { onDelete: 'cascade' }),
     createdAt: (0, pg_core_1.timestamp)('created_at').notNull().defaultNow(),
     deletedAt: (0, pg_core_1.timestamp)('deleted_at'),
 }, (table) => ({

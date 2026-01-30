@@ -13,16 +13,13 @@ const lesson_schema_js_1 = require("../../database/schema/lesson.schema.js");
 const index_js_1 = require("../../../node_modules/drizzle-orm/index.js");
 let LessonService = class LessonService {
     async createLessonAtPosition(title, order, levelId, description, content) {
-        console.log('CREATE LESSON INPUT:', title, order, levelId, description, content);
         return drizzle_js_1.db.transaction(async (tx) => {
-            // 1️⃣ Shift existing lessons down
             await tx
                 .update(lesson_schema_js_1.lessons)
                 .set({
                 order: (0, index_js_1.sql) `${lesson_schema_js_1.lessons.order} + 1`,
             })
                 .where((0, index_js_1.and)((0, index_js_1.eq)(lesson_schema_js_1.lessons.levelId, levelId), (0, index_js_1.gte)(lesson_schema_js_1.lessons.order, order)));
-            // 2️⃣ Insert the new lesson
             const [lesson] = await tx
                 .insert(lesson_schema_js_1.lessons)
                 .values({

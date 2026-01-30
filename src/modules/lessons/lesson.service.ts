@@ -13,16 +13,8 @@ export class LessonService {
     description?: string,
     content?: string,
   ) {
-    console.log(
-      'CREATE LESSON INPUT:',
-      title,
-      order,
-      levelId,
-      description,
-      content,
-    );
+
     return db.transaction(async (tx) => {
-      // 1️⃣ Shift existing lessons down
       await tx
         .update(lessons)
         .set({
@@ -30,7 +22,6 @@ export class LessonService {
         })
         .where(and(eq(lessons.levelId, levelId), gte(lessons.order, order)));
 
-      // 2️⃣ Insert the new lesson
       const [lesson] = await tx
         .insert(lessons)
         .values({

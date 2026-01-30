@@ -6,7 +6,7 @@ import {
   timestamp,
   index,
 } from 'drizzle-orm/pg-core';
-import { lessons } from './lesson.schema.js';
+import { lessons } from './lesson.schema';
 
 export const examples = pgTable(
   'examples',

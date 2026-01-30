@@ -6,7 +6,7 @@ import {
   timestamp,
   index,
 } from 'drizzle-orm/pg-core';
-import { levels } from './level.schema.js';
+import { levels } from './level.schema';
 
 export const modules = pgTable(
   'modules',
