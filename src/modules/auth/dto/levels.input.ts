@@ -1,12 +1,12 @@
 import { InputType, Field, Int } from '@nestjs/graphql';
 import { IsEnum, IsInt, IsOptional, IsPositive } from 'class-validator';
-import { LevelName } from '../../../common/enums/levelName.enum.js';
+import { LevelCode} from '../../../common/enums/levelName.enum';
 
 @InputType()
 export class CreateLevelInput {
-  @Field(() => LevelName)
-  @IsEnum(LevelName)
-  code!: LevelName;
+  @Field(() => LevelCode)
+  @IsEnum(LevelCode)
+  code!:  LevelCode;
 
   @Field(() => Int)
   @IsInt()
@@ -25,10 +25,10 @@ export class UpdateLevelInput {
   @IsInt()
   id!: number;
 
-  @Field(() => LevelName, { nullable: true })
-  @IsEnum(LevelName)
+  @Field(() => LevelCode, { nullable: true })
+  @IsEnum(LevelCode)
   @IsOptional()
-  code?: LevelName;
+  code?: LevelCode;
 
   @Field(() => Int, { nullable: true })
   @IsInt()

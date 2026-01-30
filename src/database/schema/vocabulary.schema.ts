@@ -7,7 +7,7 @@ import {
   uniqueIndex,
   index,
 } from 'drizzle-orm/pg-core';
-import { lessons } from './lesson.schema.js';
+import { lessons } from './lesson.schema';
 
 export const vocabularies = pgTable(
   'vocabularies',

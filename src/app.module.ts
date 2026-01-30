@@ -15,8 +15,7 @@ import { configuration } from './config/configuration.js';
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
-      load: [configuration],
-    }),
+    load: [configuration],    }),
     GraphQLModule.forRoot<ApolloDriverConfig>({
       driver: ApolloDriver,
       autoSchemaFile: join(process.cwd(), 'schema.gql'),

@@ -42,6 +42,6 @@ export class CourseService {
     if (!course) {
       throw new NotFoundException('Course not found');
     }
-    return course;
+    return course[0];
   }
 }

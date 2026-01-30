@@ -12,7 +12,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.Level = void 0;
 const graphql_1 = require("@nestjs/graphql");
 const module_model_js_1 = require("../modules/module.model.js");
-const levelName_enum_js_1 = require("../../common/enums/levelName.enum.js");
+const levelName_enum_1 = require("../../common/enums/levelName.enum");
 let Level = class Level {
 };
 exports.Level = Level;
@@ -21,7 +21,7 @@ __decorate([
     __metadata("design:type", Number)
 ], Level.prototype, "id", void 0);
 __decorate([
-    (0, graphql_1.Field)(() => levelName_enum_js_1.LevelName),
+    (0, graphql_1.Field)(() => levelName_enum_1.LevelCode),
     __metadata("design:type", String)
 ], Level.prototype, "code", void 0);
 __decorate([

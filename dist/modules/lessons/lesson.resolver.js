@@ -22,7 +22,6 @@ let LessonResolver = class LessonResolver {
         this.lessonService = lessonService;
     }
     createLessonAtPosition(input) {
-        console.log('CREATE LESSON INPUT:', input);
         return this.lessonService.createLessonAtPosition(input.title, input.order, input.levelId, input.description, input.content);
     }
 };

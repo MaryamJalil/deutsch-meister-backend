@@ -15,7 +15,6 @@ export class AuthResolver {
 
   @Mutation(() => String)
   async login(@Args('input') input: LoginInput): Promise<string> {
-    console.log('LOGIN INPUT:', input); // 🔍 TEMP DEBUG
     const { accessToken } = await this.authService.login(
       input.email,
       input.password,

@@ -12,13 +12,13 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.UpdateLevelInput = exports.CreateLevelInput = void 0;
 const graphql_1 = require("@nestjs/graphql");
 const class_validator_1 = require("class-validator");
-const levelName_enum_js_1 = require("../../../common/enums/levelName.enum.js");
+const levelName_enum_1 = require("../../../common/enums/levelName.enum");
 let CreateLevelInput = class CreateLevelInput {
 };
 exports.CreateLevelInput = CreateLevelInput;
 __decorate([
-    (0, graphql_1.Field)(() => levelName_enum_js_1.LevelName),
-    (0, class_validator_1.IsEnum)(levelName_enum_js_1.LevelName),
+    (0, graphql_1.Field)(() => levelName_enum_1.LevelCode),
+    (0, class_validator_1.IsEnum)(levelName_enum_1.LevelCode),
     __metadata("design:type", String)
 ], CreateLevelInput.prototype, "code", void 0);
 __decorate([
@@ -45,8 +45,8 @@ __decorate([
     __metadata("design:type", Number)
 ], UpdateLevelInput.prototype, "id", void 0);
 __decorate([
-    (0, graphql_1.Field)(() => levelName_enum_js_1.LevelName, { nullable: true }),
-    (0, class_validator_1.IsEnum)(levelName_enum_js_1.LevelName),
+    (0, graphql_1.Field)(() => levelName_enum_1.LevelCode, { nullable: true }),
+    (0, class_validator_1.IsEnum)(levelName_enum_1.LevelCode),
     (0, class_validator_1.IsOptional)(),
     __metadata("design:type", String)
 ], UpdateLevelInput.prototype, "code", void 0);

@@ -10,7 +10,6 @@ export class LessonResolver {
   createLessonAtPosition(
     @Args('input') input: CreateLessonInput,
   ): Promise<any> {
-    console.log('CREATE LESSON INPUT:', input);
     return this.lessonService.createLessonAtPosition(
       input.title,
       input.order,
