@@ -1,17 +1,17 @@
 import { Injectable, NotFoundException } from '@nestjs/common/index.js';
-import { UpdateCourseInput } from '../auth/dto/course.input.js';
+import { CreateCourseInput, UpdateCourseInput } from '../auth/dto/course.input.js';
 import { courses } from '../../database/schema/course.schema.js';
 import { db } from '../../database/drizzle.js';
 import { eq } from 'drizzle-orm/index.js';
 
 @Injectable()
 export class CourseService {
-  async createCourse(title: string, language: string) {
+  async createCourse(input:CreateCourseInput) {
     const [course] = await db
       .insert(courses)
       .values({
-        title,
-        language,
+        title:input.title,
+        language:input.language,
       })
       .returning();
     return course;

@@ -18,6 +18,7 @@ const courses_module_js_1 = require("./modules/courses/courses.module.js");
 const level_module_js_1 = require("./modules/levels/level.module.js");
 const lesson_module_js_1 = require("./modules/lessons/lesson.module.js");
 const configuration_js_1 = require("./config/configuration.js");
+const vocabulary_module_js_1 = require("./modules/vocabulary/vocabulary.module.js");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
@@ -40,6 +41,7 @@ exports.AppModule = AppModule = __decorate([
             courses_module_js_1.CoursesModule,
             level_module_js_1.LevelModule,
             lesson_module_js_1.LessonModule,
+            vocabulary_module_js_1.VocabularyModule,
         ],
     })
 ], AppModule);

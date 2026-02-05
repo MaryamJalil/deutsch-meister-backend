@@ -21,15 +21,19 @@ let LevelService = class LevelService {
             courseId: input.courseId,
         })
             .returning();
+        console.log(level);
         return level;
     }
     async updateLevel(input) {
         const { id, ...data } = input;
-        const updatedLevel = await drizzle_js_1.db
+        const [updatedLevel] = await drizzle_js_1.db
             .update(level_schema_js_1.levels)
             .set(data)
             .where((0, index_js_1.eq)(level_schema_js_1.levels.id, id))
             .returning();
+        if (!updatedLevel) {
+            throw new Error(`Level with id ${id} not found`);
+        }
         return updatedLevel;
     }
     async getLevels() {
@@ -37,14 +41,14 @@ let LevelService = class LevelService {
         if (!allLevels) {
             throw new common_1.NotFoundException('Levels not found');
         }
-        return level_schema_js_1.levels;
+        return allLevels;
     }
     async getLevel(id) {
         const level = await drizzle_js_1.db.select().from(level_schema_js_1.levels).where((0, index_js_1.eq)(level_schema_js_1.levels.id, id));
         if (!level) {
             throw new common_1.NotFoundException('Level not found');
         }
-        return level;
+        return level[0];
     }
 };
 exports.LevelService = LevelService;

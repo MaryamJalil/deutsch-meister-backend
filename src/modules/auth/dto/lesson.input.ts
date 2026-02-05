@@ -26,20 +26,3 @@ export class CreateLessonInput {
   @IsInt()
   levelId!: number;
 }
-
-@InputType()
-export class CreateVocabularyInput {
-  @Field()
-  word!: string;
-
-  @Field()
-  meaning!: string;
-}
-@InputType()
-export class CreateExampleInput {
-  @Field()
-  sentence!: string;
-
-  @Field()
-  translation!: string;
-}

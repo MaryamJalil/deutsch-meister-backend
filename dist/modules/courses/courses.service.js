@@ -12,12 +12,12 @@ const course_schema_js_1 = require("../../database/schema/course.schema.js");
 const drizzle_js_1 = require("../../database/drizzle.js");
 const index_js_2 = require("../../../node_modules/drizzle-orm/index.js");
 let CourseService = class CourseService {
-    async createCourse(title, language) {
+    async createCourse(input) {
         const [course] = await drizzle_js_1.db
             .insert(course_schema_js_1.courses)
             .values({
-            title,
-            language,
+            title: input.title,
+            language: input.language,
         })
             .returning();
         return course;

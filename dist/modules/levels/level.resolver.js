@@ -15,10 +15,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.LevelResolver = void 0;
 const graphql_1 = require("@nestjs/graphql");
 const level_model_js_1 = require("./level.model.js");
-const common_1 = require("@nestjs/common");
-const gql_auth_guard_js_1 = require("../auth/guards/gql-auth.guard.js");
-const roles_guard_js_1 = require("../auth/guards/roles.guard.js");
-const roles_decorator_js_1 = require("../auth/decorators/roles.decorator.js");
 const level_service_js_1 = require("./level.service.js");
 const levels_input_js_1 = require("../auth/dto/levels.input.js");
 let LevelResolver = class LevelResolver {
@@ -30,6 +26,8 @@ let LevelResolver = class LevelResolver {
     createLevel(input) {
         return this.levelService.createLevel(input);
     }
+    // @UseGuards(GqlAuthGuard, RolesGuard)
+    // @Roles('ADMIN')
     updateLevel(input) {
         return this.levelService.updateLevel(input);
     }
@@ -52,9 +50,10 @@ __decorate([
     __metadata("design:returntype", void 0)
 ], LevelResolver.prototype, "createLevel", null);
 __decorate([
-    (0, graphql_1.Mutation)(() => level_model_js_1.Level),
-    (0, common_1.UseGuards)(gql_auth_guard_js_1.GqlAuthGuard, roles_guard_js_1.RolesGuard),
-    (0, roles_decorator_js_1.Roles)('ADMIN'),
+    (0, graphql_1.Mutation)(() => level_model_js_1.Level)
+    // @UseGuards(GqlAuthGuard, RolesGuard)
+    // @Roles('ADMIN')
+    ,
     __param(0, (0, graphql_1.Args)('input')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [levels_input_js_1.UpdateLevelInput]),
