@@ -9,7 +9,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.CreateExampleInput = exports.CreateVocabularyInput = exports.CreateLessonInput = void 0;
+exports.CreateLessonInput = void 0;
 const index_js_1 = require("@nestjs/graphql/dist/index.js");
 const class_validator_1 = require("class-validator");
 let CreateLessonInput = class CreateLessonInput {
@@ -46,31 +46,3 @@ __decorate([
 exports.CreateLessonInput = CreateLessonInput = __decorate([
     (0, index_js_1.InputType)()
 ], CreateLessonInput);
-let CreateVocabularyInput = class CreateVocabularyInput {
-};
-exports.CreateVocabularyInput = CreateVocabularyInput;
-__decorate([
-    (0, index_js_1.Field)(),
-    __metadata("design:type", String)
-], CreateVocabularyInput.prototype, "word", void 0);
-__decorate([
-    (0, index_js_1.Field)(),
-    __metadata("design:type", String)
-], CreateVocabularyInput.prototype, "meaning", void 0);
-exports.CreateVocabularyInput = CreateVocabularyInput = __decorate([
-    (0, index_js_1.InputType)()
-], CreateVocabularyInput);
-let CreateExampleInput = class CreateExampleInput {
-};
-exports.CreateExampleInput = CreateExampleInput;
-__decorate([
-    (0, index_js_1.Field)(),
-    __metadata("design:type", String)
-], CreateExampleInput.prototype, "sentence", void 0);
-__decorate([
-    (0, index_js_1.Field)(),
-    __metadata("design:type", String)
-], CreateExampleInput.prototype, "translation", void 0);
-exports.CreateExampleInput = CreateExampleInput = __decorate([
-    (0, index_js_1.InputType)()
-], CreateExampleInput);

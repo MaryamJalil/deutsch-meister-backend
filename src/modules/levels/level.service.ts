@@ -18,17 +18,21 @@ export class LevelService {
         courseId: input.courseId,
       })
       .returning();
+    console.log(level);
     return level;
   }
 
   async updateLevel(input: UpdateLevelInput) {
     const { id, ...data } = input;
 
-    const updatedLevel = await db
+    const [updatedLevel] = await db
       .update(levels)
       .set(data)
       .where(eq(levels.id, id))
       .returning();
+    if (!updatedLevel) {
+      throw new Error(`Level with id ${id} not found`);
+    }
     return updatedLevel;
   }
   async getLevels() {
@@ -36,13 +40,13 @@ export class LevelService {
     if (!allLevels) {
       throw new NotFoundException('Levels not found');
     }
-    return levels;
+    return allLevels;
   }
   async getLevel(id: number) {
     const level = await db.select().from(levels).where(eq(levels.id, id));
     if (!level) {
       throw new NotFoundException('Level not found');
     }
-    return level;
+    return level[0];
   }
 }

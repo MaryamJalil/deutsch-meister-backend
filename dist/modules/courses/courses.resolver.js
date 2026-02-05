@@ -24,7 +24,7 @@ let CoursesResolver = class CoursesResolver {
     // @UseGuards(GqlAuthGuard, RolesGuard)
     // @Roles('ADMIN')
     async createCourse(input) {
-        const course = await this.coursesService.createCourse(input.title, input.language);
+        const course = await this.coursesService.createCourse(input);
         return course;
     }
     // @UseGuards(GqlAuthGuard, RolesGuard)

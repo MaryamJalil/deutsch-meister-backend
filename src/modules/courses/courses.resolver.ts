@@ -25,8 +25,7 @@ export class CoursesResolver {
   // @Roles('ADMIN')
   async createCourse(@Args('input') input: CreateCourseInput): Promise<Course> {
     const course = await this.coursesService.createCourse(
-      input.title,
-      input.language,
+  input
     );
     return course;
   }

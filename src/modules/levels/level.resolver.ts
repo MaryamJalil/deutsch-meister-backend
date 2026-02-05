@@ -22,8 +22,8 @@ export class LevelResolver {
   }
 
   @Mutation(() => Level)
-  @UseGuards(GqlAuthGuard, RolesGuard)
-  @Roles('ADMIN')
+  // @UseGuards(GqlAuthGuard, RolesGuard)
+  // @Roles('ADMIN')
   updateLevel(@Args('input') input: UpdateLevelInput) {
     return this.levelService.updateLevel(input);
   }

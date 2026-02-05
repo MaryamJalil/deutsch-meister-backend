@@ -10,12 +10,14 @@ import type { Request } from 'express';
 import { LevelModule } from './modules/levels/level.module.js';
 import { LessonModule } from './modules/lessons/lesson.module.js';
 import { configuration } from './config/configuration.js';
+import { VocabularyModule } from './modules/vocabulary/vocabulary.module.js';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
-    load: [configuration],    }),
+      load: [configuration],
+    }),
     GraphQLModule.forRoot<ApolloDriverConfig>({
       driver: ApolloDriver,
       autoSchemaFile: join(process.cwd(), 'schema.gql'),
@@ -28,6 +30,7 @@ import { configuration } from './config/configuration.js';
     CoursesModule,
     LevelModule,
     LessonModule,
+    VocabularyModule,
   ],
 })
 export class AppModule {}
