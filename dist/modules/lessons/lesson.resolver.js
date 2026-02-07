@@ -24,6 +24,15 @@ let LessonResolver = class LessonResolver {
     async createLesson(input) {
         return this.lessonService.createLesson(input);
     }
+    async updateLesson(input) {
+        return this.lessonService.updateLesson(input);
+    }
+    async getLessons() {
+        return this.lessonService.getLessons();
+    }
+    async getLesson(id) {
+        return this.lessonService.getLesson(id);
+    }
 };
 exports.LessonResolver = LessonResolver;
 __decorate([
@@ -33,6 +42,26 @@ __decorate([
     __metadata("design:paramtypes", [lesson_input_js_1.CreateLessonInput]),
     __metadata("design:returntype", Promise)
 ], LessonResolver.prototype, "createLesson", null);
+__decorate([
+    (0, graphql_1.Mutation)(() => lesson_model_js_1.Lesson),
+    __param(0, (0, graphql_1.Args)('input')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [lesson_input_js_1.UpdateLessonInput]),
+    __metadata("design:returntype", Promise)
+], LessonResolver.prototype, "updateLesson", null);
+__decorate([
+    (0, graphql_1.Query)(() => [lesson_model_js_1.Lesson], { name: 'lessons' }),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], LessonResolver.prototype, "getLessons", null);
+__decorate([
+    (0, graphql_1.Query)(() => lesson_model_js_1.Lesson, { name: 'lesson' }),
+    __param(0, (0, graphql_1.Args)('id', { type: () => graphql_1.Int })),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number]),
+    __metadata("design:returntype", Promise)
+], LessonResolver.prototype, "getLesson", null);
 exports.LessonResolver = LessonResolver = __decorate([
     (0, graphql_1.Resolver)(),
     __metadata("design:paramtypes", [lesson_service_js_1.LessonService])
