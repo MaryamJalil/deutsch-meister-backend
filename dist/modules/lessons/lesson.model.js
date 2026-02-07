@@ -25,29 +25,41 @@ __decorate([
     __metadata("design:type", String)
 ], Lesson.prototype, "title", void 0);
 __decorate([
-    (0, graphql_1.Field)({ nullable: true }),
-    __metadata("design:type", String)
+    (0, graphql_1.Field)(() => String, { nullable: true }),
+    __metadata("design:type", Object)
 ], Lesson.prototype, "description", void 0);
 __decorate([
-    (0, graphql_1.Field)(),
-    __metadata("design:type", String)
+    (0, graphql_1.Field)(() => String, { nullable: true }),
+    __metadata("design:type", Object)
 ], Lesson.prototype, "content", void 0);
 __decorate([
     (0, graphql_1.Field)(() => graphql_1.Int),
     __metadata("design:type", Number)
 ], Lesson.prototype, "order", void 0);
 __decorate([
-    (0, graphql_1.Field)(() => [vocabulary_model_js_1.Vocabulary]),
-    __metadata("design:type", Array)
+    (0, graphql_1.Field)(() => graphql_1.Int),
+    __metadata("design:type", Number)
+], Lesson.prototype, "levelId", void 0);
+__decorate([
+    (0, graphql_1.Field)(() => graphql_1.Int, { nullable: true }),
+    __metadata("design:type", Object)
+], Lesson.prototype, "moduleId", void 0);
+__decorate([
+    (0, graphql_1.Field)(() => [vocabulary_model_js_1.Vocabulary], { nullable: true }),
+    __metadata("design:type", Object)
 ], Lesson.prototype, "vocabulary", void 0);
 __decorate([
-    (0, graphql_1.Field)(() => [example_model_js_1.Example]),
-    __metadata("design:type", Array)
+    (0, graphql_1.Field)(() => [example_model_js_1.Example], { nullable: true }),
+    __metadata("design:type", Object)
 ], Lesson.prototype, "examples", void 0);
 __decorate([
     (0, graphql_1.Field)(),
     __metadata("design:type", Date)
 ], Lesson.prototype, "createdAt", void 0);
+__decorate([
+    (0, graphql_1.Field)(),
+    __metadata("design:type", Date)
+], Lesson.prototype, "updatedAt", void 0);
 exports.Lesson = Lesson = __decorate([
     (0, graphql_1.ObjectType)()
 ], Lesson);

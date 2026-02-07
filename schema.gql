@@ -18,6 +18,7 @@ input CreateLessonInput {
   content: String
   description: String
   levelId: Int!
+  moduleId: Float
   order: Int!
   title: String!
 }
@@ -46,14 +47,17 @@ type Example {
 }
 
 type Lesson {
-  content: String!
+  content: String
   createdAt: DateTime!
   description: String
-  examples: [Example!]!
+  examples: [Example!]
   id: Int!
+  levelId: Int!
+  moduleId: Int
   order: Int!
   title: String!
-  vocabulary: [Vocabulary!]!
+  updatedAt: DateTime!
+  vocabulary: [Vocabulary!]
 }
 
 type Level {
@@ -87,7 +91,7 @@ type Module {
 
 type Mutation {
   createCourse(input: CreateCourseInput!): Course!
-  createLessonAtPosition(input: CreateLessonInput!): Lesson!
+  createLesson(input: CreateLessonInput!): Lesson!
   createLevel(input: CreateLevelInput!): Level!
   createVocabulary(input: CreateVocabularyInput!): Vocabulary!
   login(input: LoginInput!): String!
