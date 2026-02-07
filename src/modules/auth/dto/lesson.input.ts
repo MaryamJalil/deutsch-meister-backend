@@ -27,3 +27,34 @@ export class CreateLessonInput {
   @Field({ nullable: true })
   moduleId?: number;
 }
+@InputType()
+export class UpdateLessonInput {
+  @Field(() => Int)
+  @IsInt()
+  id!: number;
+
+  @Field()
+  @IsOptional()
+  @IsString()
+  title?: string;
+
+  @Field({ nullable: true })
+  @IsOptional()
+  description?: string;
+
+  @Field({ nullable: true })
+  @IsOptional()
+  content?: string;
+
+  @Field(() => Int)
+  @IsOptional()
+  order?: number;
+
+  @Field(() => Int)
+  @IsOptional()
+  levelId?: number;
+
+  @Field({ nullable: true })
+  @IsOptional()
+  moduleId?: number;
+}

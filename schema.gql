@@ -97,6 +97,7 @@ type Mutation {
   login(input: LoginInput!): String!
   register(input: RegisterInput!): Boolean!
   updateCourse(input: UpdateCourseInput!): Course!
+  updateLesson(input: UpdateLessonInput!): Lesson!
   updateLevel(input: UpdateLevelInput!): Level!
   updateVocabulary(input: UpdateVocabularyInput!): Vocabulary!
 }
@@ -104,6 +105,8 @@ type Mutation {
 type Query {
   course(id: Int!): Course!
   courses: [Course!]!
+  lesson(id: Int!): Lesson!
+  lessons: [Lesson!]!
   level(id: Int!): Level!
   levels: [Level!]!
   searchVocabulary(query: String!): [Vocabulary!]!
@@ -128,6 +131,16 @@ input UpdateCourseInput {
   id: Int!
   language: String
   title: String
+}
+
+input UpdateLessonInput {
+  content: String
+  description: String
+  id: Int!
+  levelId: Int!
+  moduleId: Float
+  order: Int!
+  title: String!
 }
 
 input UpdateLevelInput {
