@@ -9,8 +9,6 @@ export class CreateLessonInput {
   title!: string;
 
   @Field({ nullable: true })
-  @IsNotEmpty()
-  @IsString()
   description?: string;
 
   @Field({ nullable: true })
@@ -25,4 +23,7 @@ export class CreateLessonInput {
   @IsNotEmpty()
   @IsInt()
   levelId!: number;
+
+  @Field({ nullable: true })
+  moduleId?: number;
 }

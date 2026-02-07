@@ -21,8 +21,8 @@ let LessonResolver = class LessonResolver {
     constructor(lessonService) {
         this.lessonService = lessonService;
     }
-    createLessonAtPosition(input) {
-        return this.lessonService.createLessonAtPosition(input.title, input.order, input.levelId, input.description, input.content);
+    async createLesson(input) {
+        return this.lessonService.createLesson(input);
     }
 };
 exports.LessonResolver = LessonResolver;
@@ -32,7 +32,7 @@ __decorate([
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [lesson_input_js_1.CreateLessonInput]),
     __metadata("design:returntype", Promise)
-], LessonResolver.prototype, "createLessonAtPosition", null);
+], LessonResolver.prototype, "createLesson", null);
 exports.LessonResolver = LessonResolver = __decorate([
     (0, graphql_1.Resolver)(),
     __metadata("design:paramtypes", [lesson_service_js_1.LessonService])

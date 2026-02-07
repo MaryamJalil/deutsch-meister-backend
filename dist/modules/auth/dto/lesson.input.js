@@ -23,8 +23,6 @@ __decorate([
 ], CreateLessonInput.prototype, "title", void 0);
 __decorate([
     (0, index_js_1.Field)({ nullable: true }),
-    (0, class_validator_1.IsNotEmpty)(),
-    (0, class_validator_1.IsString)(),
     __metadata("design:type", String)
 ], CreateLessonInput.prototype, "description", void 0);
 __decorate([
@@ -43,6 +41,10 @@ __decorate([
     (0, class_validator_1.IsInt)(),
     __metadata("design:type", Number)
 ], CreateLessonInput.prototype, "levelId", void 0);
+__decorate([
+    (0, index_js_1.Field)({ nullable: true }),
+    __metadata("design:type", Number)
+], CreateLessonInput.prototype, "moduleId", void 0);
 exports.CreateLessonInput = CreateLessonInput = __decorate([
     (0, index_js_1.InputType)()
 ], CreateLessonInput);
