@@ -11,6 +11,11 @@ import { LevelModule } from './modules/levels/level.module.js';
 import { LessonModule } from './modules/lessons/lesson.module.js';
 import { configuration } from './config/configuration.js';
 import { VocabularyModule } from './modules/vocabulary/vocabulary.module.js';
+import { ExampleModule } from './modules/examples/example.module.js';
+import { ModulesModule } from './modules/modules/modules.module.js';
+import { CacheModule } from './modules/cache/cache.module.js';
+import { EventsModule } from './modules/events/events.module.js';
+import { AIModule } from './modules/ai/ai.module.js';
 
 @Module({
   imports: [
@@ -30,7 +35,12 @@ import { VocabularyModule } from './modules/vocabulary/vocabulary.module.js';
     CoursesModule,
     LevelModule,
     LessonModule,
+    ModulesModule,
     VocabularyModule,
+    ExampleModule,
+    CacheModule,
+    EventsModule,
+    AIModule,
   ],
 })
 export class AppModule {}

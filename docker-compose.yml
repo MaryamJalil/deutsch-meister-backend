@@ -1,18 +1,168 @@
-version: '3.9'
+version: '3.8'
 
 services:
+  # PostgreSQL Database
   postgres:
-    image: postgres:16
-    container_name: german_postgres
-    restart: always
-    ports:
-     - "5433:5432"
+    image: postgres:16-alpine
+    container_name: deutsch-meister-db
     environment:
+      POSTGRES_DB: deutsch_meister
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: maryam
-      POSTGRES_DB: deutsch-meister
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - '5432:5432'
     volumes:
-      - pgdata:/var/lib/postgresql/data
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U postgres']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - app-network
+
+  # Redis Cache
+  redis:
+    image: redis:7-alpine
+    container_name: deutsch-meister-redis
+    ports:
+      - '6379:6379'
+    command: redis-server --appendonly yes --requirepass redispassword
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ['CMD', 'redis-cli', '--raw', 'incr', 'ping']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - app-network
+
+  # Qdrant Vector Database
+  qdrant:
+    image: qdrant/qdrant:latest
+    container_name: deutsch-meister-qdrant
+    ports:
+      - '6333:6333'
+      - '6334:6334' # gRPC port
+    volumes:
+      - qdrant_data:/qdrant/storage
+    environment:
+      QDRANT__SERVICE__GRPC_PORT: 6334
+    healthcheck:
+      test: ['CMD', 'wget', '--spider', 'http://localhost:6333/health']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - app-network
+
+  # LocalStack (for local AWS services testing)
+  localstack:
+    image: localstack/localstack:latest
+    container_name: deutsch-meister-localstack
+    ports:
+      - '4566:4566' # LocalStack edge port
+      - '4571:4571' # Legacy port
+    environment:
+      - SERVICES=sqs,eventbridge,s3
+      - DEBUG=1
+      - DATA_DIR=/tmp/localstack/data
+      - DOCKER_HOST=unix:///var/run/docker.sock
+    volumes:
+      - localstack_data:/tmp/localstack
+      - '/var/run/docker.sock:/var/run/docker.sock'
+    networks:
+      - app-network
+
+  # API (NestJS application)
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: deutsch-meister-api
+    ports:
+      - '3000:3000'
+    environment:
+      # Database
+      DATABASE_URL: postgresql://postgres:postgres@postgres:5432/deutsch_meister
+
+      # Redis
+      REDIS_URL: redis://:redispassword@redis:6379
+
+      # Qdrant
+      QDRANT_URL: http://qdrant:6333
+
+      # AI APIs (add your keys)
+      OPENAI_API_KEY: ${OPENAI_API_KEY}
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY}
+
+      # AWS LocalStack
+      AWS_REGION: eu-central-1
+      AWS_ENDPOINT: http://localstack:4566
+      AWS_ACCESS_KEY_ID: test
+      AWS_SECRET_ACCESS_KEY: test
+      EVENT_BUS_NAME: deutsch-meister-events
+
+      # App Config
+      NODE_ENV: development
+      PORT: 3000
+      JWT_SECRET: your-super-secret-jwt-key-change-in-production
+    volumes:
+      - ./src:/app/src
+      - ./node_modules:/app/node_modules
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      qdrant:
+        condition: service_healthy
+    command: npm run start:dev
+    networks:
+      - app-network
+
+  # Background Worker (for async processing)
+  worker:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: deutsch-meister-worker
+    environment:
+      DATABASE_URL: postgresql://postgres:postgres@postgres:5432/deutsch_meister
+      REDIS_URL: redis://:redispassword@redis:6379
+      QDRANT_URL: http://qdrant:6333
+      OPENAI_API_KEY: ${OPENAI_API_KEY}
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY}
+      AWS_REGION: eu-central-1
+      AWS_ENDPOINT: http://localstack:4566
+      AWS_ACCESS_KEY_ID: test
+      AWS_SECRET_ACCESS_KEY: test
+      NODE_ENV: development
+      WORKER_MODE: true
+    volumes:
+      - ./src:/app/src
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      localstack:
+        condition: service_started
+    command: npm run start:worker
+    networks:
+      - app-network
 
 volumes:
-  pgdata:
+  postgres_data:
+    driver: local
+  redis_data:
+    driver: local
+  qdrant_data:
+    driver: local
+  localstack_data:
+    driver: local
+
+networks:
+  app-network:
+    driver: bridge

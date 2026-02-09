@@ -1,5 +1,5 @@
-import { Field, InputType, Int } from '@nestjs/graphql/dist';
-import { IsInt, IsNotEmpty, IsOptional, IsString } from 'class-validator/types';
+import { Field, InputType, Int } from '@nestjs/graphql';
+import { IsInt, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 
 @InputType()
 export class CreateExampleInput {

@@ -19,6 +19,11 @@ const level_module_js_1 = require("./modules/levels/level.module.js");
 const lesson_module_js_1 = require("./modules/lessons/lesson.module.js");
 const configuration_js_1 = require("./config/configuration.js");
 const vocabulary_module_js_1 = require("./modules/vocabulary/vocabulary.module.js");
+const example_module_js_1 = require("./modules/examples/example.module.js");
+const modules_module_js_1 = require("./modules/modules/modules.module.js");
+const cache_module_js_1 = require("./modules/cache/cache.module.js");
+const events_module_js_1 = require("./modules/events/events.module.js");
+const ai_module_js_1 = require("./modules/ai/ai.module.js");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
@@ -41,7 +46,12 @@ exports.AppModule = AppModule = __decorate([
             courses_module_js_1.CoursesModule,
             level_module_js_1.LevelModule,
             lesson_module_js_1.LessonModule,
+            modules_module_js_1.ModulesModule,
             vocabulary_module_js_1.VocabularyModule,
+            example_module_js_1.ExampleModule,
+            cache_module_js_1.CacheModule,
+            events_module_js_1.EventsModule,
+            ai_module_js_1.AIModule,
         ],
     })
 ], AppModule);
