@@ -16,23 +16,63 @@ const redis_1 = require("redis");
 let CacheService = CacheService_1 = class CacheService {
     constructor() {
         this.logger = new common_1.Logger(CacheService_1.name);
+        this.connected = false;
         this.client = (0, redis_1.createClient)({
             url: process.env.REDIS_URL || 'redis://localhost:6379',
         });
-        this.client.connect();
-        this.logger.log('Redis connected');
-    }
-    async get(key) {
-        const data = await this.client.get(key);
-        return data ? JSON.parse(data) : null;
-    }
-    async set(key, value, ttl = 3600) {
-        await this.client.set(key, JSON.stringify(value), {
-            EX: ttl,
+        this.client.on('error', (err) => {
+            this.logger.warn('Redis client error', err);
+            this.connected = false;
+        });
+        this.client.on('connect', () => {
+            this.logger.log('Redis connected');
+            this.connected = true;
         });
     }
+    async onModuleInit() {
+        try {
+            await this.client.connect();
+        }
+        catch (error) {
+            this.logger.warn('Redis connection failed, caching disabled', error);
+        }
+    }
+    async onModuleDestroy() {
+        if (this.connected) {
+            await this.client.quit();
+        }
+    }
+    async get(key) {
+        if (!this.connected)
+            return null;
+        try {
+            const data = await this.client.get(key);
+            return data ? JSON.parse(data) : null;
+        }
+        catch (error) {
+            this.logger.warn(`Cache get failed for key: ${key}`, error);
+            return null;
+        }
+    }
+    async set(key, value, ttl = 3600) {
+        if (!this.connected)
+            return;
+        try {
+            await this.client.set(key, JSON.stringify(value), { EX: ttl });
+        }
+        catch (error) {
+            this.logger.warn(`Cache set failed for key: ${key}`, error);
+        }
+    }
     async delete(key) {
-        await this.client.del(key);
+        if (!this.connected)
+            return;
+        try {
+            await this.client.del(key);
+        }
+        catch (error) {
+            this.logger.warn(`Cache delete failed for key: ${key}`, error);
+        }
     }
 };
 exports.CacheService = CacheService;

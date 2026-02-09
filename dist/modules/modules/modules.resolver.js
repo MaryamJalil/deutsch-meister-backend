@@ -17,6 +17,10 @@ const graphql_1 = require("@nestjs/graphql");
 const modules_service_1 = require("./modules.service");
 const module_model_1 = require("./module.model");
 const modules_input_1 = require("../auth/dto/modules.input");
+const common_1 = require("@nestjs/common");
+const gql_auth_guard_1 = require("../auth/guards/gql-auth.guard");
+const roles_guard_1 = require("../auth/guards/roles.guard");
+const roles_decorator_1 = require("../auth/decorators/roles.decorator");
 let ModulesResolver = class ModulesResolver {
     constructor(moduleService) {
         this.moduleService = moduleService;
@@ -25,18 +29,26 @@ let ModulesResolver = class ModulesResolver {
         return this.moduleService.createModule(input);
     }
     async updateModule(input) {
-        return this.moduleService.updateeModule(input);
+        return this.moduleService.updateModule(input);
     }
-    async getLessons() {
+    async deleteModule(id) {
+        return this.moduleService.deleteModule(id);
+    }
+    async getModules() {
         return this.moduleService.getModules();
     }
-    async getLesson(id) {
+    async getModule(id) {
         return this.moduleService.getModule(id);
+    }
+    async getModulesByLevel(levelId) {
+        return this.moduleService.getModulesByLevel(levelId);
     }
 };
 exports.ModulesResolver = ModulesResolver;
 __decorate([
     (0, graphql_1.Mutation)(() => module_model_1.Module),
+    (0, common_1.UseGuards)(gql_auth_guard_1.GqlAuthGuard, roles_guard_1.RolesGuard),
+    (0, roles_decorator_1.Roles)('ADMIN', 'TEACHER'),
     __param(0, (0, graphql_1.Args)('input')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [modules_input_1.CreateModuleInput]),
@@ -44,25 +56,43 @@ __decorate([
 ], ModulesResolver.prototype, "createModule", null);
 __decorate([
     (0, graphql_1.Mutation)(() => module_model_1.Module),
+    (0, common_1.UseGuards)(gql_auth_guard_1.GqlAuthGuard, roles_guard_1.RolesGuard),
+    (0, roles_decorator_1.Roles)('ADMIN', 'TEACHER'),
     __param(0, (0, graphql_1.Args)('input')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [modules_input_1.UpdateModuleInput]),
     __metadata("design:returntype", Promise)
 ], ModulesResolver.prototype, "updateModule", null);
 __decorate([
-    (0, graphql_1.Query)(() => [module_model_1.Module], { name: 'modules' }),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
-    __metadata("design:returntype", Promise)
-], ModulesResolver.prototype, "getLessons", null);
-__decorate([
-    (0, graphql_1.Query)(() => module_model_1.Module, { name: 'module' }),
+    (0, graphql_1.Mutation)(() => module_model_1.Module),
+    (0, common_1.UseGuards)(gql_auth_guard_1.GqlAuthGuard, roles_guard_1.RolesGuard),
+    (0, roles_decorator_1.Roles)('ADMIN'),
     __param(0, (0, graphql_1.Args)('id', { type: () => graphql_1.Int })),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Number]),
     __metadata("design:returntype", Promise)
-], ModulesResolver.prototype, "getLesson", null);
+], ModulesResolver.prototype, "deleteModule", null);
+__decorate([
+    (0, graphql_1.Query)(() => [module_model_1.Module], { name: 'modules' }),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], ModulesResolver.prototype, "getModules", null);
+__decorate([
+    (0, graphql_1.Query)(() => module_model_1.Module, { name: 'module', nullable: true }),
+    __param(0, (0, graphql_1.Args)('id', { type: () => graphql_1.Int })),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number]),
+    __metadata("design:returntype", Promise)
+], ModulesResolver.prototype, "getModule", null);
+__decorate([
+    (0, graphql_1.Query)(() => [module_model_1.Module], { name: 'modulesByLevel' }),
+    __param(0, (0, graphql_1.Args)('levelId', { type: () => graphql_1.Int })),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number]),
+    __metadata("design:returntype", Promise)
+], ModulesResolver.prototype, "getModulesByLevel", null);
 exports.ModulesResolver = ModulesResolver = __decorate([
-    (0, graphql_1.Resolver)(),
+    (0, graphql_1.Resolver)(() => module_model_1.Module),
     __metadata("design:paramtypes", [modules_service_1.ModuleService])
 ], ModulesResolver);

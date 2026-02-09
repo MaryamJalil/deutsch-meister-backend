@@ -1,12 +1,11 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { db } from '../../database/drizzle.js';
-// import { vocabularies } from '../../../src/database/schema/vocabulary.schema.js';
+import { db } from '../../database/drizzle';
 import {
   CreateVocabularyInput,
   UpdateVocabularyInput,
-} from '../auth/dto/vocabulary.input.js';
-import { eq, sql } from 'drizzle-orm/index.js';
-import { vocabularies } from '../../database/schema/vocabulary.schema.js';
+} from '../auth/dto/vocabulary.input';
+import { eq, sql } from 'drizzle-orm';
+import { vocabularies } from '../../database/schema/vocabulary.schema';
 
 @Injectable()
 export class VocabularyService {
@@ -21,41 +20,66 @@ export class VocabularyService {
       .returning();
     return vocabulary;
   }
+
   async updateVocabulary(input: UpdateVocabularyInput) {
-    const { id, ...data } = input;
+    const updateData: Record<string, unknown> = {};
+    if (input.word !== undefined) updateData.word = input.word;
+    if (input.meaning !== undefined) updateData.meaning = input.meaning;
+    if (input.lessonId !== undefined) updateData.lessonId = input.lessonId;
+
     const [updatedVocabulary] = await db
       .update(vocabularies)
-      .set(data)
-      .where(eq(vocabularies.id, id))
+      .set(updateData)
+      .where(eq(vocabularies.id, input.id))
       .returning();
+
     if (!updatedVocabulary) {
-      throw new Error(`Vocabulary with id ${id} not found`);
+      throw new NotFoundException(`Vocabulary with id ${input.id} not found`);
     }
     return updatedVocabulary;
   }
-  async getVocabularies() {
-    const allVocabularies = await db.select().from(vocabularies);
-    if (!vocabularies) {
-      throw new NotFoundException('Vocabularies not found');
+
+  async deleteVocabulary(id: number) {
+    const [deleted] = await db
+      .delete(vocabularies)
+      .where(eq(vocabularies.id, id))
+      .returning();
+
+    if (!deleted) {
+      throw new NotFoundException(`Vocabulary with id ${id} not found`);
     }
-    return allVocabularies;
+    return deleted;
   }
+
+  async getVocabularies() {
+    return db.select().from(vocabularies);
+  }
+
   async getVocabulary(id: number) {
-    const vocabulary = await db
+    const [vocabulary] = await db
       .select()
       .from(vocabularies)
       .where(eq(vocabularies.id, id));
+
     if (!vocabulary) {
-      throw new NotFoundException('Vocabulary not found');
+      throw new NotFoundException(`Vocabulary with id ${id} not found`);
     }
-    return vocabulary[0];
+    return vocabulary;
   }
-  async searchVocabulary(searchTerm: String) {
-    const results = await db
+
+  async getVocabularyByLesson(lessonId: number) {
+    return db
+      .select()
+      .from(vocabularies)
+      .where(eq(vocabularies.lessonId, lessonId));
+  }
+
+  async searchVocabulary(searchTerm: string) {
+    return db
       .select()
       .from(vocabularies)
       .where(
-        sql`LOWER (${vocabularies.word}) LIKE LOWER(${'%' + searchTerm + '%'})`,
+        sql`LOWER(${vocabularies.word}) LIKE LOWER(${'%' + searchTerm + '%'})`,
       );
   }
 }

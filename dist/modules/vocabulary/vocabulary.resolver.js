@@ -17,6 +17,10 @@ const graphql_1 = require("@nestjs/graphql");
 const vocabulary_model_1 = require("./vocabulary.model");
 const vocabulary_service_1 = require("./vocabulary.service");
 const vocabulary_input_1 = require("../auth/dto/vocabulary.input");
+const common_1 = require("@nestjs/common");
+const gql_auth_guard_1 = require("../auth/guards/gql-auth.guard");
+const roles_guard_1 = require("../auth/guards/roles.guard");
+const roles_decorator_1 = require("../auth/decorators/roles.decorator");
 let VocabularyResolver = class VocabularyResolver {
     constructor(vocabularyService) {
         this.vocabularyService = vocabularyService;
@@ -27,11 +31,17 @@ let VocabularyResolver = class VocabularyResolver {
     async updateVocabulary(input) {
         return this.vocabularyService.updateVocabulary(input);
     }
+    async deleteVocabulary(id) {
+        return this.vocabularyService.deleteVocabulary(id);
+    }
     async getVocabularies() {
         return this.vocabularyService.getVocabularies();
     }
     async getVocabulary(id) {
         return this.vocabularyService.getVocabulary(id);
+    }
+    async getVocabularyByLesson(lessonId) {
+        return this.vocabularyService.getVocabularyByLesson(lessonId);
     }
     async searchVocabulary(query) {
         return this.vocabularyService.searchVocabulary(query);
@@ -40,6 +50,8 @@ let VocabularyResolver = class VocabularyResolver {
 exports.VocabularyResolver = VocabularyResolver;
 __decorate([
     (0, graphql_1.Mutation)(() => vocabulary_model_1.Vocabulary),
+    (0, common_1.UseGuards)(gql_auth_guard_1.GqlAuthGuard, roles_guard_1.RolesGuard),
+    (0, roles_decorator_1.Roles)('ADMIN', 'TEACHER'),
     __param(0, (0, graphql_1.Args)('input')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [vocabulary_input_1.CreateVocabularyInput]),
@@ -47,11 +59,22 @@ __decorate([
 ], VocabularyResolver.prototype, "createVocabulary", null);
 __decorate([
     (0, graphql_1.Mutation)(() => vocabulary_model_1.Vocabulary),
+    (0, common_1.UseGuards)(gql_auth_guard_1.GqlAuthGuard, roles_guard_1.RolesGuard),
+    (0, roles_decorator_1.Roles)('ADMIN', 'TEACHER'),
     __param(0, (0, graphql_1.Args)('input')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [vocabulary_input_1.UpdateVocabularyInput]),
     __metadata("design:returntype", Promise)
 ], VocabularyResolver.prototype, "updateVocabulary", null);
+__decorate([
+    (0, graphql_1.Mutation)(() => vocabulary_model_1.Vocabulary),
+    (0, common_1.UseGuards)(gql_auth_guard_1.GqlAuthGuard, roles_guard_1.RolesGuard),
+    (0, roles_decorator_1.Roles)('ADMIN'),
+    __param(0, (0, graphql_1.Args)('id', { type: () => graphql_1.Int })),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number]),
+    __metadata("design:returntype", Promise)
+], VocabularyResolver.prototype, "deleteVocabulary", null);
 __decorate([
     (0, graphql_1.Query)(() => [vocabulary_model_1.Vocabulary], { name: 'vocabularies' }),
     __metadata("design:type", Function),
@@ -59,12 +82,19 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], VocabularyResolver.prototype, "getVocabularies", null);
 __decorate([
-    (0, graphql_1.Query)(() => vocabulary_model_1.Vocabulary, { name: 'vocabulary' }),
+    (0, graphql_1.Query)(() => vocabulary_model_1.Vocabulary, { name: 'vocabulary', nullable: true }),
     __param(0, (0, graphql_1.Args)('id', { type: () => graphql_1.Int })),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Number]),
     __metadata("design:returntype", Promise)
 ], VocabularyResolver.prototype, "getVocabulary", null);
+__decorate([
+    (0, graphql_1.Query)(() => [vocabulary_model_1.Vocabulary], { name: 'vocabularyByLesson' }),
+    __param(0, (0, graphql_1.Args)('lessonId', { type: () => graphql_1.Int })),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number]),
+    __metadata("design:returntype", Promise)
+], VocabularyResolver.prototype, "getVocabularyByLesson", null);
 __decorate([
     (0, graphql_1.Query)(() => [vocabulary_model_1.Vocabulary], { name: 'searchVocabulary' }),
     __param(0, (0, graphql_1.Args)('query')),

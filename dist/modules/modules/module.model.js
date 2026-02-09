@@ -11,7 +11,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Module = void 0;
 const graphql_1 = require("@nestjs/graphql");
-const lesson_model_js_1 = require("../lessons/lesson.model.js");
+const lesson_model_1 = require("../lessons/lesson.model");
 let Module = class Module {
 };
 exports.Module = Module;
@@ -32,7 +32,7 @@ __decorate([
     __metadata("design:type", Number)
 ], Module.prototype, "levelId", void 0);
 __decorate([
-    (0, graphql_1.Field)(() => [lesson_model_js_1.Lesson]),
+    (0, graphql_1.Field)(() => [lesson_model_1.Lesson]),
     __metadata("design:type", Array)
 ], Module.prototype, "lessons", void 0);
 exports.Module = Module = __decorate([

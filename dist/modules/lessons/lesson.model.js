@@ -11,8 +11,8 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Lesson = void 0;
 const graphql_1 = require("@nestjs/graphql");
-const vocabulary_model_js_1 = require("../vocabulary/vocabulary.model.js");
-const example_model_js_1 = require("../examples/example.model.js");
+const vocabulary_model_1 = require("../vocabulary/vocabulary.model");
+const example_model_1 = require("../examples/example.model");
 let Lesson = class Lesson {
 };
 exports.Lesson = Lesson;
@@ -45,11 +45,11 @@ __decorate([
     __metadata("design:type", Object)
 ], Lesson.prototype, "moduleId", void 0);
 __decorate([
-    (0, graphql_1.Field)(() => [vocabulary_model_js_1.Vocabulary], { nullable: true }),
+    (0, graphql_1.Field)(() => [vocabulary_model_1.Vocabulary], { nullable: true }),
     __metadata("design:type", Object)
 ], Lesson.prototype, "vocabulary", void 0);
 __decorate([
-    (0, graphql_1.Field)(() => [example_model_js_1.Example], { nullable: true }),
+    (0, graphql_1.Field)(() => [example_model_1.Example], { nullable: true }),
     __metadata("design:type", Object)
 ], Lesson.prototype, "examples", void 0);
 __decorate([

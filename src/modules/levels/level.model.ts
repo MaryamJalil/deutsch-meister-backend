@@ -1,5 +1,5 @@
 import { ObjectType, Field, Int } from '@nestjs/graphql';
-import { Module } from '../modules/module.model.js';
+import { Module } from '../modules/module.model';
 import { LevelCode } from '../../common/enums/levelName.enum';
 
 

@@ -14,22 +14,25 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.LevelResolver = void 0;
 const graphql_1 = require("@nestjs/graphql");
-const level_model_js_1 = require("./level.model.js");
-const level_service_js_1 = require("./level.service.js");
-const levels_input_js_1 = require("../auth/dto/levels.input.js");
+const level_model_1 = require("./level.model");
+const common_1 = require("@nestjs/common");
+const gql_auth_guard_1 = require("../auth/guards/gql-auth.guard");
+const roles_guard_1 = require("../auth/guards/roles.guard");
+const roles_decorator_1 = require("../auth/decorators/roles.decorator");
+const level_service_1 = require("./level.service");
+const levels_input_1 = require("../auth/dto/levels.input");
 let LevelResolver = class LevelResolver {
     constructor(levelService) {
         this.levelService = levelService;
     }
-    // @UseGuards(GqlAuthGuard, RolesGuard)
-    // @Roles('ADMIN')
     createLevel(input) {
         return this.levelService.createLevel(input);
     }
-    // @UseGuards(GqlAuthGuard, RolesGuard)
-    // @Roles('ADMIN')
     updateLevel(input) {
         return this.levelService.updateLevel(input);
+    }
+    deleteLevel(id) {
+        return this.levelService.deleteLevel(id);
     }
     async getLevels() {
         return this.levelService.getLevels();
@@ -37,42 +40,59 @@ let LevelResolver = class LevelResolver {
     async getLevel(id) {
         return this.levelService.getLevel(id);
     }
+    async getLevelsByCourse(courseId) {
+        return this.levelService.getLevelsByCourse(courseId);
+    }
 };
 exports.LevelResolver = LevelResolver;
 __decorate([
-    (0, graphql_1.Mutation)(() => level_model_js_1.Level)
-    // @UseGuards(GqlAuthGuard, RolesGuard)
-    // @Roles('ADMIN')
-    ,
+    (0, graphql_1.Mutation)(() => level_model_1.Level),
+    (0, common_1.UseGuards)(gql_auth_guard_1.GqlAuthGuard, roles_guard_1.RolesGuard),
+    (0, roles_decorator_1.Roles)('ADMIN', 'TEACHER'),
     __param(0, (0, graphql_1.Args)('input')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [levels_input_js_1.CreateLevelInput]),
+    __metadata("design:paramtypes", [levels_input_1.CreateLevelInput]),
     __metadata("design:returntype", void 0)
 ], LevelResolver.prototype, "createLevel", null);
 __decorate([
-    (0, graphql_1.Mutation)(() => level_model_js_1.Level)
-    // @UseGuards(GqlAuthGuard, RolesGuard)
-    // @Roles('ADMIN')
-    ,
+    (0, graphql_1.Mutation)(() => level_model_1.Level),
+    (0, common_1.UseGuards)(gql_auth_guard_1.GqlAuthGuard, roles_guard_1.RolesGuard),
+    (0, roles_decorator_1.Roles)('ADMIN', 'TEACHER'),
     __param(0, (0, graphql_1.Args)('input')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [levels_input_js_1.UpdateLevelInput]),
+    __metadata("design:paramtypes", [levels_input_1.UpdateLevelInput]),
     __metadata("design:returntype", void 0)
 ], LevelResolver.prototype, "updateLevel", null);
 __decorate([
-    (0, graphql_1.Query)(() => [level_model_js_1.Level], { name: 'levels' }),
+    (0, graphql_1.Mutation)(() => level_model_1.Level),
+    (0, common_1.UseGuards)(gql_auth_guard_1.GqlAuthGuard, roles_guard_1.RolesGuard),
+    (0, roles_decorator_1.Roles)('ADMIN'),
+    __param(0, (0, graphql_1.Args)('id', { type: () => graphql_1.Int })),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number]),
+    __metadata("design:returntype", void 0)
+], LevelResolver.prototype, "deleteLevel", null);
+__decorate([
+    (0, graphql_1.Query)(() => [level_model_1.Level], { name: 'levels' }),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", Promise)
 ], LevelResolver.prototype, "getLevels", null);
 __decorate([
-    (0, graphql_1.Query)(() => level_model_js_1.Level, { name: 'level' }),
+    (0, graphql_1.Query)(() => level_model_1.Level, { name: 'level', nullable: true }),
     __param(0, (0, graphql_1.Args)('id', { type: () => graphql_1.Int })),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Number]),
     __metadata("design:returntype", Promise)
 ], LevelResolver.prototype, "getLevel", null);
+__decorate([
+    (0, graphql_1.Query)(() => [level_model_1.Level], { name: 'levelsByCourse' }),
+    __param(0, (0, graphql_1.Args)('courseId', { type: () => graphql_1.Int })),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number]),
+    __metadata("design:returntype", Promise)
+], LevelResolver.prototype, "getLevelsByCourse", null);
 exports.LevelResolver = LevelResolver = __decorate([
-    (0, graphql_1.Resolver)(() => level_model_js_1.Level),
-    __metadata("design:paramtypes", [level_service_js_1.LevelService])
+    (0, graphql_1.Resolver)(() => level_model_1.Level),
+    __metadata("design:paramtypes", [level_service_1.LevelService])
 ], LevelResolver);

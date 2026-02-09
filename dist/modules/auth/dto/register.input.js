@@ -12,8 +12,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.RegisterInput = void 0;
 const graphql_1 = require("@nestjs/graphql");
 const class_validator_1 = require("class-validator");
-const role_enum_js_1 = require("../../../common/enums/role.enum.js");
-(0, graphql_1.registerEnumType)(role_enum_js_1.Role, {
+const role_enum_1 = require("../../../common/enums/role.enum");
+(0, graphql_1.registerEnumType)(role_enum_1.Role, {
     name: 'Role',
 });
 let RegisterInput = class RegisterInput {
@@ -30,8 +30,8 @@ __decorate([
     __metadata("design:type", String)
 ], RegisterInput.prototype, "password", void 0);
 __decorate([
-    (0, graphql_1.Field)(() => role_enum_js_1.Role),
-    (0, class_validator_1.IsEnum)(role_enum_js_1.Role),
+    (0, graphql_1.Field)(() => role_enum_1.Role),
+    (0, class_validator_1.IsEnum)(role_enum_1.Role),
     __metadata("design:type", String)
 ], RegisterInput.prototype, "role", void 0);
 exports.RegisterInput = RegisterInput = __decorate([

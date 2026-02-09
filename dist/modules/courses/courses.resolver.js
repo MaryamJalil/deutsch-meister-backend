@@ -13,24 +13,26 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CoursesResolver = void 0;
-const index_js_1 = require("@nestjs/graphql/dist/index.js");
-const course_model_js_1 = require("./course.model.js");
-const courses_service_js_1 = require("./courses.service.js");
-const course_input_js_1 = require("../auth/dto/course.input.js");
+const graphql_1 = require("@nestjs/graphql");
+const course_model_1 = require("./course.model");
+const courses_service_1 = require("./courses.service");
+const course_input_1 = require("../auth/dto/course.input");
+const common_1 = require("@nestjs/common");
+const gql_auth_guard_1 = require("../auth/guards/gql-auth.guard");
+const roles_guard_1 = require("../auth/guards/roles.guard");
+const roles_decorator_1 = require("../auth/decorators/roles.decorator");
 let CoursesResolver = class CoursesResolver {
     constructor(coursesService) {
         this.coursesService = coursesService;
     }
-    // @UseGuards(GqlAuthGuard, RolesGuard)
-    // @Roles('ADMIN')
     async createCourse(input) {
-        const course = await this.coursesService.createCourse(input);
-        return course;
+        return this.coursesService.createCourse(input);
     }
-    // @UseGuards(GqlAuthGuard, RolesGuard)
-    // @Roles('ADMIN')
-    updateCourse(input) {
+    async updateCourse(input) {
         return this.coursesService.updateCourse(input);
+    }
+    async deleteCourse(id) {
+        return this.coursesService.deleteCourse(id);
     }
     async getCourses() {
         return this.coursesService.getCourses();
@@ -41,39 +43,46 @@ let CoursesResolver = class CoursesResolver {
 };
 exports.CoursesResolver = CoursesResolver;
 __decorate([
-    (0, index_js_1.Mutation)(() => course_model_js_1.Course)
-    // @UseGuards(GqlAuthGuard, RolesGuard)
-    // @Roles('ADMIN')
-    ,
-    __param(0, (0, index_js_1.Args)('input')),
+    (0, graphql_1.Mutation)(() => course_model_1.Course),
+    (0, common_1.UseGuards)(gql_auth_guard_1.GqlAuthGuard, roles_guard_1.RolesGuard),
+    (0, roles_decorator_1.Roles)('ADMIN', 'TEACHER'),
+    __param(0, (0, graphql_1.Args)('input')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [course_input_js_1.CreateCourseInput]),
+    __metadata("design:paramtypes", [course_input_1.CreateCourseInput]),
     __metadata("design:returntype", Promise)
 ], CoursesResolver.prototype, "createCourse", null);
 __decorate([
-    (0, index_js_1.Mutation)(() => course_model_js_1.Course)
-    // @UseGuards(GqlAuthGuard, RolesGuard)
-    // @Roles('ADMIN')
-    ,
-    __param(0, (0, index_js_1.Args)('input')),
+    (0, graphql_1.Mutation)(() => course_model_1.Course),
+    (0, common_1.UseGuards)(gql_auth_guard_1.GqlAuthGuard, roles_guard_1.RolesGuard),
+    (0, roles_decorator_1.Roles)('ADMIN', 'TEACHER'),
+    __param(0, (0, graphql_1.Args)('input')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [course_input_js_1.UpdateCourseInput]),
-    __metadata("design:returntype", void 0)
+    __metadata("design:paramtypes", [course_input_1.UpdateCourseInput]),
+    __metadata("design:returntype", Promise)
 ], CoursesResolver.prototype, "updateCourse", null);
 __decorate([
-    (0, index_js_1.Query)(() => [course_model_js_1.Course], { name: 'courses' }),
+    (0, graphql_1.Mutation)(() => course_model_1.Course),
+    (0, common_1.UseGuards)(gql_auth_guard_1.GqlAuthGuard, roles_guard_1.RolesGuard),
+    (0, roles_decorator_1.Roles)('ADMIN'),
+    __param(0, (0, graphql_1.Args)('id', { type: () => graphql_1.Int })),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number]),
+    __metadata("design:returntype", Promise)
+], CoursesResolver.prototype, "deleteCourse", null);
+__decorate([
+    (0, graphql_1.Query)(() => [course_model_1.Course], { name: 'courses' }),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", Promise)
 ], CoursesResolver.prototype, "getCourses", null);
 __decorate([
-    (0, index_js_1.Query)(() => course_model_js_1.Course, { name: 'course' }),
-    __param(0, (0, index_js_1.Args)('id', { type: () => index_js_1.Int })),
+    (0, graphql_1.Query)(() => course_model_1.Course, { name: 'course', nullable: true }),
+    __param(0, (0, graphql_1.Args)('id', { type: () => graphql_1.Int })),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Number]),
     __metadata("design:returntype", Promise)
 ], CoursesResolver.prototype, "getCourse", null);
 exports.CoursesResolver = CoursesResolver = __decorate([
-    (0, index_js_1.Resolver)(),
-    __metadata("design:paramtypes", [courses_service_js_1.CourseService])
+    (0, graphql_1.Resolver)(() => course_model_1.Course),
+    __metadata("design:paramtypes", [courses_service_1.CourseService])
 ], CoursesResolver);

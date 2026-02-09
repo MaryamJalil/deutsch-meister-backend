@@ -20,20 +20,23 @@ export class ExampleService {
       .returning();
     return example;
   }
+
   async updateExample(input: UpdateExampleInput) {
+    const updateData: Record<string, unknown> = {};
+    if (input.sentence !== undefined) updateData.sentence = input.sentence;
+    if (input.translation !== undefined) updateData.translation = input.translation;
+    if (input.lessonId !== undefined) updateData.lessonId = input.lessonId;
+
     const [updatedExample] = await db
       .update(examples)
-      .set({
-        sentence: input.sentence,
-        translation: input.translation,
-        lessonId: input.lessonId,
-      })
+      .set(updateData)
       .where(eq(examples.id, input.id))
       .returning();
+
     if (!updatedExample) {
-      throw new NotFoundException('example Not Found');
+      throw new NotFoundException(`Example with id ${input.id} not found`);
     }
-    return { ...updatedExample };
+    return updatedExample;
   }
 
   async deleteExample(id: number) {
@@ -43,23 +46,31 @@ export class ExampleService {
       .returning();
 
     if (!deletedExample) {
-      throw new NotFoundException('Example not found');
+      throw new NotFoundException(`Example with id ${id} not found`);
     }
-
     return deletedExample;
   }
+
   async getExamples() {
-    const allExamples = await db.select().from(examples);
-    if (!allExamples) {
-      throw new NotFoundException('Examples not found');
-    }
-    return allExamples;
+    return db.select().from(examples);
   }
+
   async getExample(id: number) {
-    const example = await db.select().from(examples).where(eq(examples.id, id));
+    const [example] = await db
+      .select()
+      .from(examples)
+      .where(eq(examples.id, id));
+
     if (!example) {
-      throw new NotFoundException('Example not found');
+      throw new NotFoundException(`Example with id ${id} not found`);
     }
-    return example[0];
+    return example;
+  }
+
+  async getExamplesByLesson(lessonId: number) {
+    return db
+      .select()
+      .from(examples)
+      .where(eq(examples.lessonId, lessonId));
   }
 }

@@ -36,16 +36,23 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.db = exports.pool = void 0;
 const node_postgres_1 = require("drizzle-orm/node-postgres");
 const pg_1 = require("pg");
+const userSchema = __importStar(require("./schema/user.schema"));
 const courseSchema = __importStar(require("./schema/course.schema"));
+const levelSchema = __importStar(require("./schema/level.schema"));
+const moduleSchema = __importStar(require("./schema/module.schema"));
 const lessonSchema = __importStar(require("./schema/lesson.schema"));
+const vocabularySchema = __importStar(require("./schema/vocabulary.schema"));
 const exampleSchema = __importStar(require("./schema/example.schema"));
 exports.pool = new pg_1.Pool({
     connectionString: process.env.DATABASE_URL,
 });
-// Combine all schemas
 const allSchemas = {
+    ...userSchema,
     ...courseSchema,
+    ...levelSchema,
+    ...moduleSchema,
     ...lessonSchema,
+    ...vocabularySchema,
     ...exampleSchema,
 };
 exports.db = (0, node_postgres_1.drizzle)(exports.pool, { schema: allSchemas });

@@ -8,13 +8,13 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.VocabularyService = void 0;
 const common_1 = require("@nestjs/common");
-const drizzle_js_1 = require("../../database/drizzle.js");
-const index_js_1 = require("../../../node_modules/drizzle-orm/index.js");
-const vocabulary_schema_js_1 = require("../../database/schema/vocabulary.schema.js");
+const drizzle_1 = require("../../database/drizzle");
+const drizzle_orm_1 = require("drizzle-orm");
+const vocabulary_schema_1 = require("../../database/schema/vocabulary.schema");
 let VocabularyService = class VocabularyService {
     async createVocabulary(input) {
-        const [vocabulary] = await drizzle_js_1.db
-            .insert(vocabulary_schema_js_1.vocabularies)
+        const [vocabulary] = await drizzle_1.db
+            .insert(vocabulary_schema_1.vocabularies)
             .values({
             word: input.word,
             meaning: input.meaning,
@@ -24,39 +24,57 @@ let VocabularyService = class VocabularyService {
         return vocabulary;
     }
     async updateVocabulary(input) {
-        const { id, ...data } = input;
-        const [updatedVocabulary] = await drizzle_js_1.db
-            .update(vocabulary_schema_js_1.vocabularies)
-            .set(data)
-            .where((0, index_js_1.eq)(vocabulary_schema_js_1.vocabularies.id, id))
+        const updateData = {};
+        if (input.word !== undefined)
+            updateData.word = input.word;
+        if (input.meaning !== undefined)
+            updateData.meaning = input.meaning;
+        if (input.lessonId !== undefined)
+            updateData.lessonId = input.lessonId;
+        const [updatedVocabulary] = await drizzle_1.db
+            .update(vocabulary_schema_1.vocabularies)
+            .set(updateData)
+            .where((0, drizzle_orm_1.eq)(vocabulary_schema_1.vocabularies.id, input.id))
             .returning();
         if (!updatedVocabulary) {
-            throw new Error(`Vocabulary with id ${id} not found`);
+            throw new common_1.NotFoundException(`Vocabulary with id ${input.id} not found`);
         }
         return updatedVocabulary;
     }
-    async getVocabularies() {
-        const allVocabularies = await drizzle_js_1.db.select().from(vocabulary_schema_js_1.vocabularies);
-        if (!vocabulary_schema_js_1.vocabularies) {
-            throw new common_1.NotFoundException('Vocabularies not found');
+    async deleteVocabulary(id) {
+        const [deleted] = await drizzle_1.db
+            .delete(vocabulary_schema_1.vocabularies)
+            .where((0, drizzle_orm_1.eq)(vocabulary_schema_1.vocabularies.id, id))
+            .returning();
+        if (!deleted) {
+            throw new common_1.NotFoundException(`Vocabulary with id ${id} not found`);
         }
-        return allVocabularies;
+        return deleted;
+    }
+    async getVocabularies() {
+        return drizzle_1.db.select().from(vocabulary_schema_1.vocabularies);
     }
     async getVocabulary(id) {
-        const vocabulary = await drizzle_js_1.db
+        const [vocabulary] = await drizzle_1.db
             .select()
-            .from(vocabulary_schema_js_1.vocabularies)
-            .where((0, index_js_1.eq)(vocabulary_schema_js_1.vocabularies.id, id));
+            .from(vocabulary_schema_1.vocabularies)
+            .where((0, drizzle_orm_1.eq)(vocabulary_schema_1.vocabularies.id, id));
         if (!vocabulary) {
-            throw new common_1.NotFoundException('Vocabulary not found');
+            throw new common_1.NotFoundException(`Vocabulary with id ${id} not found`);
         }
-        return vocabulary[0];
+        return vocabulary;
+    }
+    async getVocabularyByLesson(lessonId) {
+        return drizzle_1.db
+            .select()
+            .from(vocabulary_schema_1.vocabularies)
+            .where((0, drizzle_orm_1.eq)(vocabulary_schema_1.vocabularies.lessonId, lessonId));
     }
     async searchVocabulary(searchTerm) {
-        const results = await drizzle_js_1.db
+        return drizzle_1.db
             .select()
-            .from(vocabulary_schema_js_1.vocabularies)
-            .where((0, index_js_1.sql) `LOWER (${vocabulary_schema_js_1.vocabularies.word}) LIKE LOWER(${'%' + searchTerm + '%'})`);
+            .from(vocabulary_schema_1.vocabularies)
+            .where((0, drizzle_orm_1.sql) `LOWER(${vocabulary_schema_1.vocabularies.word}) LIKE LOWER(${'%' + searchTerm + '%'})`);
     }
 };
 exports.VocabularyService = VocabularyService;

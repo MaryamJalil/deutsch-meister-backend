@@ -1,6 +1,6 @@
 import { ObjectType, Field, Int } from '@nestjs/graphql';
-import { Vocabulary } from '../vocabulary/vocabulary.model.js';
-import { Example } from '../examples/example.model.js';
+import { Vocabulary } from '../vocabulary/vocabulary.model';
+import { Example } from '../examples/example.model';
 
 @ObjectType()
 export class Lesson {

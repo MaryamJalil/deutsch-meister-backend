@@ -10,22 +10,22 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Example = void 0;
-const index_js_1 = require("@nestjs/graphql/dist/index.js");
+const graphql_1 = require("@nestjs/graphql");
 let Example = class Example {
 };
 exports.Example = Example;
 __decorate([
-    (0, index_js_1.Field)(() => index_js_1.Int),
+    (0, graphql_1.Field)(() => graphql_1.Int),
     __metadata("design:type", Number)
 ], Example.prototype, "id", void 0);
 __decorate([
-    (0, index_js_1.Field)(),
+    (0, graphql_1.Field)(),
     __metadata("design:type", String)
 ], Example.prototype, "sentence", void 0);
 __decorate([
-    (0, index_js_1.Field)(),
+    (0, graphql_1.Field)(),
     __metadata("design:type", String)
 ], Example.prototype, "translation", void 0);
 exports.Example = Example = __decorate([
-    (0, index_js_1.ObjectType)()
+    (0, graphql_1.ObjectType)()
 ], Example);

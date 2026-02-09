@@ -1,4 +1,4 @@
-import { Role } from '../../../common/enums/role.enum.js';
+import { Role } from '../../../common/enums/role.enum';
 
 export interface JwtPayload {
   sub: number;

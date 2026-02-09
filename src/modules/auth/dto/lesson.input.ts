@@ -1,4 +1,4 @@
-import { Field, InputType, Int } from '@nestjs/graphql/dist/index.js';
+import { Field, InputType, Int } from '@nestjs/graphql';
 import { IsInt, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 
 @InputType()
@@ -9,9 +9,13 @@ export class CreateLessonInput {
   title!: string;
 
   @Field({ nullable: true })
+  @IsOptional()
+  @IsString()
   description?: string;
 
   @Field({ nullable: true })
+  @IsOptional()
+  @IsString()
   content?: string;
 
   @Field(() => Int)
@@ -24,37 +28,45 @@ export class CreateLessonInput {
   @IsInt()
   levelId!: number;
 
-  @Field({ nullable: true })
+  @Field(() => Int, { nullable: true })
+  @IsOptional()
+  @IsInt()
   moduleId?: number;
 }
+
 @InputType()
 export class UpdateLessonInput {
   @Field(() => Int)
   @IsInt()
   id!: number;
 
-  @Field()
+  @Field({ nullable: true })
   @IsOptional()
   @IsString()
   title?: string;
 
   @Field({ nullable: true })
   @IsOptional()
+  @IsString()
   description?: string;
 
   @Field({ nullable: true })
   @IsOptional()
+  @IsString()
   content?: string;
 
-  @Field(() => Int)
+  @Field(() => Int, { nullable: true })
   @IsOptional()
+  @IsInt()
   order?: number;
 
-  @Field(() => Int)
+  @Field(() => Int, { nullable: true })
   @IsOptional()
+  @IsInt()
   levelId?: number;
 
-  @Field({ nullable: true })
+  @Field(() => Int, { nullable: true })
   @IsOptional()
+  @IsInt()
   moduleId?: number;
 }

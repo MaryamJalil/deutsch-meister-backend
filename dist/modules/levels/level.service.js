@@ -8,47 +8,69 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.LevelService = void 0;
 const common_1 = require("@nestjs/common");
-const drizzle_js_1 = require("../../database/drizzle.js");
-const level_schema_js_1 = require("../../database/schema/level.schema.js");
-const index_js_1 = require("../../../node_modules/drizzle-orm/index.js");
+const drizzle_1 = require("../../database/drizzle");
+const level_schema_1 = require("../../database/schema/level.schema");
+const drizzle_orm_1 = require("drizzle-orm");
 let LevelService = class LevelService {
     async createLevel(input) {
-        const [level] = await drizzle_js_1.db
-            .insert(level_schema_js_1.levels)
+        const [level] = await drizzle_1.db
+            .insert(level_schema_1.levels)
             .values({
             code: input.code,
             position: input.position,
             courseId: input.courseId,
         })
             .returning();
-        console.log(level);
         return level;
     }
     async updateLevel(input) {
-        const { id, ...data } = input;
-        const [updatedLevel] = await drizzle_js_1.db
-            .update(level_schema_js_1.levels)
-            .set(data)
-            .where((0, index_js_1.eq)(level_schema_js_1.levels.id, id))
+        const { id, ...rest } = input;
+        const updateData = {};
+        if (rest.code !== undefined)
+            updateData.code = rest.code;
+        if (rest.position !== undefined)
+            updateData.position = rest.position;
+        if (rest.courseId !== undefined)
+            updateData.courseId = rest.courseId;
+        const [updatedLevel] = await drizzle_1.db
+            .update(level_schema_1.levels)
+            .set(updateData)
+            .where((0, drizzle_orm_1.eq)(level_schema_1.levels.id, id))
             .returning();
         if (!updatedLevel) {
-            throw new Error(`Level with id ${id} not found`);
+            throw new common_1.NotFoundException(`Level with id ${id} not found`);
         }
         return updatedLevel;
     }
-    async getLevels() {
-        const allLevels = await drizzle_js_1.db.select().from(level_schema_js_1.levels);
-        if (!allLevels) {
-            throw new common_1.NotFoundException('Levels not found');
+    async deleteLevel(id) {
+        const [deleted] = await drizzle_1.db
+            .update(level_schema_1.levels)
+            .set({ deletedAt: new Date() })
+            .where((0, drizzle_orm_1.eq)(level_schema_1.levels.id, id))
+            .returning();
+        if (!deleted) {
+            throw new common_1.NotFoundException(`Level with id ${id} not found`);
         }
-        return allLevels;
+        return deleted;
+    }
+    async getLevels() {
+        return drizzle_1.db.select().from(level_schema_1.levels).where((0, drizzle_orm_1.isNull)(level_schema_1.levels.deletedAt));
     }
     async getLevel(id) {
-        const level = await drizzle_js_1.db.select().from(level_schema_js_1.levels).where((0, index_js_1.eq)(level_schema_js_1.levels.id, id));
+        const [level] = await drizzle_1.db
+            .select()
+            .from(level_schema_1.levels)
+            .where((0, drizzle_orm_1.eq)(level_schema_1.levels.id, id));
         if (!level) {
-            throw new common_1.NotFoundException('Level not found');
+            throw new common_1.NotFoundException(`Level with id ${id} not found`);
         }
-        return level[0];
+        return level;
+    }
+    async getLevelsByCourse(courseId) {
+        return drizzle_1.db
+            .select()
+            .from(level_schema_1.levels)
+            .where((0, drizzle_orm_1.and)((0, drizzle_orm_1.eq)(level_schema_1.levels.courseId, courseId), (0, drizzle_orm_1.isNull)(level_schema_1.levels.deletedAt)));
     }
 };
 exports.LevelService = LevelService;

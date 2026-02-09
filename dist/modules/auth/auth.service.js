@@ -46,42 +46,48 @@ exports.AuthService = void 0;
 const common_1 = require("@nestjs/common");
 const jwt_1 = require("@nestjs/jwt");
 const bcrypt = __importStar(require("bcrypt"));
-const drizzle_js_1 = require("../../database/drizzle.js");
-const user_schema_js_1 = require("../../database/schema/user.schema.js");
-const index_js_1 = require("../../../node_modules/drizzle-orm/index.js");
+const drizzle_1 = require("../../database/drizzle");
+const user_schema_1 = require("../../database/schema/user.schema");
+const drizzle_orm_1 = require("drizzle-orm");
 let AuthService = class AuthService {
     constructor(jwtService) {
         this.jwtService = jwtService;
     }
-    // --------------------
     async register(email, password, role) {
-        const existingUser = await drizzle_js_1.db
+        const existingUser = await drizzle_1.db
             .select()
-            .from(user_schema_js_1.users)
-            .where((0, index_js_1.eq)(user_schema_js_1.users.email, email))
+            .from(user_schema_1.users)
+            .where((0, drizzle_orm_1.eq)(user_schema_1.users.email, email))
             .limit(1);
         if (existingUser.length > 0) {
             throw new common_1.ConflictException('Email already in use');
         }
         const hashedPassword = await bcrypt.hash(password, 10);
-        const [user] = await drizzle_js_1.db
-            .insert(user_schema_js_1.users)
+        const [user] = await drizzle_1.db
+            .insert(user_schema_1.users)
             .values({
             email,
             password: hashedPassword,
             role,
         })
             .returning({
-            id: user_schema_js_1.users.id,
-            role: user_schema_js_1.users.role,
+            id: user_schema_1.users.id,
+            role: user_schema_1.users.role,
         });
-        return this.generateTokens(user.id, user.role);
+        const tokens = await this.generateTokens(user.id, user.role);
+        await drizzle_1.db
+            .update(user_schema_1.users)
+            .set({
+            refreshToken: await bcrypt.hash(tokens.refreshToken, 10),
+        })
+            .where((0, drizzle_orm_1.eq)(user_schema_1.users.id, user.id));
+        return tokens;
     }
     async login(email, password) {
-        const result = await drizzle_js_1.db
+        const result = await drizzle_1.db
             .select()
-            .from(user_schema_js_1.users)
-            .where((0, index_js_1.eq)(user_schema_js_1.users.email, email))
+            .from(user_schema_1.users)
+            .where((0, drizzle_orm_1.eq)(user_schema_1.users.email, email))
             .limit(1);
         const user = result[0];
         if (!user) {
@@ -92,30 +98,36 @@ let AuthService = class AuthService {
             throw new common_1.UnauthorizedException('Invalid credentials');
         }
         const tokens = await this.generateTokens(user.id, user.role);
-        // store HASHED refresh token
-        await drizzle_js_1.db
-            .update(user_schema_js_1.users)
+        await drizzle_1.db
+            .update(user_schema_1.users)
             .set({
             refreshToken: await bcrypt.hash(tokens.refreshToken, 10),
         })
-            .where((0, index_js_1.eq)(user_schema_js_1.users.id, user.id));
+            .where((0, drizzle_orm_1.eq)(user_schema_1.users.id, user.id));
         return tokens;
     }
     async refreshTokens(userId, refreshToken) {
-        const result = await drizzle_js_1.db
+        const result = await drizzle_1.db
             .select()
-            .from(user_schema_js_1.users)
-            .where((0, index_js_1.eq)(user_schema_js_1.users.id, userId))
+            .from(user_schema_1.users)
+            .where((0, drizzle_orm_1.eq)(user_schema_1.users.id, userId))
             .limit(1);
         const user = result[0];
         if (!user || !user.refreshToken) {
-            throw new common_1.UnauthorizedException();
+            throw new common_1.UnauthorizedException('Access denied');
         }
         const isValid = await bcrypt.compare(refreshToken, user.refreshToken);
         if (!isValid) {
-            throw new common_1.UnauthorizedException();
+            throw new common_1.UnauthorizedException('Access denied');
         }
-        return this.generateTokens(user.id, user.role);
+        const tokens = await this.generateTokens(user.id, user.role);
+        await drizzle_1.db
+            .update(user_schema_1.users)
+            .set({
+            refreshToken: await bcrypt.hash(tokens.refreshToken, 10),
+        })
+            .where((0, drizzle_orm_1.eq)(user_schema_1.users.id, user.id));
+        return tokens;
     }
     async generateTokens(userId, role) {
         const payload = {

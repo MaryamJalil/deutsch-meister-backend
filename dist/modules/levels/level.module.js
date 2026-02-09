@@ -8,14 +8,14 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.LevelModule = void 0;
 const common_1 = require("@nestjs/common");
-const level_service_js_1 = require("./level.service.js");
-const level_resolver_js_1 = require("./level.resolver.js");
+const level_service_1 = require("./level.service");
+const level_resolver_1 = require("./level.resolver");
 let LevelModule = class LevelModule {
 };
 exports.LevelModule = LevelModule;
 exports.LevelModule = LevelModule = __decorate([
     (0, common_1.Module)({
         imports: [],
-        providers: [level_service_js_1.LevelService, level_resolver_js_1.LevelResolver],
+        providers: [level_service_1.LevelService, level_resolver_1.LevelResolver],
     })
 ], LevelModule);

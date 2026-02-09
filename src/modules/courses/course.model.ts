@@ -1,5 +1,5 @@
 import { ObjectType, Field, Int } from '@nestjs/graphql';
-import { Level } from '../levels/level.model.js';
+import { Level } from '../levels/level.model';
 
 @ObjectType()
 export class Course {

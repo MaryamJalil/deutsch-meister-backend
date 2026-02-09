@@ -7,14 +7,14 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CourseService = void 0;
-const index_js_1 = require("@nestjs/common/index.js");
-const course_schema_js_1 = require("../../database/schema/course.schema.js");
-const drizzle_js_1 = require("../../database/drizzle.js");
-const index_js_2 = require("../../../node_modules/drizzle-orm/index.js");
+const common_1 = require("@nestjs/common");
+const course_schema_1 = require("../../database/schema/course.schema");
+const drizzle_1 = require("../../database/drizzle");
+const drizzle_orm_1 = require("drizzle-orm");
 let CourseService = class CourseService {
     async createCourse(input) {
-        const [course] = await drizzle_js_1.db
-            .insert(course_schema_js_1.courses)
+        const [course] = await drizzle_1.db
+            .insert(course_schema_1.courses)
             .values({
             title: input.title,
             language: input.language,
@@ -23,35 +23,47 @@ let CourseService = class CourseService {
         return course;
     }
     async updateCourse(input) {
-        const [updatedCourse] = await drizzle_js_1.db
-            .update(course_schema_js_1.courses)
-            .set({
-            title: input.title,
-            language: input.language,
-        })
-            .where((0, index_js_2.eq)(course_schema_js_1.courses.id, input.id))
+        const updateData = {};
+        if (input.title !== undefined)
+            updateData.title = input.title;
+        if (input.language !== undefined)
+            updateData.language = input.language;
+        const [updatedCourse] = await drizzle_1.db
+            .update(course_schema_1.courses)
+            .set(updateData)
+            .where((0, drizzle_orm_1.eq)(course_schema_1.courses.id, input.id))
             .returning();
         if (!updatedCourse) {
-            throw new index_js_1.NotFoundException('Course not found');
+            throw new common_1.NotFoundException(`Course with id ${input.id} not found`);
         }
         return updatedCourse;
     }
-    async getCourses() {
-        const course = await drizzle_js_1.db.select().from(course_schema_js_1.courses);
-        if (!course) {
-            throw new index_js_1.NotFoundException('Course not found');
+    async deleteCourse(id) {
+        const [deleted] = await drizzle_1.db
+            .update(course_schema_1.courses)
+            .set({ deletedAt: new Date() })
+            .where((0, drizzle_orm_1.eq)(course_schema_1.courses.id, id))
+            .returning();
+        if (!deleted) {
+            throw new common_1.NotFoundException(`Course with id ${id} not found`);
         }
-        return course;
+        return deleted;
+    }
+    async getCourses() {
+        return drizzle_1.db.select().from(course_schema_1.courses).where((0, drizzle_orm_1.isNull)(course_schema_1.courses.deletedAt));
     }
     async getCourse(id) {
-        const course = await drizzle_js_1.db.select().from(course_schema_js_1.courses).where((0, index_js_2.eq)(course_schema_js_1.courses.id, id));
+        const [course] = await drizzle_1.db
+            .select()
+            .from(course_schema_1.courses)
+            .where((0, drizzle_orm_1.eq)(course_schema_1.courses.id, id));
         if (!course) {
-            throw new index_js_1.NotFoundException('Course not found');
+            throw new common_1.NotFoundException(`Course with id ${id} not found`);
         }
-        return course[0];
+        return course;
     }
 };
 exports.CourseService = CourseService;
 exports.CourseService = CourseService = __decorate([
-    (0, index_js_1.Injectable)()
+    (0, common_1.Injectable)()
 ], CourseService);

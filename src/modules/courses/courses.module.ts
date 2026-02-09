@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
-import { CourseService } from './courses.service.js';
-import { CoursesResolver } from './courses.resolver.js';
+import { CourseService } from './courses.service';
+import { CoursesResolver } from './courses.resolver';
 
 @Module({
   imports: [],

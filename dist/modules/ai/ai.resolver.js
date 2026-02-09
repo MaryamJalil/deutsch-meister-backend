@@ -14,35 +14,126 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AIResolver = void 0;
 const graphql_1 = require("@nestjs/graphql");
-const ai_content_generator_service_js_1 = require("./ai-content-generator.service.js");
-const ai_tutor_service_js_1 = require("./ai-tutor.service.js");
-const graphql_2 = require("@nestjs/graphql");
-const vocabulary_model_js_1 = require("../vocabulary/vocabulary.model.js");
-let GenerateVocabularyInputType = class GenerateVocabularyInputType {
+const ai_content_generator_service_1 = require("./ai-content-generator.service");
+const ai_tutor_service_1 = require("./ai-tutor.service");
+let GeneratedVocabularyItem = class GeneratedVocabularyItem {
 };
 __decorate([
-    (0, graphql_2.Field)(),
+    (0, graphql_1.Field)(),
     __metadata("design:type", String)
-], GenerateVocabularyInputType.prototype, "topic", void 0);
+], GeneratedVocabularyItem.prototype, "word", void 0);
 __decorate([
-    (0, graphql_2.Field)(),
+    (0, graphql_1.Field)(),
     __metadata("design:type", String)
-], GenerateVocabularyInputType.prototype, "level", void 0);
+], GeneratedVocabularyItem.prototype, "meaning", void 0);
 __decorate([
-    (0, graphql_2.Field)(),
+    (0, graphql_1.Field)({ nullable: true }),
+    __metadata("design:type", String)
+], GeneratedVocabularyItem.prototype, "partOfSpeech", void 0);
+__decorate([
+    (0, graphql_1.Field)({ nullable: true }),
+    __metadata("design:type", String)
+], GeneratedVocabularyItem.prototype, "example", void 0);
+GeneratedVocabularyItem = __decorate([
+    (0, graphql_1.ObjectType)()
+], GeneratedVocabularyItem);
+let GeneratedExampleSentence = class GeneratedExampleSentence {
+};
+__decorate([
+    (0, graphql_1.Field)(),
+    __metadata("design:type", String)
+], GeneratedExampleSentence.prototype, "sentence", void 0);
+__decorate([
+    (0, graphql_1.Field)(),
+    __metadata("design:type", String)
+], GeneratedExampleSentence.prototype, "translation", void 0);
+__decorate([
+    (0, graphql_1.Field)({ nullable: true }),
+    __metadata("design:type", String)
+], GeneratedExampleSentence.prototype, "context", void 0);
+GeneratedExampleSentence = __decorate([
+    (0, graphql_1.ObjectType)()
+], GeneratedExampleSentence);
+let TutorResponse = class TutorResponse {
+};
+__decorate([
+    (0, graphql_1.Field)(),
+    __metadata("design:type", String)
+], TutorResponse.prototype, "message", void 0);
+__decorate([
+    (0, graphql_1.Field)(() => [String], { nullable: true }),
+    __metadata("design:type", Array)
+], TutorResponse.prototype, "relatedLessons", void 0);
+TutorResponse = __decorate([
+    (0, graphql_1.ObjectType)()
+], TutorResponse);
+let TranslationResponse = class TranslationResponse {
+};
+__decorate([
+    (0, graphql_1.Field)(),
+    __metadata("design:type", String)
+], TranslationResponse.prototype, "translation", void 0);
+__decorate([
+    (0, graphql_1.Field)(),
+    __metadata("design:type", String)
+], TranslationResponse.prototype, "explanation", void 0);
+__decorate([
+    (0, graphql_1.Field)(() => [String], { nullable: true }),
+    __metadata("design:type", Array)
+], TranslationResponse.prototype, "breakdown", void 0);
+TranslationResponse = __decorate([
+    (0, graphql_1.ObjectType)()
+], TranslationResponse);
+let GenerateVocabularyInput = class GenerateVocabularyInput {
+};
+__decorate([
+    (0, graphql_1.Field)(),
+    __metadata("design:type", String)
+], GenerateVocabularyInput.prototype, "topic", void 0);
+__decorate([
+    (0, graphql_1.Field)(),
+    __metadata("design:type", String)
+], GenerateVocabularyInput.prototype, "level", void 0);
+__decorate([
+    (0, graphql_1.Field)(() => graphql_1.Int),
     __metadata("design:type", Number)
-], GenerateVocabularyInputType.prototype, "count", void 0);
+], GenerateVocabularyInput.prototype, "count", void 0);
 __decorate([
-    (0, graphql_2.Field)(),
+    (0, graphql_1.Field)(),
     __metadata("design:type", String)
-], GenerateVocabularyInputType.prototype, "targetLanguage", void 0);
+], GenerateVocabularyInput.prototype, "targetLanguage", void 0);
 __decorate([
-    (0, graphql_2.Field)(),
+    (0, graphql_1.Field)(),
     __metadata("design:type", String)
-], GenerateVocabularyInputType.prototype, "sourceLanguage", void 0);
-GenerateVocabularyInputType = __decorate([
-    (0, graphql_2.InputType)()
-], GenerateVocabularyInputType);
+], GenerateVocabularyInput.prototype, "sourceLanguage", void 0);
+GenerateVocabularyInput = __decorate([
+    (0, graphql_1.InputType)()
+], GenerateVocabularyInput);
+let GenerateExamplesInput = class GenerateExamplesInput {
+};
+__decorate([
+    (0, graphql_1.Field)(),
+    __metadata("design:type", String)
+], GenerateExamplesInput.prototype, "word", void 0);
+__decorate([
+    (0, graphql_1.Field)(),
+    __metadata("design:type", String)
+], GenerateExamplesInput.prototype, "level", void 0);
+__decorate([
+    (0, graphql_1.Field)(() => graphql_1.Int),
+    __metadata("design:type", Number)
+], GenerateExamplesInput.prototype, "count", void 0);
+__decorate([
+    (0, graphql_1.Field)(),
+    __metadata("design:type", String)
+], GenerateExamplesInput.prototype, "targetLanguage", void 0);
+__decorate([
+    (0, graphql_1.Field)(),
+    __metadata("design:type", String)
+], GenerateExamplesInput.prototype, "sourceLanguage", void 0);
+GenerateExamplesInput = __decorate([
+    (0, graphql_1.InputType)()
+], GenerateExamplesInput);
 let AIResolver = class AIResolver {
     constructor(generator, tutor) {
         this.generator = generator;
@@ -51,28 +142,63 @@ let AIResolver = class AIResolver {
     async generateVocabulary(input) {
         return this.generator.generateVocabulary(input);
     }
+    async generateExamples(input) {
+        return this.generator.generateExamples(input);
+    }
     async askTutor(message) {
-        const response = await this.tutor.chat(message);
-        return response.message;
+        return this.tutor.chat(message);
+    }
+    async explainGrammar(concept, level, targetLanguage, sourceLanguage) {
+        return this.generator.explainGrammar(concept, level, targetLanguage, sourceLanguage);
+    }
+    async translateWithExplanation(text, sourceLanguage, targetLanguage, level) {
+        return this.generator.translateWithExplanation(text, sourceLanguage, targetLanguage, level);
     }
 };
 exports.AIResolver = AIResolver;
 __decorate([
-    (0, graphql_1.Mutation)(() => [vocabulary_model_js_1.Vocabulary]),
+    (0, graphql_1.Mutation)(() => [GeneratedVocabularyItem]),
     __param(0, (0, graphql_1.Args)('input')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [GenerateVocabularyInputType]),
+    __metadata("design:paramtypes", [GenerateVocabularyInput]),
     __metadata("design:returntype", Promise)
 ], AIResolver.prototype, "generateVocabulary", null);
 __decorate([
-    (0, graphql_1.Query)(() => String),
+    (0, graphql_1.Mutation)(() => [GeneratedExampleSentence]),
+    __param(0, (0, graphql_1.Args)('input')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [GenerateExamplesInput]),
+    __metadata("design:returntype", Promise)
+], AIResolver.prototype, "generateExamples", null);
+__decorate([
+    (0, graphql_1.Query)(() => TutorResponse),
     __param(0, (0, graphql_1.Args)('message')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", Promise)
 ], AIResolver.prototype, "askTutor", null);
+__decorate([
+    (0, graphql_1.Query)(() => String),
+    __param(0, (0, graphql_1.Args)('concept')),
+    __param(1, (0, graphql_1.Args)('level')),
+    __param(2, (0, graphql_1.Args)('targetLanguage', { defaultValue: 'German' })),
+    __param(3, (0, graphql_1.Args)('sourceLanguage', { defaultValue: 'English' })),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, String, String, String]),
+    __metadata("design:returntype", Promise)
+], AIResolver.prototype, "explainGrammar", null);
+__decorate([
+    (0, graphql_1.Query)(() => TranslationResponse),
+    __param(0, (0, graphql_1.Args)('text')),
+    __param(1, (0, graphql_1.Args)('sourceLanguage')),
+    __param(2, (0, graphql_1.Args)('targetLanguage')),
+    __param(3, (0, graphql_1.Args)('level', { defaultValue: 'A1' })),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, String, String, String]),
+    __metadata("design:returntype", Promise)
+], AIResolver.prototype, "translateWithExplanation", null);
 exports.AIResolver = AIResolver = __decorate([
     (0, graphql_1.Resolver)(),
-    __metadata("design:paramtypes", [ai_content_generator_service_js_1.AIContentGeneratorService,
-        ai_tutor_service_js_1.AITutorService])
+    __metadata("design:paramtypes", [ai_content_generator_service_1.AIContentGeneratorService,
+        ai_tutor_service_1.AITutorService])
 ], AIResolver);

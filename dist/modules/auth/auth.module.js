@@ -9,15 +9,15 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.AuthModule = void 0;
 const common_1 = require("@nestjs/common");
 const jwt_1 = require("@nestjs/jwt");
-const auth_service_js_1 = require("./auth.service.js");
-const auth_resolver_js_1 = require("./auth.resolver.js");
-const jwt_strategy_js_1 = require("./strategies/jwt.strategy.js");
+const auth_service_1 = require("./auth.service");
+const auth_resolver_1 = require("./auth.resolver");
+const jwt_strategy_1 = require("./strategies/jwt.strategy");
 let AuthModule = class AuthModule {
 };
 exports.AuthModule = AuthModule;
 exports.AuthModule = AuthModule = __decorate([
     (0, common_1.Module)({
         imports: [jwt_1.JwtModule.register({})],
-        providers: [auth_service_js_1.AuthService, auth_resolver_js_1.AuthResolver, jwt_strategy_js_1.JwtStrategy],
+        providers: [auth_service_1.AuthService, auth_resolver_1.AuthResolver, jwt_strategy_1.JwtStrategy],
     })
 ], AuthModule);

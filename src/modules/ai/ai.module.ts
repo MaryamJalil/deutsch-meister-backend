@@ -1,26 +1,20 @@
 import { Module } from '@nestjs/common';
-import { AIContentGeneratorService } from './ai-content-generator.service.js';
-import { AITutorService } from './ai-tutor.service.js';
-import { VectorSearchService } from './vector-search.service.js';
-import { AIResolver } from './ai.resolver.js';
+import { AIContentGeneratorService } from './ai-content-generator.service';
+import { AITutorService } from './ai-tutor.service';
+import { VectorSearchService } from './vector-search.service';
+import { AIResolver } from './ai.resolver';
 
 @Module({
-  imports: [],
-  // imports = Other modules this module needs
-
   providers: [
-    AIContentGeneratorService, // Makes this service available
+    AIContentGeneratorService,
     AITutorService,
     VectorSearchService,
     AIResolver,
   ],
-  // providers = Classes that can be injected into other classes
-
   exports: [
-    AIContentGeneratorService, // Other modules can use these
+    AIContentGeneratorService,
     AITutorService,
     VectorSearchService,
   ],
-  // exports = Make these available to other modules
 })
 export class AIModule {}

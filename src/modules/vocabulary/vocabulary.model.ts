@@ -1,4 +1,4 @@
-import { Field, Int, ObjectType } from '@nestjs/graphql/dist/index.js';
+import { Field, Int, ObjectType } from '@nestjs/graphql';
 
 @ObjectType()
 export class Vocabulary {

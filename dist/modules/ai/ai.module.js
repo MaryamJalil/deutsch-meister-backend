@@ -8,29 +8,25 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AIModule = void 0;
 const common_1 = require("@nestjs/common");
-const ai_content_generator_service_js_1 = require("./ai-content-generator.service.js");
-const ai_tutor_service_js_1 = require("./ai-tutor.service.js");
-const vector_search_service_js_1 = require("./vector-search.service.js");
-const ai_resolver_js_1 = require("./ai.resolver.js");
+const ai_content_generator_service_1 = require("./ai-content-generator.service");
+const ai_tutor_service_1 = require("./ai-tutor.service");
+const vector_search_service_1 = require("./vector-search.service");
+const ai_resolver_1 = require("./ai.resolver");
 let AIModule = class AIModule {
 };
 exports.AIModule = AIModule;
 exports.AIModule = AIModule = __decorate([
     (0, common_1.Module)({
-        imports: [],
-        // imports = Other modules this module needs
         providers: [
-            ai_content_generator_service_js_1.AIContentGeneratorService, // Makes this service available
-            ai_tutor_service_js_1.AITutorService,
-            vector_search_service_js_1.VectorSearchService,
-            ai_resolver_js_1.AIResolver,
+            ai_content_generator_service_1.AIContentGeneratorService,
+            ai_tutor_service_1.AITutorService,
+            vector_search_service_1.VectorSearchService,
+            ai_resolver_1.AIResolver,
         ],
-        // providers = Classes that can be injected into other classes
         exports: [
-            ai_content_generator_service_js_1.AIContentGeneratorService, // Other modules can use these
-            ai_tutor_service_js_1.AITutorService,
-            vector_search_service_js_1.VectorSearchService,
+            ai_content_generator_service_1.AIContentGeneratorService,
+            ai_tutor_service_1.AITutorService,
+            vector_search_service_1.VectorSearchService,
         ],
-        // exports = Make these available to other modules
     })
 ], AIModule);

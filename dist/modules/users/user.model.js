@@ -11,7 +11,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.User = void 0;
 const graphql_1 = require("@nestjs/graphql");
-const role_enum_js_1 = require("../../common/enums/role.enum.js");
+const role_enum_1 = require("../../common/enums/role.enum");
 let User = class User {
 };
 exports.User = User;
@@ -24,7 +24,7 @@ __decorate([
     __metadata("design:type", String)
 ], User.prototype, "email", void 0);
 __decorate([
-    (0, graphql_1.Field)(() => role_enum_js_1.Role),
+    (0, graphql_1.Field)(() => role_enum_1.Role),
     __metadata("design:type", String)
 ], User.prototype, "role", void 0);
 __decorate([

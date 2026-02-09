@@ -17,6 +17,10 @@ const graphql_1 = require("@nestjs/graphql");
 const example_service_1 = require("./example.service");
 const example_model_1 = require("./example.model");
 const example_input_1 = require("../auth/dto/example.input");
+const common_1 = require("@nestjs/common");
+const gql_auth_guard_1 = require("../auth/guards/gql-auth.guard");
+const roles_guard_1 = require("../auth/guards/roles.guard");
+const roles_decorator_1 = require("../auth/decorators/roles.decorator");
 let ExampleResolver = class ExampleResolver {
     constructor(exampleService) {
         this.exampleService = exampleService;
@@ -30,16 +34,21 @@ let ExampleResolver = class ExampleResolver {
     async deleteExample(id) {
         return this.exampleService.deleteExample(id);
     }
-    async getLessons() {
+    async getExamples() {
         return this.exampleService.getExamples();
     }
-    async getLesson(id) {
+    async getExample(id) {
         return this.exampleService.getExample(id);
+    }
+    async getExamplesByLesson(lessonId) {
+        return this.exampleService.getExamplesByLesson(lessonId);
     }
 };
 exports.ExampleResolver = ExampleResolver;
 __decorate([
     (0, graphql_1.Mutation)(() => example_model_1.Example),
+    (0, common_1.UseGuards)(gql_auth_guard_1.GqlAuthGuard, roles_guard_1.RolesGuard),
+    (0, roles_decorator_1.Roles)('ADMIN', 'TEACHER'),
     __param(0, (0, graphql_1.Args)('input')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [example_input_1.CreateExampleInput]),
@@ -47,6 +56,8 @@ __decorate([
 ], ExampleResolver.prototype, "createExample", null);
 __decorate([
     (0, graphql_1.Mutation)(() => example_model_1.Example),
+    (0, common_1.UseGuards)(gql_auth_guard_1.GqlAuthGuard, roles_guard_1.RolesGuard),
+    (0, roles_decorator_1.Roles)('ADMIN', 'TEACHER'),
     __param(0, (0, graphql_1.Args)('input')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [example_input_1.UpdateExampleInput]),
@@ -54,7 +65,9 @@ __decorate([
 ], ExampleResolver.prototype, "updateExample", null);
 __decorate([
     (0, graphql_1.Mutation)(() => example_model_1.Example),
-    __param(0, (0, graphql_1.Args)('id')),
+    (0, common_1.UseGuards)(gql_auth_guard_1.GqlAuthGuard, roles_guard_1.RolesGuard),
+    (0, roles_decorator_1.Roles)('ADMIN'),
+    __param(0, (0, graphql_1.Args)('id', { type: () => graphql_1.Int })),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Number]),
     __metadata("design:returntype", Promise)
@@ -64,15 +77,22 @@ __decorate([
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", Promise)
-], ExampleResolver.prototype, "getLessons", null);
+], ExampleResolver.prototype, "getExamples", null);
 __decorate([
-    (0, graphql_1.Query)(() => example_model_1.Example, { name: 'example' }),
+    (0, graphql_1.Query)(() => example_model_1.Example, { name: 'example', nullable: true }),
     __param(0, (0, graphql_1.Args)('id', { type: () => graphql_1.Int })),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Number]),
     __metadata("design:returntype", Promise)
-], ExampleResolver.prototype, "getLesson", null);
+], ExampleResolver.prototype, "getExample", null);
+__decorate([
+    (0, graphql_1.Query)(() => [example_model_1.Example], { name: 'examplesByLesson' }),
+    __param(0, (0, graphql_1.Args)('lessonId', { type: () => graphql_1.Int })),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number]),
+    __metadata("design:returntype", Promise)
+], ExampleResolver.prototype, "getExamplesByLesson", null);
 exports.ExampleResolver = ExampleResolver = __decorate([
-    (0, graphql_1.Resolver)(),
+    (0, graphql_1.Resolver)(() => example_model_1.Example),
     __metadata("design:paramtypes", [example_service_1.ExampleService])
 ], ExampleResolver);

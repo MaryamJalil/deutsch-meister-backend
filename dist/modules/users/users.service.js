@@ -8,11 +8,11 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.UsersService = void 0;
 const common_1 = require("@nestjs/common");
-const drizzle_js_1 = require("../../database/drizzle.js");
-const user_schema_js_1 = require("../../database/schema/user.schema.js");
+const drizzle_1 = require("../../database/drizzle");
+const user_schema_1 = require("../../database/schema/user.schema");
 let UsersService = class UsersService {
     async findAll() {
-        return drizzle_js_1.db.select().from(user_schema_js_1.users);
+        return drizzle_1.db.select().from(user_schema_1.users);
     }
 };
 exports.UsersService = UsersService;

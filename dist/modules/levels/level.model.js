@@ -11,7 +11,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Level = void 0;
 const graphql_1 = require("@nestjs/graphql");
-const module_model_js_1 = require("../modules/module.model.js");
+const module_model_1 = require("../modules/module.model");
 const levelName_enum_1 = require("../../common/enums/levelName.enum");
 let Level = class Level {
 };
@@ -33,7 +33,7 @@ __decorate([
     __metadata("design:type", Number)
 ], Level.prototype, "courseId", void 0);
 __decorate([
-    (0, graphql_1.Field)(() => [module_model_js_1.Module], { nullable: 'itemsAndList' }),
+    (0, graphql_1.Field)(() => [module_model_1.Module], { nullable: 'itemsAndList' }),
     __metadata("design:type", Array)
 ], Level.prototype, "modules", void 0);
 exports.Level = Level = __decorate([

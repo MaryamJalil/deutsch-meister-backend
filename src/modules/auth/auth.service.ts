@@ -5,16 +5,16 @@ import {
 } from '@nestjs/common';
 import { JwtService, JwtSignOptions } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
-import { db } from '../../database/drizzle.js';
-import { users } from '../../database/schema/user.schema.js';
-import { JwtPayload } from './interfaces/jwt-payload.interface.js';
-import { Role } from '../../common/enums/role.enum.js';
-import { eq } from 'drizzle-orm/index.js';
+import { db } from '../../database/drizzle';
+import { users } from '../../database/schema/user.schema';
+import { JwtPayload } from './interfaces/jwt-payload.interface';
+import { Role } from '../../common/enums/role.enum';
+import { eq } from 'drizzle-orm';
 
 @Injectable()
 export class AuthService {
   constructor(private readonly jwtService: JwtService) {}
-  // --------------------
+
   async register(email: string, password: string, role: Role) {
     const existingUser = await db
       .select()
@@ -40,8 +40,18 @@ export class AuthService {
         role: users.role,
       });
 
-    return this.generateTokens(user.id, user.role as Role);
+    const tokens = await this.generateTokens(user.id, user.role as Role);
+
+    await db
+      .update(users)
+      .set({
+        refreshToken: await bcrypt.hash(tokens.refreshToken, 10),
+      })
+      .where(eq(users.id, user.id));
+
+    return tokens;
   }
+
   async login(email: string, password: string) {
     const result = await db
       .select()
@@ -61,7 +71,6 @@ export class AuthService {
 
     const tokens = await this.generateTokens(user.id, user.role as Role);
 
-    // store HASHED refresh token
     await db
       .update(users)
       .set({
@@ -82,15 +91,24 @@ export class AuthService {
     const user = result[0];
 
     if (!user || !user.refreshToken) {
-      throw new UnauthorizedException();
+      throw new UnauthorizedException('Access denied');
     }
 
     const isValid = await bcrypt.compare(refreshToken, user.refreshToken);
     if (!isValid) {
-      throw new UnauthorizedException();
+      throw new UnauthorizedException('Access denied');
     }
 
-    return this.generateTokens(user.id, user.role as Role);
+    const tokens = await this.generateTokens(user.id, user.role as Role);
+
+    await db
+      .update(users)
+      .set({
+        refreshToken: await bcrypt.hash(tokens.refreshToken, 10),
+      })
+      .where(eq(users.id, user.id));
+
+    return tokens;
   }
 
   private async generateTokens(userId: number, role: Role) {

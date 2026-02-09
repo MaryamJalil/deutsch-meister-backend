@@ -25,17 +25,17 @@ export class UpdateExampleInput {
   @IsInt()
   id!: number;
 
-  @Field(() => String)
+  @Field(() => String, { nullable: true })
   @IsString()
   @IsOptional()
   sentence?: string;
 
-  @Field(() => String)
+  @Field(() => String, { nullable: true })
   @IsString()
   @IsOptional()
   translation?: string;
 
-  @Field(() => Int)
+  @Field(() => Int, { nullable: true })
   @IsInt()
   @IsOptional()
   lessonId?: number;

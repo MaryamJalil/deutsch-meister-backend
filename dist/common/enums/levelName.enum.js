@@ -9,6 +9,7 @@ var LevelCode;
     LevelCode["B1"] = "B1";
     LevelCode["B2"] = "B2";
     LevelCode["C1"] = "C1";
+    LevelCode["C2"] = "C2";
 })(LevelCode || (exports.LevelCode = LevelCode = {}));
 (0, graphql_1.registerEnumType)(LevelCode, {
     name: 'LevelCode',

@@ -2,20 +2,22 @@ import { Module } from '@nestjs/common';
 import { GraphQLModule } from '@nestjs/graphql';
 import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 import { join } from 'path';
-import { UsersModule } from './modules/users/users.module.js';
-import { ConfigModule } from '@nestjs/config/index.js';
-import { AuthModule } from './modules/auth/auth.module.js';
-import { CoursesModule } from './modules/courses/courses.module.js';
+import { UsersModule } from './modules/users/users.module';
+import { ConfigModule } from '@nestjs/config';
+import { AuthModule } from './modules/auth/auth.module';
+import { CoursesModule } from './modules/courses/courses.module';
 import type { Request } from 'express';
-import { LevelModule } from './modules/levels/level.module.js';
-import { LessonModule } from './modules/lessons/lesson.module.js';
-import { configuration } from './config/configuration.js';
-import { VocabularyModule } from './modules/vocabulary/vocabulary.module.js';
-import { ExampleModule } from './modules/examples/example.module.js';
-import { ModulesModule } from './modules/modules/modules.module.js';
-import { CacheModule } from './modules/cache/cache.module.js';
-import { EventsModule } from './modules/events/events.module.js';
-import { AIModule } from './modules/ai/ai.module.js';
+import { LevelModule } from './modules/levels/level.module';
+import { LessonModule } from './modules/lessons/lesson.module';
+import { configuration } from './config/configuration';
+import { VocabularyModule } from './modules/vocabulary/vocabulary.module';
+import { ExampleModule } from './modules/examples/example.module';
+import { ModulesModule } from './modules/modules/modules.module';
+import { CacheModule } from './modules/cache/cache.module';
+import { EventsModule } from './modules/events/events.module';
+import { AIModule } from './modules/ai/ai.module';
+import { AppController } from './app.controller';
+import { AppService } from './app.service';
 
 @Module({
   imports: [
@@ -42,5 +44,7 @@ import { AIModule } from './modules/ai/ai.module.js';
     EventsModule,
     AIModule,
   ],
+  controllers: [AppController],
+  providers: [AppService],
 })
 export class AppModule {}

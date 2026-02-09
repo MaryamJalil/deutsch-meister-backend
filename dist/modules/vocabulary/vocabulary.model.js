@@ -10,22 +10,22 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Vocabulary = void 0;
-const index_js_1 = require("@nestjs/graphql/dist/index.js");
+const graphql_1 = require("@nestjs/graphql");
 let Vocabulary = class Vocabulary {
 };
 exports.Vocabulary = Vocabulary;
 __decorate([
-    (0, index_js_1.Field)(() => index_js_1.Int),
+    (0, graphql_1.Field)(() => graphql_1.Int),
     __metadata("design:type", Number)
 ], Vocabulary.prototype, "id", void 0);
 __decorate([
-    (0, index_js_1.Field)(),
+    (0, graphql_1.Field)(),
     __metadata("design:type", String)
 ], Vocabulary.prototype, "word", void 0);
 __decorate([
-    (0, index_js_1.Field)(),
+    (0, graphql_1.Field)(),
     __metadata("design:type", String)
 ], Vocabulary.prototype, "meaning", void 0);
 exports.Vocabulary = Vocabulary = __decorate([
-    (0, index_js_1.ObjectType)()
+    (0, graphql_1.ObjectType)()
 ], Vocabulary);

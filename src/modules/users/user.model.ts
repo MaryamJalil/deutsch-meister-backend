@@ -1,5 +1,5 @@
 import { ObjectType, Field, Int } from '@nestjs/graphql';
-import { Role } from '../../common/enums/role.enum.js';
+import { Role } from '../../common/enums/role.enum';
 
 @ObjectType()
 export class User {

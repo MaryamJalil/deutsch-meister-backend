@@ -11,28 +11,30 @@ const common_1 = require("@nestjs/common");
 const graphql_1 = require("@nestjs/graphql");
 const apollo_1 = require("@nestjs/apollo");
 const path_1 = require("path");
-const users_module_js_1 = require("./modules/users/users.module.js");
-const index_js_1 = require("@nestjs/config/index.js");
-const auth_module_js_1 = require("./modules/auth/auth.module.js");
-const courses_module_js_1 = require("./modules/courses/courses.module.js");
-const level_module_js_1 = require("./modules/levels/level.module.js");
-const lesson_module_js_1 = require("./modules/lessons/lesson.module.js");
-const configuration_js_1 = require("./config/configuration.js");
-const vocabulary_module_js_1 = require("./modules/vocabulary/vocabulary.module.js");
-const example_module_js_1 = require("./modules/examples/example.module.js");
-const modules_module_js_1 = require("./modules/modules/modules.module.js");
-const cache_module_js_1 = require("./modules/cache/cache.module.js");
-const events_module_js_1 = require("./modules/events/events.module.js");
-const ai_module_js_1 = require("./modules/ai/ai.module.js");
+const users_module_1 = require("./modules/users/users.module");
+const config_1 = require("@nestjs/config");
+const auth_module_1 = require("./modules/auth/auth.module");
+const courses_module_1 = require("./modules/courses/courses.module");
+const level_module_1 = require("./modules/levels/level.module");
+const lesson_module_1 = require("./modules/lessons/lesson.module");
+const configuration_1 = require("./config/configuration");
+const vocabulary_module_1 = require("./modules/vocabulary/vocabulary.module");
+const example_module_1 = require("./modules/examples/example.module");
+const modules_module_1 = require("./modules/modules/modules.module");
+const cache_module_1 = require("./modules/cache/cache.module");
+const events_module_1 = require("./modules/events/events.module");
+const ai_module_1 = require("./modules/ai/ai.module");
+const app_controller_1 = require("./app.controller");
+const app_service_1 = require("./app.service");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
 exports.AppModule = AppModule = __decorate([
     (0, common_1.Module)({
         imports: [
-            index_js_1.ConfigModule.forRoot({
+            config_1.ConfigModule.forRoot({
                 isGlobal: true,
-                load: [configuration_js_1.configuration],
+                load: [configuration_1.configuration],
             }),
             graphql_1.GraphQLModule.forRoot({
                 driver: apollo_1.ApolloDriver,
@@ -41,17 +43,19 @@ exports.AppModule = AppModule = __decorate([
                 playground: true,
                 context: ({ req }) => ({ req }),
             }),
-            auth_module_js_1.AuthModule,
-            users_module_js_1.UsersModule,
-            courses_module_js_1.CoursesModule,
-            level_module_js_1.LevelModule,
-            lesson_module_js_1.LessonModule,
-            modules_module_js_1.ModulesModule,
-            vocabulary_module_js_1.VocabularyModule,
-            example_module_js_1.ExampleModule,
-            cache_module_js_1.CacheModule,
-            events_module_js_1.EventsModule,
-            ai_module_js_1.AIModule,
+            auth_module_1.AuthModule,
+            users_module_1.UsersModule,
+            courses_module_1.CoursesModule,
+            level_module_1.LevelModule,
+            lesson_module_1.LessonModule,
+            modules_module_1.ModulesModule,
+            vocabulary_module_1.VocabularyModule,
+            example_module_1.ExampleModule,
+            cache_module_1.CacheModule,
+            events_module_1.EventsModule,
+            ai_module_1.AIModule,
         ],
+        controllers: [app_controller_1.AppController],
+        providers: [app_service_1.AppService],
     })
 ], AppModule);

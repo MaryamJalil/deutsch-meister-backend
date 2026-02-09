@@ -5,71 +5,70 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 var AIContentGeneratorService_1;
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AIContentGeneratorService = void 0;
 const common_1 = require("@nestjs/common");
-const anthropic_1 = require("@langchain/anthropic");
-const prompts_1 = require("@langchain/core/prompts");
-const output_parsers_1 = require("@langchain/core/output_parsers");
-const runnables_1 = require("@langchain/core/runnables");
+const sdk_1 = __importDefault(require("@anthropic-ai/sdk"));
 let AIContentGeneratorService = AIContentGeneratorService_1 = class AIContentGeneratorService {
     constructor() {
         this.logger = new common_1.Logger(AIContentGeneratorService_1.name);
-        if (!process.env.ANTHROPIC_API_KEY) {
-            throw new Error('ANTHROPIC_API_KEY is missing. Please add it to your .env file');
-        }
-        this.anthropic = new anthropic_1.ChatAnthropic({
-            modelName: 'claude-3-haiku-20240307', // cheaper & stable
-            temperature: 0.7,
-            apiKey: process.env.ANTHROPIC_API_KEY,
-        });
+        this.client = null;
     }
-    // -------------------------------
-    // Safe JSON Parser
-    // -------------------------------
+    getClient() {
+        if (!this.client) {
+            const apiKey = process.env.ANTHROPIC_API_KEY;
+            if (!apiKey) {
+                throw new Error('ANTHROPIC_API_KEY is not set in environment');
+            }
+            this.client = new sdk_1.default({ apiKey });
+        }
+        return this.client;
+    }
     extractJson(response) {
         const jsonMatch = response.match(/(\{[\s\S]*\}|\[[\s\S]*\])/);
         if (!jsonMatch) {
-            throw new Error('Failed to extract JSON from LLM response');
+            throw new Error('Failed to extract JSON from AI response');
         }
         try {
             return JSON.parse(jsonMatch[0]);
         }
-        catch (err) {
+        catch {
             this.logger.error('Invalid JSON from AI:', response);
             throw new Error('AI returned invalid JSON');
         }
     }
-    // -------------------------------
-    // Vocabulary Generator
-    // -------------------------------
+    async ask(prompt) {
+        const response = await this.getClient().messages.create({
+            model: 'claude-sonnet-4-5-20250929',
+            max_tokens: 4096,
+            messages: [{ role: 'user', content: prompt }],
+        });
+        const textBlock = response.content.find((block) => block.type === 'text');
+        if (!textBlock || textBlock.type !== 'text') {
+            throw new Error('No text response from AI');
+        }
+        return textBlock.text;
+    }
     async generateVocabulary(input) {
-        const prompt = prompts_1.PromptTemplate.fromTemplate(`
-You are an expert language teacher.
+        const prompt = `You are an expert language teacher.
 
-Generate exactly {count} {targetLanguage} vocabulary words about "{topic}" for {level} level learners.
+Generate exactly ${input.count} ${input.targetLanguage} vocabulary words about "${input.topic}" for ${input.level} level learners.
 
-Return ONLY valid JSON array:
+Return ONLY a valid JSON array with no extra text:
 [
   {
-    "word": "...",
-    "meaning": "...",
-    "partOfSpeech": "...",
-    "example": "..."
+    "word": "the word in ${input.targetLanguage}",
+    "meaning": "meaning in ${input.sourceLanguage}",
+    "partOfSpeech": "noun/verb/adjective/etc",
+    "example": "example sentence"
   }
-]
-`);
-        const chain = runnables_1.RunnableSequence.from([
-            prompt,
-            this.anthropic,
-            new output_parsers_1.StringOutputParser(),
-        ]);
+]`;
         try {
-            const response = await chain.invoke(input);
+            const response = await this.ask(prompt);
             return this.extractJson(response);
         }
         catch (error) {
@@ -77,30 +76,19 @@ Return ONLY valid JSON array:
             throw error;
         }
     }
-    // -------------------------------
-    // Example Generator
-    // -------------------------------
     async generateExamples(input) {
-        const prompt = prompts_1.PromptTemplate.fromTemplate(`
-Create exactly {count} example sentences using "{word}" 
-for {level} level learners.
+        const prompt = `Create exactly ${input.count} example sentences using "${input.word}" for ${input.level} level learners.
 
-Return ONLY JSON array:
+Return ONLY a valid JSON array:
 [
   {
-    "sentence": "...",
-    "translation": "...",
-    "context": "..."
+    "sentence": "sentence in ${input.targetLanguage}",
+    "translation": "translation in ${input.sourceLanguage}",
+    "context": "when to use this"
   }
-]
-`);
-        const chain = runnables_1.RunnableSequence.from([
-            prompt,
-            this.anthropic,
-            new output_parsers_1.StringOutputParser(),
-        ]);
+]`;
         try {
-            const response = await chain.invoke(input);
+            const response = await this.ask(prompt);
             return this.extractJson(response);
         }
         catch (error) {
@@ -108,37 +96,23 @@ Return ONLY JSON array:
             throw error;
         }
     }
-    // -------------------------------
-    // Lesson Generator
-    // -------------------------------
     async generateLessonContent(input) {
         const focusAreas = input.focusAreas?.join(', ') || 'grammar, vocabulary, conversation';
-        const prompt = prompts_1.PromptTemplate.fromTemplate(`
-Create a complete {targetLanguage} lesson about "{topic}" 
-for {level} learners.
+        const prompt = `Create a complete ${input.targetLanguage} lesson about "${input.topic}" for ${input.level} learners.
 
-Focus on: {focusAreas}
+Focus on: ${focusAreas}
 
-Return ONLY JSON:
+Return ONLY valid JSON:
 {
   "title": "...",
   "description": "...",
-  "content": "...",
-  "vocabulary": [],
-  "examples": [],
-  "exercises": []
-}
-`);
-        const chain = runnables_1.RunnableSequence.from([
-            prompt,
-            this.anthropic,
-            new output_parsers_1.StringOutputParser(),
-        ]);
+  "content": "full lesson content as markdown",
+  "vocabulary": [{"word": "...", "meaning": "..."}],
+  "examples": [{"sentence": "...", "translation": "..."}],
+  "exercises": ["exercise 1", "exercise 2"]
+}`;
         try {
-            const response = await chain.invoke({
-                ...input,
-                focusAreas,
-            });
+            const response = await this.ask(prompt);
             return this.extractJson(response);
         }
         catch (error) {
@@ -146,65 +120,33 @@ Return ONLY JSON:
             throw error;
         }
     }
-    // -------------------------------
-    // Grammar Explanation
-    // -------------------------------
     async explainGrammar(concept, level, targetLanguage, sourceLanguage) {
-        const prompt = prompts_1.PromptTemplate.fromTemplate(`
-Explain "{concept}" in {targetLanguage} 
-for {level} level learners.
+        const prompt = `Explain the grammar concept "${concept}" in ${targetLanguage} for ${level} level learners.
 
-Explain in {sourceLanguage}.
-Provide examples.
-`);
-        const chain = runnables_1.RunnableSequence.from([
-            prompt,
-            this.anthropic, // FIXED: no more openai usage
-            new output_parsers_1.StringOutputParser(),
-        ]);
+Explain in ${sourceLanguage}. Provide clear examples.`;
         try {
-            return await chain.invoke({
-                concept,
-                level,
-                targetLanguage,
-                sourceLanguage,
-            });
+            return await this.ask(prompt);
         }
         catch (error) {
             this.logger.error('Grammar explanation failed', error);
             throw error;
         }
     }
-    // -------------------------------
-    // Translation with Explanation
-    // -------------------------------
     async translateWithExplanation(text, sourceLanguage, targetLanguage, level) {
-        const prompt = prompts_1.PromptTemplate.fromTemplate(`
-Translate and explain "{text}"
+        const prompt = `Translate and explain "${text}"
 
-From: {sourceLanguage}
-To: {targetLanguage}
-Level: {level}
+From: ${sourceLanguage}
+To: ${targetLanguage}
+Level: ${level}
 
-Return ONLY JSON:
+Return ONLY valid JSON:
 {
   "translation": "...",
   "explanation": "...",
-  "breakdown": []
-}
-`);
-        const chain = runnables_1.RunnableSequence.from([
-            prompt,
-            this.anthropic,
-            new output_parsers_1.StringOutputParser(),
-        ]);
+  "breakdown": ["word-by-word breakdown"]
+}`;
         try {
-            const response = await chain.invoke({
-                text,
-                sourceLanguage,
-                targetLanguage,
-                level,
-            });
+            const response = await this.ask(prompt);
             return this.extractJson(response);
         }
         catch (error) {
@@ -215,6 +157,5 @@ Return ONLY JSON:
 };
 exports.AIContentGeneratorService = AIContentGeneratorService;
 exports.AIContentGeneratorService = AIContentGeneratorService = AIContentGeneratorService_1 = __decorate([
-    (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [])
+    (0, common_1.Injectable)()
 ], AIContentGeneratorService);

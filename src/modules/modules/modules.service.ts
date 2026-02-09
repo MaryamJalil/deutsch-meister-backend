@@ -1,11 +1,8 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { modules } from '../../database/schema/module.schema.js';
-import { db } from '../../database/drizzle.js';
-import {
-  CreateModuleInput,
-  UpdateModuleInput,
-} from '../auth/dto/modules.input.js';
-import { eq } from 'drizzle-orm/index.js';
+import { modules } from '../../database/schema/module.schema';
+import { db } from '../../database/drizzle';
+import { CreateModuleInput, UpdateModuleInput } from '../auth/dto/modules.input';
+import { eq, and, isNull } from 'drizzle-orm';
 
 @Injectable()
 export class ModuleService {
@@ -18,35 +15,59 @@ export class ModuleService {
         levelId: input.levelId,
       })
       .returning();
-
     return module;
   }
-  async updateeModule(input: UpdateModuleInput) {
-    const [module] = await db
+
+  async updateModule(input: UpdateModuleInput) {
+    const updateData: Record<string, unknown> = {};
+    if (input.title !== undefined) updateData.title = input.title;
+    if (input.order !== undefined) updateData.order = input.order;
+
+    const [updatedModule] = await db
       .update(modules)
-      .set({
-        title: input.title,
-        order: input.order,
-      })
+      .set(updateData)
       .where(eq(modules.id, input.id))
       .returning();
+
+    if (!updatedModule) {
+      throw new NotFoundException(`Module with id ${input.id} not found`);
+    }
+    return updatedModule;
+  }
+
+  async deleteModule(id: number) {
+    const [deleted] = await db
+      .update(modules)
+      .set({ deletedAt: new Date() })
+      .where(eq(modules.id, id))
+      .returning();
+
+    if (!deleted) {
+      throw new NotFoundException(`Module with id ${id} not found`);
+    }
+    return deleted;
+  }
+
+  async getModules() {
+    return db.select().from(modules).where(isNull(modules.deletedAt));
+  }
+
+  async getModule(id: number) {
+    const [module] = await db
+      .select()
+      .from(modules)
+      .where(eq(modules.id, id));
+
     if (!module) {
-      throw new NotFoundException('Module Not Found');
+      throw new NotFoundException(`Module with id ${id} not found`);
     }
     return module;
   }
-  async getModules() {
-    const aLLmODULES = await db.select().from(modules);
-    if (!aLLmODULES) {
-      throw new NotFoundException('Modules not found');
-    }
-    return aLLmODULES;
-  }
-  async getModule(id: number) {
-    const module = await db.select().from(modules).where(eq(modules.id, id));
-    if (!module) {
-      throw new NotFoundException('Module not found');
-    }
-    return module[0];
+
+  async getModulesByLevel(levelId: number) {
+    return db
+      .select()
+      .from(modules)
+      .where(and(eq(modules.levelId, levelId), isNull(modules.deletedAt)));
   }
 }

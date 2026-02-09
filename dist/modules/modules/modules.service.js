@@ -8,13 +8,13 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ModuleService = void 0;
 const common_1 = require("@nestjs/common");
-const module_schema_js_1 = require("../../database/schema/module.schema.js");
-const drizzle_js_1 = require("../../database/drizzle.js");
-const index_js_1 = require("../../../node_modules/drizzle-orm/index.js");
+const module_schema_1 = require("../../database/schema/module.schema");
+const drizzle_1 = require("../../database/drizzle");
+const drizzle_orm_1 = require("drizzle-orm");
 let ModuleService = class ModuleService {
     async createModule(input) {
-        const [module] = await drizzle_js_1.db
-            .insert(module_schema_js_1.modules)
+        const [module] = await drizzle_1.db
+            .insert(module_schema_1.modules)
             .values({
             title: input.title,
             order: input.order,
@@ -23,33 +23,51 @@ let ModuleService = class ModuleService {
             .returning();
         return module;
     }
-    async updateeModule(input) {
-        const [module] = await drizzle_js_1.db
-            .update(module_schema_js_1.modules)
-            .set({
-            title: input.title,
-            order: input.order,
-        })
-            .where((0, index_js_1.eq)(module_schema_js_1.modules.id, input.id))
+    async updateModule(input) {
+        const updateData = {};
+        if (input.title !== undefined)
+            updateData.title = input.title;
+        if (input.order !== undefined)
+            updateData.order = input.order;
+        const [updatedModule] = await drizzle_1.db
+            .update(module_schema_1.modules)
+            .set(updateData)
+            .where((0, drizzle_orm_1.eq)(module_schema_1.modules.id, input.id))
             .returning();
+        if (!updatedModule) {
+            throw new common_1.NotFoundException(`Module with id ${input.id} not found`);
+        }
+        return updatedModule;
+    }
+    async deleteModule(id) {
+        const [deleted] = await drizzle_1.db
+            .update(module_schema_1.modules)
+            .set({ deletedAt: new Date() })
+            .where((0, drizzle_orm_1.eq)(module_schema_1.modules.id, id))
+            .returning();
+        if (!deleted) {
+            throw new common_1.NotFoundException(`Module with id ${id} not found`);
+        }
+        return deleted;
+    }
+    async getModules() {
+        return drizzle_1.db.select().from(module_schema_1.modules).where((0, drizzle_orm_1.isNull)(module_schema_1.modules.deletedAt));
+    }
+    async getModule(id) {
+        const [module] = await drizzle_1.db
+            .select()
+            .from(module_schema_1.modules)
+            .where((0, drizzle_orm_1.eq)(module_schema_1.modules.id, id));
         if (!module) {
-            throw new common_1.NotFoundException('Module Not Found');
+            throw new common_1.NotFoundException(`Module with id ${id} not found`);
         }
         return module;
     }
-    async getModules() {
-        const aLLmODULES = await drizzle_js_1.db.select().from(module_schema_js_1.modules);
-        if (!aLLmODULES) {
-            throw new common_1.NotFoundException('Modules not found');
-        }
-        return aLLmODULES;
-    }
-    async getModule(id) {
-        const module = await drizzle_js_1.db.select().from(module_schema_js_1.modules).where((0, index_js_1.eq)(module_schema_js_1.modules.id, id));
-        if (!module) {
-            throw new common_1.NotFoundException('Module not found');
-        }
-        return module[0];
+    async getModulesByLevel(levelId) {
+        return drizzle_1.db
+            .select()
+            .from(module_schema_1.modules)
+            .where((0, drizzle_orm_1.and)((0, drizzle_orm_1.eq)(module_schema_1.modules.levelId, levelId), (0, drizzle_orm_1.isNull)(module_schema_1.modules.deletedAt)));
     }
 };
 exports.ModuleService = ModuleService;

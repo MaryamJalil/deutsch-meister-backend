@@ -1,5 +1,5 @@
 import { Module, Global } from '@nestjs/common';
-import { EventPublisherService } from './event-publisher.service.js';
+import { EventPublisherService } from './event-publisher.service';
 
 @Global()
 @Module({

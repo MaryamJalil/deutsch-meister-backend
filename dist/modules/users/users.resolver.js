@@ -11,8 +11,8 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.UsersResolver = void 0;
 const graphql_1 = require("@nestjs/graphql");
-const user_model_js_1 = require("./user.model.js");
-const users_service_js_1 = require("./users.service.js");
+const user_model_1 = require("./user.model");
+const users_service_1 = require("./users.service");
 let UsersResolver = class UsersResolver {
     constructor(usersService) {
         this.usersService = usersService;
@@ -23,12 +23,12 @@ let UsersResolver = class UsersResolver {
 };
 exports.UsersResolver = UsersResolver;
 __decorate([
-    (0, graphql_1.Query)(() => [user_model_js_1.User], { name: 'users' }),
+    (0, graphql_1.Query)(() => [user_model_1.User], { name: 'users' }),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", Promise)
 ], UsersResolver.prototype, "getUsers", null);
 exports.UsersResolver = UsersResolver = __decorate([
-    (0, graphql_1.Resolver)(() => user_model_js_1.User),
-    __metadata("design:paramtypes", [users_service_js_1.UsersService])
+    (0, graphql_1.Resolver)(() => user_model_1.User),
+    __metadata("design:paramtypes", [users_service_1.UsersService])
 ], UsersResolver);

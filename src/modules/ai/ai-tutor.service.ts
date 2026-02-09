@@ -1,40 +1,57 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { ChatAnthropic } from '@langchain/anthropic';
-import { VectorSearchService } from './vector-search.service.js';
+import Anthropic from '@anthropic-ai/sdk';
+import { VectorSearchService } from './vector-search.service';
 
 @Injectable()
 export class AITutorService {
   private readonly logger = new Logger(AITutorService.name);
-  private readonly anthropic: ChatAnthropic;
+  private client: Anthropic | null = null;
 
-  constructor(private readonly vectorService: VectorSearchService) {
-    this.anthropic = new ChatAnthropic({
-      modelName: 'claude-3-5-sonnet-20241022',
-      temperature: 0.7,
-      apiKey: process.env.ANTHROPIC_API_KEY,
-    });
+  constructor(private readonly vectorService: VectorSearchService) {}
+
+  private getClient(): Anthropic {
+    if (!this.client) {
+      const apiKey = process.env.ANTHROPIC_API_KEY;
+      if (!apiKey) {
+        throw new Error('ANTHROPIC_API_KEY is not set in environment');
+      }
+      this.client = new Anthropic({ apiKey });
+    }
+    return this.client;
   }
 
-  async chat(userMessage: string) {
-    const relevantLessons = await this.vectorService.search(userMessage);
+  async chat(userMessage: string): Promise<{ message: string; relatedLessons: string[] }> {
+    let context = '';
+    let lessonTitles: string[] = [];
 
-    const context = relevantLessons.map((l) => `Lesson: ${l.title}`).join('\n');
+    try {
+      const relevantLessons = await this.vectorService.search(userMessage);
+      lessonTitles = relevantLessons
+        .map((l) => l.title)
+        .filter((t): t is string => typeof t === 'string');
+      context = lessonTitles.map((t) => `- ${t}`).join('\n');
+    } catch (error) {
+      this.logger.warn('Vector search unavailable, proceeding without context', error);
+    }
 
-    const response = await this.anthropic.invoke(`
-You are a German tutor.
+    const prompt = `You are a friendly and knowledgeable German language tutor.
+${context ? `\nRelevant lessons from our curriculum:\n${context}\n` : ''}
+Student question: ${userMessage}
 
-Relevant lessons:
-${context}
+Answer clearly and educationally. Use examples where helpful. If relevant, reference the lesson topics above.`;
 
-Student question:
-${userMessage}
+    const response = await this.getClient().messages.create({
+      model: 'claude-sonnet-4-5-20250929',
+      max_tokens: 2048,
+      messages: [{ role: 'user', content: prompt }],
+    });
 
-Answer clearly and educationally.
-`);
+    const textBlock = response.content.find((block) => block.type === 'text');
+    const message = textBlock && textBlock.type === 'text' ? textBlock.text : 'Sorry, I could not generate a response.';
 
     return {
-      message: response.content,
-      relatedLessons: relevantLessons,
+      message,
+      relatedLessons: lessonTitles,
     };
   }
 }

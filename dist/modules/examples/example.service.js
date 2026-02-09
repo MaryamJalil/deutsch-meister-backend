@@ -24,19 +24,22 @@ let ExampleService = class ExampleService {
         return example;
     }
     async updateExample(input) {
+        const updateData = {};
+        if (input.sentence !== undefined)
+            updateData.sentence = input.sentence;
+        if (input.translation !== undefined)
+            updateData.translation = input.translation;
+        if (input.lessonId !== undefined)
+            updateData.lessonId = input.lessonId;
         const [updatedExample] = await drizzle_1.db
             .update(example_schema_1.examples)
-            .set({
-            sentence: input.sentence,
-            translation: input.translation,
-            lessonId: input.lessonId,
-        })
+            .set(updateData)
             .where((0, drizzle_orm_1.eq)(example_schema_1.examples.id, input.id))
             .returning();
         if (!updatedExample) {
-            throw new common_1.NotFoundException('example Not Found');
+            throw new common_1.NotFoundException(`Example with id ${input.id} not found`);
         }
-        return { ...updatedExample };
+        return updatedExample;
     }
     async deleteExample(id) {
         const [deletedExample] = await drizzle_1.db
@@ -44,23 +47,28 @@ let ExampleService = class ExampleService {
             .where((0, drizzle_orm_1.eq)(example_schema_1.examples.id, id))
             .returning();
         if (!deletedExample) {
-            throw new common_1.NotFoundException('Example not found');
+            throw new common_1.NotFoundException(`Example with id ${id} not found`);
         }
         return deletedExample;
     }
     async getExamples() {
-        const allExamples = await drizzle_1.db.select().from(example_schema_1.examples);
-        if (!allExamples) {
-            throw new common_1.NotFoundException('Examples not found');
-        }
-        return allExamples;
+        return drizzle_1.db.select().from(example_schema_1.examples);
     }
     async getExample(id) {
-        const example = await drizzle_1.db.select().from(example_schema_1.examples).where((0, drizzle_orm_1.eq)(example_schema_1.examples.id, id));
+        const [example] = await drizzle_1.db
+            .select()
+            .from(example_schema_1.examples)
+            .where((0, drizzle_orm_1.eq)(example_schema_1.examples.id, id));
         if (!example) {
-            throw new common_1.NotFoundException('Example not found');
+            throw new common_1.NotFoundException(`Example with id ${id} not found`);
         }
-        return example[0];
+        return example;
+    }
+    async getExamplesByLesson(lessonId) {
+        return drizzle_1.db
+            .select()
+            .from(example_schema_1.examples)
+            .where((0, drizzle_orm_1.eq)(example_schema_1.examples.lessonId, lessonId));
     }
 };
 exports.ExampleService = ExampleService;

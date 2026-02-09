@@ -8,14 +8,14 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CacheModule = void 0;
 const common_1 = require("@nestjs/common");
-const cache_service_js_1 = require("./cache.service.js");
+const cache_service_1 = require("./cache.service");
 let CacheModule = class CacheModule {
 };
 exports.CacheModule = CacheModule;
 exports.CacheModule = CacheModule = __decorate([
     (0, common_1.Global)(),
     (0, common_1.Module)({
-        providers: [cache_service_js_1.CacheService],
-        exports: [cache_service_js_1.CacheService],
+        providers: [cache_service_1.CacheService],
+        exports: [cache_service_1.CacheService],
     })
 ], CacheModule);
