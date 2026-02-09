@@ -14,6 +14,12 @@ input CreateCourseInput {
   title: String!
 }
 
+input CreateExampleInput {
+  lessonId: Int!
+  sentence: String!
+  translation: String!
+}
+
 input CreateLessonInput {
   content: String
   description: String
@@ -27,6 +33,12 @@ input CreateLevelInput {
   code: LevelCode!
   courseId: Int!
   position: Int!
+}
+
+input CreateModuleInput {
+  levelId: Int!
+  order: Int!
+  title: String!
 }
 
 input CreateVocabularyInput {
@@ -44,6 +56,14 @@ type Example {
   id: Int!
   sentence: String!
   translation: String!
+}
+
+input GenerateVocabularyInputType {
+  count: Float!
+  level: String!
+  sourceLanguage: String!
+  targetLanguage: String!
+  topic: String!
 }
 
 type Lesson {
@@ -91,24 +111,35 @@ type Module {
 
 type Mutation {
   createCourse(input: CreateCourseInput!): Course!
+  createExample(input: CreateExampleInput!): Example!
   createLesson(input: CreateLessonInput!): Lesson!
   createLevel(input: CreateLevelInput!): Level!
+  createModule(input: CreateModuleInput!): Module!
   createVocabulary(input: CreateVocabularyInput!): Vocabulary!
+  deleteExample(id: Float!): Example!
+  generateVocabulary(input: GenerateVocabularyInputType!): [Vocabulary!]!
   login(input: LoginInput!): String!
   register(input: RegisterInput!): Boolean!
   updateCourse(input: UpdateCourseInput!): Course!
+  updateExample(input: UpdateExampleInput!): Example!
   updateLesson(input: UpdateLessonInput!): Lesson!
   updateLevel(input: UpdateLevelInput!): Level!
+  updateModule(input: UpdateModuleInput!): Module!
   updateVocabulary(input: UpdateVocabularyInput!): Vocabulary!
 }
 
 type Query {
+  askTutor(message: String!): String!
   course(id: Int!): Course!
   courses: [Course!]!
+  example(id: Int!): Example!
+  examples: [Example!]!
   lesson(id: Int!): Lesson!
   lessons: [Lesson!]!
   level(id: Int!): Level!
   levels: [Level!]!
+  module(id: Int!): Module!
+  modules: [Module!]!
   searchVocabulary(query: String!): [Vocabulary!]!
   users: [User!]!
   vocabularies: [Vocabulary!]!
@@ -133,6 +164,13 @@ input UpdateCourseInput {
   title: String
 }
 
+input UpdateExampleInput {
+  id: Int!
+  lessonId: Int!
+  sentence: String!
+  translation: String!
+}
+
 input UpdateLessonInput {
   content: String
   description: String
@@ -148,6 +186,12 @@ input UpdateLevelInput {
   courseId: Int
   id: Int!
   position: Int
+}
+
+input UpdateModuleInput {
+  id: Int!
+  order: Int
+  title: String
 }
 
 input UpdateVocabularyInput {

@@ -6,16 +6,16 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.ExampleModule = void 0;
+exports.EventsModule = void 0;
 const common_1 = require("@nestjs/common");
-const example_resolver_1 = require("./example.resolver");
-const example_service_1 = require("./example.service");
-let ExampleModule = class ExampleModule {
+const event_publisher_service_js_1 = require("./event-publisher.service.js");
+let EventsModule = class EventsModule {
 };
-exports.ExampleModule = ExampleModule;
-exports.ExampleModule = ExampleModule = __decorate([
+exports.EventsModule = EventsModule;
+exports.EventsModule = EventsModule = __decorate([
+    (0, common_1.Global)(),
     (0, common_1.Module)({
-        imports: [],
-        providers: [example_resolver_1.ExampleResolver, example_service_1.ExampleService],
+        providers: [event_publisher_service_js_1.EventPublisherService],
+        exports: [event_publisher_service_js_1.EventPublisherService],
     })
-], ExampleModule);
+], EventsModule);
