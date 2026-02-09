@@ -22,7 +22,6 @@ export class LessonService {
         moduleId: input.moduleId ?? null,
       })
       .returning();
-    console.log(lesson);
     return { ...lesson, vocabulary: [], examples: [] };
   }
   async updateLesson(input: UpdateLessonInput) {
