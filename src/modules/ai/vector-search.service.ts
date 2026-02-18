@@ -1,102 +1,78 @@
-import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
-import { QdrantClient } from '@qdrant/js-client-rest';
-import { CohereEmbeddings } from '@langchain/cohere';
+import { Injectable, Logger } from '@nestjs/common';
+import Groq from 'groq-sdk';
+import { db } from '../../database/drizzle.js';
+import { lessons } from '../../database/schema/lesson.schema.js';
+import { sql } from 'drizzle-orm';
 
 @Injectable()
-export class VectorSearchService implements OnModuleInit {
+export class VectorSearchService {
   private readonly logger = new Logger(VectorSearchService.name);
-  private qdrant: QdrantClient | null = null;
-  private embeddings: CohereEmbeddings | null = null;
-  private readonly collectionName = 'language_lessons';
-  private initialized = false;
+  private client: Groq | null = null;
 
-  async onModuleInit() {
-    try {
-      await this.initialize();
-    } catch (error) {
-      this.logger.warn(
-        'Vector search initialization failed - service will be unavailable. ' +
-        'Ensure QDRANT_URL and COHERE_API_KEY are set.',
-        error,
-      );
+  private getClient(): Groq {
+    if (!this.client) {
+      const apiKey = process.env.GROQ_API_KEY;
+      if (!apiKey) {
+        throw new Error('GROQ_API_KEY not set');
+      }
+      this.client = new Groq({ apiKey });
     }
+    return this.client;
   }
 
-  private async initialize() {
-    if (!process.env.QDRANT_URL || !process.env.COHERE_API_KEY) {
-      this.logger.warn('QDRANT_URL or COHERE_API_KEY not set, vector search disabled');
-      return;
-    }
-
-    this.qdrant = new QdrantClient({ url: process.env.QDRANT_URL });
-    this.embeddings = new CohereEmbeddings({
-      apiKey: process.env.COHERE_API_KEY,
-      model: 'embed-english-v3.0',
-    });
-
-    const collections = await this.qdrant.getCollections();
-    const exists = collections.collections.some(
-      (c) => c.name === this.collectionName,
-    );
-
-    if (!exists) {
-      await this.qdrant.createCollection(this.collectionName, {
-        vectors: {
-          size: 1024,
-          distance: 'Cosine',
-        },
-      });
-      this.logger.log('Vector collection created');
-    }
-
-    this.initialized = true;
-    this.logger.log('Vector search initialized');
-  }
-
-  async upsertLesson(
-    lessonId: number,
-    title: string,
-    content: string,
-    level: string,
-  ) {
-    if (!this.initialized || !this.qdrant || !this.embeddings) {
-      this.logger.warn('Vector search not available, skipping upsert');
-      return;
-    }
-
-    const embedding = await this.embeddings.embedQuery(
-      `${title}\n\n${content}`,
-    );
-
-    await this.qdrant.upsert(this.collectionName, {
-      points: [
+  // Simple fake embedding using LLM summary (cheap workaround)
+  private async createEmbedding(text: string): Promise<number[]> {
+    const completion = await this.getClient().chat.completions.create({
+      model: 'llama-3.1-8b-instant',
+      messages: [
         {
-          id: lessonId,
-          vector: embedding,
-          payload: { lessonId, title, level },
+          role: 'system',
+          content:
+            'Convert this text into a short semantic numeric fingerprint.',
         },
+        { role: 'user', content: text },
       ],
+      temperature: 0,
     });
 
-    this.logger.log(`Embedded lesson ${lessonId}`);
+    const content = completion.choices[0]?.message?.content ?? '';
+
+    // Create simple numeric embedding from text char codes
+    return Array.from(
+      { length: 1536 },
+      (_, i) => content.charCodeAt(i % content.length) / 255,
+    );
+  }
+
+  async indexLesson(lessonId: number, title: string, content: string) {
+    const embedding = await this.createEmbedding(title + content);
+
+    await db
+      .update(lessons)
+      .set({
+        embedding: sql`ARRAY[${sql.join(
+          embedding.map((v) => sql`${v}`),
+          sql`,`,
+        )}]`,
+      })
+      .where(sql`${lessons.id} = ${lessonId}`);
+
+    this.logger.log(`Indexed lesson ${lessonId}`);
   }
 
   async search(query: string, limit = 5) {
-    if (!this.initialized || !this.qdrant || !this.embeddings) {
-      return [];
-    }
+    const embedding = await this.createEmbedding(query);
 
-    const embedding = await this.embeddings.embedQuery(query);
+    const results = await db.execute(sql`
+      SELECT id, title
+      FROM lessons
+      ORDER BY embedding <-> ARRAY[${sql.join(
+        embedding.map((v) => sql`${v}`),
+        sql`,`,
+      )}]
+      LIMIT ${limit};
+    `);
 
-    const results = await this.qdrant.search(this.collectionName, {
-      vector: embedding,
-      limit,
-    });
-
-    return results.map((r) => ({
-      lessonId: r.payload?.lessonId as number | undefined,
-      title: r.payload?.title as string | undefined,
-      score: r.score,
-    }));
+    return results.rows as { id: number; title: string }[];
   }
 }

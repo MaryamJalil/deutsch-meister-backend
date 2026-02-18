@@ -1,26 +1,28 @@
 import { Injectable, Logger } from '@nestjs/common';
-import Anthropic from '@anthropic-ai/sdk';
-import { VectorSearchService } from './vector-search.service';
+import Groq from 'groq-sdk';
+import { VectorSearchService } from './vector-search.service.js';
 
 @Injectable()
 export class AITutorService {
   private readonly logger = new Logger(AITutorService.name);
-  private client: Anthropic | null = null;
+  private client: Groq | null = null;
 
   constructor(private readonly vectorService: VectorSearchService) {}
 
-  private getClient(): Anthropic {
+  private getClient(): Groq {
     if (!this.client) {
-      const apiKey = process.env.ANTHROPIC_API_KEY;
+      const apiKey = process.env.GROQ_API_KEY;
       if (!apiKey) {
-        throw new Error('ANTHROPIC_API_KEY is not set in environment');
+        throw new Error('GROQ_API_KEY is not set in environment');
       }
-      this.client = new Anthropic({ apiKey });
+      this.client = new Groq({ apiKey });
     }
     return this.client;
   }
 
-  async chat(userMessage: string): Promise<{ message: string; relatedLessons: string[] }> {
+  async chat(
+    userMessage: string,
+  ): Promise<{ message: string; relatedLessons: string[] }> {
     let context = '';
     let lessonTitles: string[] = [];
 
@@ -29,29 +31,45 @@ export class AITutorService {
       lessonTitles = relevantLessons
         .map((l) => l.title)
         .filter((t): t is string => typeof t === 'string');
+
       context = lessonTitles.map((t) => `- ${t}`).join('\n');
     } catch (error) {
-      this.logger.warn('Vector search unavailable, proceeding without context', error);
+      this.logger.warn('Vector search unavailable, proceeding without context');
     }
 
-    const prompt = `You are a friendly and knowledgeable German language tutor.
-${context ? `\nRelevant lessons from our curriculum:\n${context}\n` : ''}
-Student question: ${userMessage}
+    const prompt = `
+You are a friendly and knowledgeable German language tutor.
 
-Answer clearly and educationally. Use examples where helpful. If relevant, reference the lesson topics above.`;
+${context ? `Relevant lessons:\n${context}\n` : ''}
 
-    const response = await this.getClient().messages.create({
-      model: 'claude-sonnet-4-5-20250929',
-      max_tokens: 2048,
-      messages: [{ role: 'user', content: prompt }],
-    });
+Student question:
+${userMessage}
 
-    const textBlock = response.content.find((block) => block.type === 'text');
-    const message = textBlock && textBlock.type === 'text' ? textBlock.text : 'Sorry, I could not generate a response.';
+Answer clearly and educationally.
+`;
 
-    return {
-      message,
-      relatedLessons: lessonTitles,
-    };
+    try {
+      const completion = await this.getClient().chat.completions.create({
+        model: 'llama-3.1-8b-instant', // Free + fast
+        messages: [
+          { role: 'system', content: 'You are a helpful German tutor.' },
+          { role: 'user', content: prompt },
+        ],
+        temperature: 0.7,
+      });
+
+      return {
+        message:
+          completion.choices[0]?.message?.content ??
+          'Could not generate response.',
+        relatedLessons: lessonTitles,
+      };
+    } catch (error: any) {
+      this.logger.error('Groq AI error', error);
+      return {
+        message: 'AI tutor temporarily unavailable.',
+        relatedLessons: lessonTitles,
+      };
+    }
   }
 }

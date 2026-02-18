@@ -15,8 +15,8 @@ var AITutorService_1;
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AITutorService = void 0;
 const common_1 = require("@nestjs/common");
-const sdk_1 = __importDefault(require("@anthropic-ai/sdk"));
-const vector_search_service_1 = require("./vector-search.service");
+const groq_sdk_1 = __importDefault(require("groq-sdk"));
+const vector_search_service_js_1 = require("./vector-search.service.js");
 let AITutorService = AITutorService_1 = class AITutorService {
     constructor(vectorService) {
         this.vectorService = vectorService;
@@ -25,11 +25,11 @@ let AITutorService = AITutorService_1 = class AITutorService {
     }
     getClient() {
         if (!this.client) {
-            const apiKey = process.env.ANTHROPIC_API_KEY;
+            const apiKey = process.env.GROQ_API_KEY;
             if (!apiKey) {
-                throw new Error('ANTHROPIC_API_KEY is not set in environment');
+                throw new Error('GROQ_API_KEY is not set in environment');
             }
-            this.client = new sdk_1.default({ apiKey });
+            this.client = new groq_sdk_1.default({ apiKey });
         }
         return this.client;
     }
@@ -44,28 +44,44 @@ let AITutorService = AITutorService_1 = class AITutorService {
             context = lessonTitles.map((t) => `- ${t}`).join('\n');
         }
         catch (error) {
-            this.logger.warn('Vector search unavailable, proceeding without context', error);
+            this.logger.warn('Vector search unavailable, proceeding without context');
         }
-        const prompt = `You are a friendly and knowledgeable German language tutor.
-${context ? `\nRelevant lessons from our curriculum:\n${context}\n` : ''}
-Student question: ${userMessage}
+        const prompt = `
+You are a friendly and knowledgeable German language tutor.
 
-Answer clearly and educationally. Use examples where helpful. If relevant, reference the lesson topics above.`;
-        const response = await this.getClient().messages.create({
-            model: 'claude-sonnet-4-5-20250929',
-            max_tokens: 2048,
-            messages: [{ role: 'user', content: prompt }],
-        });
-        const textBlock = response.content.find((block) => block.type === 'text');
-        const message = textBlock && textBlock.type === 'text' ? textBlock.text : 'Sorry, I could not generate a response.';
-        return {
-            message,
-            relatedLessons: lessonTitles,
-        };
+${context ? `Relevant lessons:\n${context}\n` : ''}
+
+Student question:
+${userMessage}
+
+Answer clearly and educationally.
+`;
+        try {
+            const completion = await this.getClient().chat.completions.create({
+                model: 'llama-3.1-8b-instant', // Free + fast
+                messages: [
+                    { role: 'system', content: 'You are a helpful German tutor.' },
+                    { role: 'user', content: prompt },
+                ],
+                temperature: 0.7,
+            });
+            return {
+                message: completion.choices[0]?.message?.content ??
+                    'Could not generate response.',
+                relatedLessons: lessonTitles,
+            };
+        }
+        catch (error) {
+            this.logger.error('Groq AI error', error);
+            return {
+                message: 'AI tutor temporarily unavailable.',
+                relatedLessons: lessonTitles,
+            };
+        }
     }
 };
 exports.AITutorService = AITutorService;
 exports.AITutorService = AITutorService = AITutorService_1 = __decorate([
     (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [vector_search_service_1.VectorSearchService])
+    __metadata("design:paramtypes", [vector_search_service_js_1.VectorSearchService])
 ], AITutorService);

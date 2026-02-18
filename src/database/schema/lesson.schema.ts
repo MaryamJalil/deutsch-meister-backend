@@ -10,6 +10,16 @@ import {
 } from 'drizzle-orm/pg-core';
 import { levels } from './level.schema';
 import { modules } from './module.schema';
+import { customType } from 'drizzle-orm/pg-core';
+
+const vector = customType<{
+  data: number[];
+  driverData: string;
+}>({
+  dataType() {
+    return 'vector(1536)';
+  },
+});
 
 export const lessons = pgTable(
   'lessons',
@@ -29,6 +39,7 @@ export const lessons = pgTable(
       .references(() => levels.id),
 
     moduleId: integer('module_id').references(() => modules.id),
+    embedding: vector('embedding', { dimensions: 1536 }),
 
     createdAt: timestamp('created_at').notNull().defaultNow(),
 

@@ -8,6 +8,6 @@ exports.envSchema = zod_1.z.object({
     DATABASE_URL: zod_1.z.string().url(),
     JWT_ACCESS_SECRET: zod_1.z.string().min(1).optional(),
     JWT_REFRESH_SECRET: zod_1.z.string().min(1).optional(),
-    ANTHROPIC_API_KEY: zod_1.z.string().min(1).optional(),
+    GROQ_API_KEY: zod_1.z.string().min(1).optional(),
     REDIS_URL: zod_1.z.string().optional(),
 });

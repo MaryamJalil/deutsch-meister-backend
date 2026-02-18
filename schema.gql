@@ -2,6 +2,11 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
+type AuthPayload {
+  accessToken: String!
+  refreshToken: String!
+}
+
 type Course {
   id: Int!
   language: String!
@@ -24,7 +29,7 @@ input CreateLessonInput {
   content: String
   description: String
   levelId: Int!
-  moduleId: Float
+  moduleId: Int
   order: Int!
   title: String!
 }
@@ -58,12 +63,33 @@ type Example {
   translation: String!
 }
 
-input GenerateVocabularyInputType {
-  count: Float!
+input GenerateExamplesInput {
+  count: Int!
+  level: String!
+  sourceLanguage: String!
+  targetLanguage: String!
+  word: String!
+}
+
+input GenerateVocabularyInput {
+  count: Int!
   level: String!
   sourceLanguage: String!
   targetLanguage: String!
   topic: String!
+}
+
+type GeneratedExampleSentence {
+  context: String
+  sentence: String!
+  translation: String!
+}
+
+type GeneratedVocabularyItem {
+  example: String
+  meaning: String!
+  partOfSpeech: String
+  word: String!
 }
 
 type Lesson {
@@ -94,6 +120,7 @@ enum LevelCode {
   B1
   B2
   C1
+  C2
 }
 
 input LoginInput {
@@ -116,10 +143,17 @@ type Mutation {
   createLevel(input: CreateLevelInput!): Level!
   createModule(input: CreateModuleInput!): Module!
   createVocabulary(input: CreateVocabularyInput!): Vocabulary!
-  deleteExample(id: Float!): Example!
-  generateVocabulary(input: GenerateVocabularyInputType!): [Vocabulary!]!
-  login(input: LoginInput!): String!
-  register(input: RegisterInput!): Boolean!
+  deleteCourse(id: Int!): Course!
+  deleteExample(id: Int!): Example!
+  deleteLesson(id: Int!): Lesson!
+  deleteLevel(id: Int!): Level!
+  deleteModule(id: Int!): Module!
+  deleteVocabulary(id: Int!): Vocabulary!
+  generateExamples(input: GenerateExamplesInput!): [GeneratedExampleSentence!]!
+  generateVocabulary(input: GenerateVocabularyInput!): [GeneratedVocabularyItem!]!
+  login(input: LoginInput!): AuthPayload!
+  refreshTokens(refreshToken: String!, userId: Int!): AuthPayload!
+  register(input: RegisterInput!): AuthPayload!
   updateCourse(input: UpdateCourseInput!): Course!
   updateExample(input: UpdateExampleInput!): Example!
   updateLesson(input: UpdateLessonInput!): Lesson!
@@ -129,21 +163,29 @@ type Mutation {
 }
 
 type Query {
-  askTutor(message: String!): String!
-  course(id: Int!): Course!
+  askTutor(message: String!): TutorResponse!
+  course(id: Int!): Course
   courses: [Course!]!
-  example(id: Int!): Example!
+  example(id: Int!): Example
   examples: [Example!]!
-  lesson(id: Int!): Lesson!
+  examplesByLesson(lessonId: Int!): [Example!]!
+  explainGrammar(concept: String!, level: String!, sourceLanguage: String! = "English", targetLanguage: String! = "German"): String!
+  lesson(id: Int!): Lesson
   lessons: [Lesson!]!
-  level(id: Int!): Level!
+  lessonsByLevel(levelId: Int!): [Lesson!]!
+  lessonsByModule(moduleId: Int!): [Lesson!]!
+  level(id: Int!): Level
   levels: [Level!]!
-  module(id: Int!): Module!
+  levelsByCourse(courseId: Int!): [Level!]!
+  module(id: Int!): Module
   modules: [Module!]!
+  modulesByLevel(levelId: Int!): [Module!]!
   searchVocabulary(query: String!): [Vocabulary!]!
+  translateWithExplanation(level: String! = "A1", sourceLanguage: String!, targetLanguage: String!, text: String!): TranslationResponse!
   users: [User!]!
   vocabularies: [Vocabulary!]!
-  vocabulary(id: Int!): Vocabulary!
+  vocabulary(id: Int!): Vocabulary
+  vocabularyByLesson(lessonId: Int!): [Vocabulary!]!
 }
 
 input RegisterInput {
@@ -158,6 +200,17 @@ enum Role {
   TEACHER
 }
 
+type TranslationResponse {
+  breakdown: [String!]
+  explanation: String!
+  translation: String!
+}
+
+type TutorResponse {
+  message: String!
+  relatedLessons: [String!]
+}
+
 input UpdateCourseInput {
   id: Int!
   language: String
@@ -166,19 +219,19 @@ input UpdateCourseInput {
 
 input UpdateExampleInput {
   id: Int!
-  lessonId: Int!
-  sentence: String!
-  translation: String!
+  lessonId: Int
+  sentence: String
+  translation: String
 }
 
 input UpdateLessonInput {
   content: String
   description: String
   id: Int!
-  levelId: Int!
-  moduleId: Float
-  order: Int!
-  title: String!
+  levelId: Int
+  moduleId: Int
+  order: Int
+  title: String
 }
 
 input UpdateLevelInput {
