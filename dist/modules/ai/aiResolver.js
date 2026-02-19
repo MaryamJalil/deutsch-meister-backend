@@ -14,8 +14,8 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AIResolver = void 0;
 const graphql_1 = require("@nestjs/graphql");
-const ai_content_generator_service_1 = require("./ai-content-generator.service");
-const ai_tutor_service_1 = require("./ai-tutor.service");
+const aiContentGenerator_service_1 = require("./aiContentGenerator.service");
+const aiTutor_service_1 = require("./aiTutor.service");
 let GeneratedVocabularyItem = class GeneratedVocabularyItem {
 };
 __decorate([
@@ -84,6 +84,91 @@ __decorate([
 TranslationResponse = __decorate([
     (0, graphql_1.ObjectType)()
 ], TranslationResponse);
+let LessonSection = class LessonSection {
+};
+__decorate([
+    (0, graphql_1.Field)(),
+    __metadata("design:type", String)
+], LessonSection.prototype, "title", void 0);
+__decorate([
+    (0, graphql_1.Field)(),
+    __metadata("design:type", String)
+], LessonSection.prototype, "content", void 0);
+LessonSection = __decorate([
+    (0, graphql_1.ObjectType)()
+], LessonSection);
+let GeneratedLesson = class GeneratedLesson {
+};
+__decorate([
+    (0, graphql_1.Field)(),
+    __metadata("design:type", String)
+], GeneratedLesson.prototype, "title", void 0);
+__decorate([
+    (0, graphql_1.Field)(() => [String]),
+    __metadata("design:type", Array)
+], GeneratedLesson.prototype, "objectives", void 0);
+__decorate([
+    (0, graphql_1.Field)(() => [LessonSection]),
+    __metadata("design:type", Array)
+], GeneratedLesson.prototype, "sections", void 0);
+GeneratedLesson = __decorate([
+    (0, graphql_1.ObjectType)()
+], GeneratedLesson);
+let GenerateLessonInput = class GenerateLessonInput {
+};
+__decorate([
+    (0, graphql_1.Field)(),
+    __metadata("design:type", String)
+], GenerateLessonInput.prototype, "topic", void 0);
+__decorate([
+    (0, graphql_1.Field)(),
+    __metadata("design:type", String)
+], GenerateLessonInput.prototype, "level", void 0);
+__decorate([
+    (0, graphql_1.Field)(() => graphql_1.Int, { nullable: true }),
+    __metadata("design:type", Number)
+], GenerateLessonInput.prototype, "sections", void 0);
+GenerateLessonInput = __decorate([
+    (0, graphql_1.InputType)()
+], GenerateLessonInput);
+let GeneratedQuizQuestion = class GeneratedQuizQuestion {
+};
+__decorate([
+    (0, graphql_1.Field)(),
+    __metadata("design:type", String)
+], GeneratedQuizQuestion.prototype, "question", void 0);
+__decorate([
+    (0, graphql_1.Field)(() => [String]),
+    __metadata("design:type", Array)
+], GeneratedQuizQuestion.prototype, "options", void 0);
+__decorate([
+    (0, graphql_1.Field)(),
+    __metadata("design:type", String)
+], GeneratedQuizQuestion.prototype, "answer", void 0);
+__decorate([
+    (0, graphql_1.Field)({ nullable: true }),
+    __metadata("design:type", String)
+], GeneratedQuizQuestion.prototype, "explanation", void 0);
+GeneratedQuizQuestion = __decorate([
+    (0, graphql_1.ObjectType)()
+], GeneratedQuizQuestion);
+let GenerateQuizInput = class GenerateQuizInput {
+};
+__decorate([
+    (0, graphql_1.Field)(),
+    __metadata("design:type", String)
+], GenerateQuizInput.prototype, "text", void 0);
+__decorate([
+    (0, graphql_1.Field)(() => graphql_1.Int),
+    __metadata("design:type", Number)
+], GenerateQuizInput.prototype, "count", void 0);
+__decorate([
+    (0, graphql_1.Field)(),
+    __metadata("design:type", String)
+], GenerateQuizInput.prototype, "level", void 0);
+GenerateQuizInput = __decorate([
+    (0, graphql_1.InputType)()
+], GenerateQuizInput);
 let GenerateVocabularyInput = class GenerateVocabularyInput {
 };
 __decorate([
@@ -145,6 +230,12 @@ let AIResolver = class AIResolver {
     async generateExamples(input) {
         return this.generator.generateExamples(input);
     }
+    async generateLessonOutline(input) {
+        return this.generator.generateLessonOutline(input);
+    }
+    async generateQuiz(input) {
+        return this.generator.generateQuiz(input);
+    }
     async askTutor(message) {
         return this.tutor.chat(message);
     }
@@ -153,6 +244,12 @@ let AIResolver = class AIResolver {
     }
     async translateWithExplanation(text, sourceLanguage, targetLanguage, level) {
         return this.generator.translateWithExplanation(text, sourceLanguage, targetLanguage, level);
+    }
+    async summarizeText(text, targetLanguage) {
+        return this.generator.summarizeText(text, targetLanguage);
+    }
+    async paraphraseText(text, level) {
+        return this.generator.paraphraseText(text, level);
     }
 };
 exports.AIResolver = AIResolver;
@@ -170,6 +267,20 @@ __decorate([
     __metadata("design:paramtypes", [GenerateExamplesInput]),
     __metadata("design:returntype", Promise)
 ], AIResolver.prototype, "generateExamples", null);
+__decorate([
+    (0, graphql_1.Mutation)(() => GeneratedLesson),
+    __param(0, (0, graphql_1.Args)('input')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [GenerateLessonInput]),
+    __metadata("design:returntype", Promise)
+], AIResolver.prototype, "generateLessonOutline", null);
+__decorate([
+    (0, graphql_1.Mutation)(() => [GeneratedQuizQuestion]),
+    __param(0, (0, graphql_1.Args)('input')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [GenerateQuizInput]),
+    __metadata("design:returntype", Promise)
+], AIResolver.prototype, "generateQuiz", null);
 __decorate([
     (0, graphql_1.Query)(() => TutorResponse),
     __param(0, (0, graphql_1.Args)('message')),
@@ -197,8 +308,24 @@ __decorate([
     __metadata("design:paramtypes", [String, String, String, String]),
     __metadata("design:returntype", Promise)
 ], AIResolver.prototype, "translateWithExplanation", null);
+__decorate([
+    (0, graphql_1.Query)(() => String),
+    __param(0, (0, graphql_1.Args)('text')),
+    __param(1, (0, graphql_1.Args)('targetLanguage', { defaultValue: 'German' })),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, String]),
+    __metadata("design:returntype", Promise)
+], AIResolver.prototype, "summarizeText", null);
+__decorate([
+    (0, graphql_1.Mutation)(() => String),
+    __param(0, (0, graphql_1.Args)('text')),
+    __param(1, (0, graphql_1.Args)('level', { defaultValue: 'A2' })),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, String]),
+    __metadata("design:returntype", Promise)
+], AIResolver.prototype, "paraphraseText", null);
 exports.AIResolver = AIResolver = __decorate([
     (0, graphql_1.Resolver)(),
-    __metadata("design:paramtypes", [ai_content_generator_service_1.AIContentGeneratorService,
-        ai_tutor_service_1.AITutorService])
+    __metadata("design:paramtypes", [aiContentGenerator_service_1.AIContentGeneratorService,
+        aiTutor_service_1.AITutorService])
 ], AIResolver);

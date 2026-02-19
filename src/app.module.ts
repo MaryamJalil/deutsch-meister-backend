@@ -15,7 +15,7 @@ import { ExampleModule } from './modules/examples/example.module';
 import { ModulesModule } from './modules/modules/modules.module';
 import { CacheModule } from './modules/cache/cache.module';
 import { EventsModule } from './modules/events/events.module';
-import { AIModule } from './modules/ai/ai.module';
+import { AIModule } from './modules/ai/aiModule';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 
@@ -48,4 +48,4 @@ import { AppService } from './app.service';
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule {}
+export class AppModule { }

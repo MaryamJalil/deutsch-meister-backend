@@ -23,7 +23,7 @@ const example_module_1 = require("./modules/examples/example.module");
 const modules_module_1 = require("./modules/modules/modules.module");
 const cache_module_1 = require("./modules/cache/cache.module");
 const events_module_1 = require("./modules/events/events.module");
-const ai_module_1 = require("./modules/ai/ai.module");
+const aiModule_1 = require("./modules/ai/aiModule");
 const app_controller_1 = require("./app.controller");
 const app_service_1 = require("./app.service");
 let AppModule = class AppModule {
@@ -53,7 +53,7 @@ exports.AppModule = AppModule = __decorate([
             example_module_1.ExampleModule,
             cache_module_1.CacheModule,
             events_module_1.EventsModule,
-            ai_module_1.AIModule,
+            aiModule_1.AIModule,
         ],
         controllers: [app_controller_1.AppController],
         providers: [app_service_1.AppService],
