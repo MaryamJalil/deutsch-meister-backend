@@ -16,7 +16,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.AITutorService = void 0;
 const common_1 = require("@nestjs/common");
 const groq_sdk_1 = __importDefault(require("groq-sdk"));
-const vector_search_service_js_1 = require("./vector-search.service.js");
+const vectorSearch_service_js_1 = require("./vectorSearch.service.js");
 let AITutorService = AITutorService_1 = class AITutorService {
     constructor(vectorService) {
         this.vectorService = vectorService;
@@ -83,5 +83,5 @@ Answer clearly and educationally.
 exports.AITutorService = AITutorService;
 exports.AITutorService = AITutorService = AITutorService_1 = __decorate([
     (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [vector_search_service_js_1.VectorSearchService])
+    __metadata("design:paramtypes", [vectorSearch_service_js_1.VectorSearchService])
 ], AITutorService);

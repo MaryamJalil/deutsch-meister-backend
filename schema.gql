@@ -63,12 +63,30 @@ type Example {
   translation: String!
 }
 
+type FlashcardObject {
+  back: String!
+  example: String
+  front: String!
+}
+
 input GenerateExamplesInput {
   count: Int!
   level: String!
   sourceLanguage: String!
   targetLanguage: String!
   word: String!
+}
+
+input GenerateLessonInput {
+  level: String!
+  sections: Int
+  topic: String!
+}
+
+input GenerateQuizInput {
+  count: Int!
+  level: String!
+  text: String!
 }
 
 input GenerateVocabularyInput {
@@ -83,6 +101,19 @@ type GeneratedExampleSentence {
   context: String
   sentence: String!
   translation: String!
+}
+
+type GeneratedLesson {
+  objectives: [String!]!
+  sections: [LessonSection!]!
+  title: String!
+}
+
+type GeneratedQuizQuestion {
+  answer: String!
+  explanation: String
+  options: [String!]!
+  question: String!
 }
 
 type GeneratedVocabularyItem {
@@ -104,6 +135,11 @@ type Lesson {
   title: String!
   updatedAt: DateTime!
   vocabulary: [Vocabulary!]
+}
+
+type LessonSection {
+  content: String!
+  title: String!
 }
 
 type Level {
@@ -150,8 +186,12 @@ type Mutation {
   deleteModule(id: Int!): Module!
   deleteVocabulary(id: Int!): Vocabulary!
   generateExamples(input: GenerateExamplesInput!): [GeneratedExampleSentence!]!
+  generateFlashcards(count: Int! = 10, level: String! = "A1", text: String!): [FlashcardObject!]!
+  generateLessonOutline(input: GenerateLessonInput!): GeneratedLesson!
+  generateQuiz(input: GenerateQuizInput!): [GeneratedQuizQuestion!]!
   generateVocabulary(input: GenerateVocabularyInput!): [GeneratedVocabularyItem!]!
   login(input: LoginInput!): AuthPayload!
+  paraphraseText(level: String! = "A2", text: String!): String!
   refreshTokens(refreshToken: String!, userId: Int!): AuthPayload!
   register(input: RegisterInput!): AuthPayload!
   updateCourse(input: UpdateCourseInput!): Course!
@@ -160,6 +200,11 @@ type Mutation {
   updateLevel(input: UpdateLevelInput!): Level!
   updateModule(input: UpdateModuleInput!): Module!
   updateVocabulary(input: UpdateVocabularyInput!): Vocabulary!
+}
+
+type PhoneticResult {
+  ipa: String!
+  simplified: String!
 }
 
 type Query {
@@ -180,7 +225,9 @@ type Query {
   module(id: Int!): Module
   modules: [Module!]!
   modulesByLevel(levelId: Int!): [Module!]!
+  phonetic(language: String! = "German", text: String!): PhoneticResult!
   searchVocabulary(query: String!): [Vocabulary!]!
+  summarizeText(targetLanguage: String! = "German", text: String!): String!
   translateWithExplanation(level: String! = "A1", sourceLanguage: String!, targetLanguage: String!, text: String!): TranslationResponse!
   users: [User!]!
   vocabularies: [Vocabulary!]!

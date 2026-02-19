@@ -69,6 +69,54 @@ Return JSON array of sentences.
             throw new Error('Invalid JSON');
         return JSON.parse(jsonMatch[0]);
     }
+    async generateLessonOutline(input) {
+        const { topic, level, sections = 3 } = input;
+        const prompt = `
+Create a lesson outline in JSON for German learners.
+Topic: ${topic}
+Level: ${level}
+Sections: ${sections}
+
+Return ONLY valid JSON object like:
+{
+  "title": "...",
+  "objectives": ["..."],
+  "sections": [{ "title": "...", "content": "..." }]
+}
+`;
+        const completion = await this.getClient().chat.completions.create({
+            model: 'llama-3.1-8b-instant',
+            messages: [{ role: 'user', content: prompt }],
+            temperature: 0.7,
+        });
+        const text = completion.choices[0]?.message?.content ?? '';
+        const objMatch = text.match(/\{[\s\S]*\}/);
+        if (!objMatch)
+            throw new Error('Invalid JSON response for lesson outline');
+        return JSON.parse(objMatch[0]);
+    }
+    async generateQuiz(input) {
+        const { text, count, level } = input;
+        const prompt = `
+Generate ${count} multiple-choice questions (with 4 options each) based on the following content for ${level} German learners.
+Content: ${text}
+
+Return ONLY a JSON array like:
+[
+  { "question": "...", "options": ["a","b","c","d"], "answer": "...", "explanation": "..." }
+]
+`;
+        const completion = await this.getClient().chat.completions.create({
+            model: 'llama-3.1-8b-instant',
+            messages: [{ role: 'user', content: prompt }],
+            temperature: 0.7,
+        });
+        const textResp = completion.choices[0]?.message?.content ?? '';
+        const jsonMatch = textResp.match(/\[[\s\S]*\]/);
+        if (!jsonMatch)
+            throw new Error('Invalid JSON response for quiz');
+        return JSON.parse(jsonMatch[0]);
+    }
     async explainGrammar(concept, level, targetLanguage, sourceLanguage) {
         const prompt = `
 Explain the German grammar concept "${concept}" 
@@ -90,6 +138,34 @@ Translate this text from ${sourceLanguage} to ${targetLanguage}:
 "${text}"
 
 Explain grammar decisions briefly for ${level} learner.
+`;
+        const completion = await this.getClient().chat.completions.create({
+            model: 'llama-3.1-8b-instant',
+            messages: [{ role: 'user', content: prompt }],
+        });
+        return completion.choices[0]?.message?.content ?? '';
+    }
+    async summarizeText(text, targetLanguage) {
+        const prompt = `
+Summarize the following text in ${targetLanguage} in a short paragraph suitable for learners:
+
+"""
+${text}
+"""
+`;
+        const completion = await this.getClient().chat.completions.create({
+            model: 'llama-3.1-8b-instant',
+            messages: [{ role: 'user', content: prompt }],
+        });
+        return completion.choices[0]?.message?.content ?? '';
+    }
+    async paraphraseText(text, level) {
+        const prompt = `
+Paraphrase the following text to be appropriate for a ${level} German learner. Keep meaning but simplify vocabulary and sentence structure:
+
+"""
+${text}
+"""
 `;
         const completion = await this.getClient().chat.completions.create({
             model: 'llama-3.1-8b-instant',
