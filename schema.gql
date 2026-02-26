@@ -90,7 +90,7 @@ input GenerateQuizInput {
 }
 
 input GenerateVocabularyInput {
-  count: Int!
+  count: Float
   level: String!
   sourceLanguage: String!
   targetLanguage: String!

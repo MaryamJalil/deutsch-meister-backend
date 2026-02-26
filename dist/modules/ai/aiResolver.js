@@ -16,6 +16,7 @@ exports.AIResolver = void 0;
 const graphql_1 = require("@nestjs/graphql");
 const aiContentGenerator_service_1 = require("./aiContentGenerator.service");
 const aiTutor_service_1 = require("./aiTutor.service");
+const ai_input_1 = require("../auth/dto/ai.input");
 let GeneratedVocabularyItem = class GeneratedVocabularyItem {
 };
 __decorate([
@@ -169,31 +170,6 @@ __decorate([
 GenerateQuizInput = __decorate([
     (0, graphql_1.InputType)()
 ], GenerateQuizInput);
-let GenerateVocabularyInput = class GenerateVocabularyInput {
-};
-__decorate([
-    (0, graphql_1.Field)(),
-    __metadata("design:type", String)
-], GenerateVocabularyInput.prototype, "topic", void 0);
-__decorate([
-    (0, graphql_1.Field)(),
-    __metadata("design:type", String)
-], GenerateVocabularyInput.prototype, "level", void 0);
-__decorate([
-    (0, graphql_1.Field)(() => graphql_1.Int),
-    __metadata("design:type", Number)
-], GenerateVocabularyInput.prototype, "count", void 0);
-__decorate([
-    (0, graphql_1.Field)(),
-    __metadata("design:type", String)
-], GenerateVocabularyInput.prototype, "targetLanguage", void 0);
-__decorate([
-    (0, graphql_1.Field)(),
-    __metadata("design:type", String)
-], GenerateVocabularyInput.prototype, "sourceLanguage", void 0);
-GenerateVocabularyInput = __decorate([
-    (0, graphql_1.InputType)()
-], GenerateVocabularyInput);
 let GenerateExamplesInput = class GenerateExamplesInput {
 };
 __decorate([
@@ -225,6 +201,7 @@ let AIResolver = class AIResolver {
         this.tutor = tutor;
     }
     async generateVocabulary(input) {
+        console.log(input, 'jjj');
         return this.generator.generateVocabulary(input);
     }
     async generateExamples(input) {
@@ -257,7 +234,7 @@ __decorate([
     (0, graphql_1.Mutation)(() => [GeneratedVocabularyItem]),
     __param(0, (0, graphql_1.Args)('input')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [GenerateVocabularyInput]),
+    __metadata("design:paramtypes", [ai_input_1.GenerateVocabularyInput]),
     __metadata("design:returntype", Promise)
 ], AIResolver.prototype, "generateVocabulary", null);
 __decorate([
