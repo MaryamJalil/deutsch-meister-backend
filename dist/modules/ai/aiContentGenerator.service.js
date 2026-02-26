@@ -39,6 +39,7 @@ Return ONLY valid JSON array like:
  { "word": "...", "meaning": "...", "example": "..." }
 ]
 `;
+        console.log(count, prompt);
         const completion = await this.getClient().chat.completions.create({
             model: 'llama-3.1-8b-instant',
             messages: [
@@ -47,8 +48,11 @@ Return ONLY valid JSON array like:
             ],
             temperature: 0.7,
         });
+        console.log(completion, 'completion');
         const text = completion.choices[0]?.message?.content ?? '';
+        console.log(text, 'text');
         const jsonMatch = text.match(/\[[\s\S]*\]/);
+        console.log(jsonMatch, 'jsonMatch');
         if (!jsonMatch)
             throw new Error('Invalid JSON response');
         return JSON.parse(jsonMatch[0]);
