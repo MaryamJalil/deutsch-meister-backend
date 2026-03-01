@@ -93,10 +93,6 @@ services:
       # Qdrant
       QDRANT_URL: http://qdrant:6333
 
-      # AI APIs (add your keys)
-      OPENAI_API_KEY: ${OPENAI_API_KEY}
-      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY}
-
       # AWS LocalStack
       AWS_REGION: eu-central-1
       AWS_ENDPOINT: http://localstack:4566
@@ -132,8 +128,7 @@ services:
       DATABASE_URL: postgresql://postgres:postgres@postgres:5432/deutsch_meister
       REDIS_URL: redis://:redispassword@redis:6379
       QDRANT_URL: http://qdrant:6333
-      OPENAI_API_KEY: ${OPENAI_API_KEY}
-      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY}
+      GROQ_API_KEY: ${GROQ_API_KEY}
       AWS_REGION: eu-central-1
       AWS_ENDPOINT: http://localstack:4566
       AWS_ACCESS_KEY_ID: test

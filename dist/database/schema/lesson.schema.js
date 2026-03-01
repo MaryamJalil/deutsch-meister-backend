@@ -5,9 +5,10 @@ const pg_core_1 = require("drizzle-orm/pg-core");
 const level_schema_1 = require("./level.schema");
 const module_schema_1 = require("./module.schema");
 const pg_core_2 = require("drizzle-orm/pg-core");
-const vector = (0, pg_core_2.customType)({
+// Use JSON column for embeddings instead of vector
+const jsonVector = (0, pg_core_2.customType)({
     dataType() {
-        return 'vector(1536)';
+        return 'jsonb';
     },
 });
 exports.lessons = (0, pg_core_1.pgTable)('lessons', {
@@ -20,7 +21,7 @@ exports.lessons = (0, pg_core_1.pgTable)('lessons', {
         .notNull()
         .references(() => level_schema_1.levels.id),
     moduleId: (0, pg_core_1.integer)('module_id').references(() => module_schema_1.modules.id),
-    embedding: vector('embedding', { dimensions: 1536 }),
+    embedding: jsonVector('embedding'), // store embeddings as JSON
     createdAt: (0, pg_core_1.timestamp)('created_at').notNull().defaultNow(),
     updatedAt: (0, pg_core_1.timestamp)('updated_at')
         .notNull()

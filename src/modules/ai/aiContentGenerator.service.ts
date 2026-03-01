@@ -219,4 +219,155 @@ ${text}
 
     return completion.choices[0]?.message?.content ?? '';
   }
+
+  async generateMultipleChoiceExercises(
+    lessonContent: string,
+    level: string,
+    count: number,
+  ): Promise<
+    Array<{
+      question: string;
+      options: string[];
+      correctIndex: number;
+      explanation: string;
+    }>
+  > {
+    const prompt = `
+Based on the following German lesson content for ${level} learners, generate ${count} multiple-choice questions.
+
+Lesson content:
+"""
+${lessonContent}
+"""
+
+Return ONLY valid JSON array:
+[
+  { "question": "...", "options": ["a","b","c","d"], "correctIndex": 0, "explanation": "..." }
+]
+correctIndex is the 0-based index of the correct option.
+`;
+    const completion = await this.getClient().chat.completions.create({
+      model: 'llama-3.1-8b-instant',
+      messages: [{ role: 'user', content: prompt }],
+      temperature: 0.5,
+    });
+
+    const text = completion.choices[0]?.message?.content ?? '';
+    const jsonMatch = text.match(/\[[\s\S]*\]/);
+    if (!jsonMatch) throw new Error('Invalid JSON for multiple choice');
+    return JSON.parse(jsonMatch[0]);
+  }
+
+  async generateFillInBlankExercises(
+    lessonContent: string,
+    level: string,
+    count: number,
+  ): Promise<
+    Array<{ sentence_with_blank: string; answer: string; hint: string }>
+  > {
+    const prompt = `
+Based on the following German lesson content for ${level} learners, generate ${count} fill-in-the-blank exercises.
+
+Lesson content:
+"""
+${lessonContent}
+"""
+
+Return ONLY valid JSON array:
+[
+  { "sentence_with_blank": "Ich ___ nach Hause.", "answer": "gehe", "hint": "verb for 'to go'" }
+]
+Replace the missing word with ___ (three underscores).
+`;
+    const completion = await this.getClient().chat.completions.create({
+      model: 'llama-3.1-8b-instant',
+      messages: [{ role: 'user', content: prompt }],
+      temperature: 0.5,
+    });
+
+    const text = completion.choices[0]?.message?.content ?? '';
+    const jsonMatch = text.match(/\[[\s\S]*\]/);
+    if (!jsonMatch) throw new Error('Invalid JSON for fill-in-blank');
+    return JSON.parse(jsonMatch[0]);
+  }
+
+  async generateSentenceOrderingExercises(
+    lessonContent: string,
+    level: string,
+    count: number,
+  ): Promise<
+    Array<{ parts: string[]; correctOrder: number[]; prompt: string }>
+  > {
+    const prompt = `
+Based on the following German lesson content for ${level} learners, generate ${count} sentence ordering exercises.
+
+Lesson content:
+"""
+${lessonContent}
+"""
+
+Return ONLY valid JSON array:
+[
+  {
+    "prompt": "Arrange the words to form a correct German sentence.",
+    "parts": ["Hause", "Ich", "nach", "gehe"],
+    "correctOrder": [1, 3, 2, 0]
+  }
+]
+correctOrder is the array of original indices forming the correct sentence.
+`;
+    const completion = await this.getClient().chat.completions.create({
+      model: 'llama-3.1-8b-instant',
+      messages: [{ role: 'user', content: prompt }],
+      temperature: 0.5,
+    });
+
+    const text = completion.choices[0]?.message?.content ?? '';
+    const jsonMatch = text.match(/\[[\s\S]*\]/);
+    if (!jsonMatch) throw new Error('Invalid JSON for sentence ordering');
+    return JSON.parse(jsonMatch[0]);
+  }
+
+  async generateListeningExercises(
+    lessonContent: string,
+    level: string,
+    count: number,
+  ): Promise<
+    Array<{
+      text_to_read: string;
+      question: string;
+      answer: string;
+      hint: string;
+    }>
+  > {
+    const prompt = `
+Based on the following German lesson content for ${level} learners, generate ${count} listening comprehension exercises.
+
+Lesson content:
+"""
+${lessonContent}
+"""
+
+Return ONLY valid JSON array:
+[
+  {
+    "text_to_read": "Ich wohne in Berlin. Die Stadt ist sehr schön.",
+    "question": "Where does the speaker live?",
+    "answer": "Berlin",
+    "hint": "Listen for a city name."
+  }
+]
+The text_to_read is what would be spoken aloud. The question tests comprehension.
+`;
+    const completion = await this.getClient().chat.completions.create({
+      model: 'llama-3.1-8b-instant',
+      messages: [{ role: 'user', content: prompt }],
+      temperature: 0.5,
+    });
+
+    const text = completion.choices[0]?.message?.content ?? '';
+    const jsonMatch = text.match(/\[[\s\S]*\]/);
+    if (!jsonMatch) throw new Error('Invalid JSON for listening exercises');
+    return JSON.parse(jsonMatch[0]);
+  }
 }

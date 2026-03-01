@@ -46,7 +46,7 @@ Create a `.env` file in the root directory:
 ```env
 NODE_ENV=development
 PORT=4000
-DATABASE_URL=postgresql://postgres:postgres@localhost:5432/deutsch_meister
+DATABASE_URL=postgresql://postgres:postgres@localhost:5432/postgres
 JWT_ACCESS_SECRET=your-access-secret
 JWT_REFRESH_SECRET=your-refresh-secret
 ANTHROPIC_API_KEY=your-anthropic-key
@@ -80,14 +80,14 @@ npm run drizzle:studio   # Interactive DB editor
 
 ### Docker Compose Services
 
-| Service      | Port(s)     | Purpose                    |
-|-------------|-------------|----------------------------|
-| PostgreSQL  | 5432        | Primary database           |
-| Redis       | 6379        | Caching layer              |
-| Qdrant      | 6333, 6334  | Vector database            |
-| LocalStack  | 4566        | Local AWS emulation        |
-| API         | 3000        | NestJS application         |
-| Worker      | -           | Background async processing|
+| Service    | Port(s)    | Purpose                     |
+| ---------- | ---------- | --------------------------- |
+| PostgreSQL | 5432       | Primary database            |
+| Redis      | 6379       | Caching layer               |
+| Qdrant     | 6333, 6334 | Vector database             |
+| LocalStack | 4566       | Local AWS emulation         |
+| API        | 3000       | NestJS application          |
+| Worker     | -          | Background async processing |
 
 ---
 
@@ -128,6 +128,7 @@ This roadmap uses the existing project as a learning sandbox to progressively ad
 **Goal:** Learn NestJS microservice communication by extracting the AI module into a standalone service.
 
 #### What You'll Learn
+
 - NestJS microservice transports (Redis, RabbitMQ, gRPC)
 - `@MessagePattern()` and `@EventPattern()` decorators
 - `ClientProxy` for inter-service messaging
@@ -192,6 +193,7 @@ deutsch-meister-backend/
    await app.listen();
    ```
 4. **Add message handlers** in the AI service:
+
    ```typescript
    @MessagePattern({ cmd: 'generate_content' })
    async generateContent(data: GenerateContentDto) { ... }
@@ -202,7 +204,9 @@ deutsch-meister-backend/
    @EventPattern('lesson_created')
    async handleLessonCreated(data: LessonCreatedEvent) { ... }
    ```
+
 5. **Update API gateway** to use `ClientProxy` instead of direct imports:
+
    ```typescript
    @Inject('AI_SERVICE') private readonly aiClient: ClientProxy;
 
@@ -210,10 +214,12 @@ deutsch-meister-backend/
      return this.aiClient.send({ cmd: 'generate_content' }, input);
    }
    ```
+
 6. **Add ai-service to docker-compose.yml** as a separate container
 7. **Test** request-response and event-based patterns between services
 
 #### Key NestJS Docs
+
 - [NestJS Microservices Overview](https://docs.nestjs.com/microservices/basics)
 - [Redis Transport](https://docs.nestjs.com/microservices/redis)
 - [NestJS Monorepo](https://docs.nestjs.com/cli/monorepo)
@@ -225,6 +231,7 @@ deutsch-meister-backend/
 **Goal:** Learn core AWS services by deploying the project to real AWS infrastructure.
 
 #### What You'll Learn
+
 - ECS Fargate (serverless containers)
 - ECR (Docker image registry)
 - RDS (managed PostgreSQL)
@@ -261,6 +268,7 @@ deutsch-meister-backend/
 #### Steps
 
 1. **Push Docker images to ECR**
+
    ```bash
    # Create ECR repositories
    aws ecr create-repository --repository-name deutsch-meister/api
@@ -300,6 +308,7 @@ deutsch-meister-backend/
    - Health check path: `/health`
 
 7. **Store secrets in AWS Secrets Manager**
+
    ```
    ANTHROPIC_API_KEY, COHERE_API_KEY, JWT_ACCESS_SECRET, JWT_REFRESH_SECRET
    ```
@@ -307,6 +316,7 @@ deutsch-meister-backend/
 8. **Update environment variables** in ECS task definitions to point to real AWS resources instead of localhost/LocalStack
 
 #### Key Concepts to Understand
+
 - **VPC:** Your private network in AWS — nothing is accessible unless you allow it
 - **Security Groups:** Firewalls for each service — only allow traffic between your own services
 - **IAM Roles:** Instead of hardcoded AWS keys, ECS tasks assume roles with specific permissions
@@ -319,6 +329,7 @@ deutsch-meister-backend/
 **Goal:** Replace LocalStack with real AWS messaging and build async workflows.
 
 #### What You'll Learn
+
 - EventBridge event buses and rules
 - SQS queues, dead-letter queues (DLQ), visibility timeout
 - Async event-driven patterns
@@ -343,22 +354,24 @@ deutsch-meister-backend/
 
 #### Events to Implement
 
-| Event | Source | Consumer | Action |
-|-------|--------|----------|--------|
-| `lesson.created` | API | AI Service | Auto-generate embeddings for vector search |
-| `lesson.updated` | API | AI Service | Re-generate embeddings |
-| `user.registered` | API | Worker | Send welcome email, generate starter content |
-| `vocabulary.generated` | AI Service | API | Cache generated vocabulary |
-| `course.deleted` | API | AI Service | Remove vectors from Qdrant |
+| Event                  | Source     | Consumer   | Action                                       |
+| ---------------------- | ---------- | ---------- | -------------------------------------------- |
+| `lesson.created`       | API        | AI Service | Auto-generate embeddings for vector search   |
+| `lesson.updated`       | API        | AI Service | Re-generate embeddings                       |
+| `user.registered`      | API        | Worker     | Send welcome email, generate starter content |
+| `vocabulary.generated` | AI Service | API        | Cache generated vocabulary                   |
+| `course.deleted`       | API        | AI Service | Remove vectors from Qdrant                   |
 
 #### Steps
 
 1. **Create EventBridge event bus** in AWS
+
    ```bash
    aws events create-event-bus --name deutsch-meister-events
    ```
 
 2. **Create SQS queues** with dead-letter queues
+
    ```bash
    # Main queue
    aws sqs create-queue --queue-name deutsch-meister-ai-queue
@@ -367,6 +380,7 @@ deutsch-meister-backend/
    ```
 
 3. **Create EventBridge rules** to route events to SQS
+
    ```json
    {
      "source": ["deutsch-meister"],
@@ -375,19 +389,25 @@ deutsch-meister-backend/
    ```
 
 4. **Update the Events module** to publish real events:
+
    ```typescript
    // Already exists in src/modules/events/ — update to use real AWS endpoints
-   await this.eventBridge.send(new PutEventsCommand({
-     Entries: [{
-       Source: 'deutsch-meister',
-       DetailType: 'lesson.created',
-       Detail: JSON.stringify({ lessonId, title, level }),
-       EventBusName: 'deutsch-meister-events',
-     }],
-   }));
+   await this.eventBridge.send(
+     new PutEventsCommand({
+       Entries: [
+         {
+           Source: 'deutsch-meister',
+           DetailType: 'lesson.created',
+           Detail: JSON.stringify({ lessonId, title, level }),
+           EventBusName: 'deutsch-meister-events',
+         },
+       ],
+     }),
+   );
    ```
 
 5. **Add SQS consumer to AI Service**
+
    ```typescript
    // AI service polls SQS and processes events
    @EventPattern('lesson.created')
@@ -399,6 +419,7 @@ deutsch-meister-backend/
 6. **Set up DLQ alerting** — CloudWatch alarm when messages land in DLQ
 
 #### Key Concepts to Understand
+
 - **Eventual consistency:** AI embeddings may lag a few seconds behind lesson creation — that's OK
 - **Idempotency:** Processing the same event twice should produce the same result
 - **Dead-letter queues:** Failed messages go here instead of being lost
@@ -411,6 +432,7 @@ deutsch-meister-backend/
 **Goal:** Codify everything you built manually in Phase 2-3.
 
 #### What You'll Learn
+
 - Terraform HCL syntax and providers
 - State management (remote state with S3 backend)
 - Plan → Apply workflow
@@ -441,11 +463,13 @@ infra/
 #### Steps
 
 1. **Install Terraform** and learn the basics:
+
    ```bash
    brew install terraform
    ```
 
 2. **Start with one resource** — don't try to codify everything at once:
+
    ```hcl
    # infra/main.tf
    provider "aws" {
@@ -458,6 +482,7 @@ infra/
    ```
 
 3. **Run the workflow:**
+
    ```bash
    cd infra
    terraform init      # Download provider plugins
@@ -487,6 +512,7 @@ infra/
    ```
 
 #### Key Concepts to Understand
+
 - **State:** Terraform tracks what it created — never edit AWS resources manually after this
 - **Plan:** Always review the plan before applying — it shows what will be created/changed/destroyed
 - **Idempotency:** Running `apply` twice with the same config changes nothing
@@ -499,6 +525,7 @@ infra/
 **Goal:** Automate the build → test → deploy cycle.
 
 #### What You'll Learn
+
 - GitHub Actions workflow syntax
 - Docker build + push to ECR in CI
 - Automated testing in pipeline
@@ -588,6 +615,7 @@ jobs:
 **Goal:** Add a notification service and implement distributed tracing.
 
 #### What You'll Learn
+
 - Designing service boundaries
 - Distributed tracing with AWS X-Ray
 - CloudWatch Logs, Metrics, and Alarms
@@ -608,21 +636,21 @@ jobs:
 
 #### Events the Notification Service Handles
 
-| Event | Notification |
-|-------|-------------|
-| `user.registered` | Welcome email via SES |
-| `course.completed` | Congratulations push notification |
+| Event                  | Notification                               |
+| ---------------------- | ------------------------------------------ |
+| `user.registered`      | Welcome email via SES                      |
+| `course.completed`     | Congratulations push notification          |
 | `vocabulary.generated` | "New vocabulary ready" in-app notification |
-| `streak.milestone` | Achievement notification |
+| `streak.milestone`     | Achievement notification                   |
 
 #### Observability Stack
 
-| Tool | Purpose |
-|------|---------|
-| **AWS X-Ray** | Trace requests across API → AI Service → Notification Service |
-| **CloudWatch Logs** | Centralized logging from all ECS tasks |
-| **CloudWatch Metrics** | Custom metrics (requests/sec, AI latency, queue depth) |
-| **CloudWatch Alarms** | Alert when error rate spikes or DLQ has messages |
+| Tool                   | Purpose                                                       |
+| ---------------------- | ------------------------------------------------------------- |
+| **AWS X-Ray**          | Trace requests across API → AI Service → Notification Service |
+| **CloudWatch Logs**    | Centralized logging from all ECS tasks                        |
+| **CloudWatch Metrics** | Custom metrics (requests/sec, AI latency, queue depth)        |
+| **CloudWatch Alarms**  | Alert when error rate spikes or DLQ has messages              |
 
 #### Steps
 
@@ -641,31 +669,31 @@ jobs:
 
 ## Quick Reference: AWS Services Used
 
-| Service | Purpose | Phase |
-|---------|---------|-------|
-| **ECR** | Docker image registry | 2 |
-| **ECS Fargate** | Run containers without servers | 2 |
-| **RDS** | Managed PostgreSQL | 2 |
-| **ElastiCache** | Managed Redis | 2 |
-| **ALB** | Load balancer | 2 |
-| **VPC** | Private networking | 2 |
-| **Secrets Manager** | Store API keys securely | 2 |
-| **IAM** | Roles and permissions | 2 |
-| **SQS** | Message queues | 3 |
-| **EventBridge** | Event bus and routing | 3 |
-| **S3** | File/object storage | 4 |
-| **CloudWatch** | Logs, metrics, alarms | 5-6 |
-| **X-Ray** | Distributed tracing | 6 |
-| **SES** | Email sending | 6 |
-| **SNS** | Push notifications | 6 |
+| Service             | Purpose                        | Phase |
+| ------------------- | ------------------------------ | ----- |
+| **ECR**             | Docker image registry          | 2     |
+| **ECS Fargate**     | Run containers without servers | 2     |
+| **RDS**             | Managed PostgreSQL             | 2     |
+| **ElastiCache**     | Managed Redis                  | 2     |
+| **ALB**             | Load balancer                  | 2     |
+| **VPC**             | Private networking             | 2     |
+| **Secrets Manager** | Store API keys securely        | 2     |
+| **IAM**             | Roles and permissions          | 2     |
+| **SQS**             | Message queues                 | 3     |
+| **EventBridge**     | Event bus and routing          | 3     |
+| **S3**              | File/object storage            | 4     |
+| **CloudWatch**      | Logs, metrics, alarms          | 5-6   |
+| **X-Ray**           | Distributed tracing            | 6     |
+| **SES**             | Email sending                  | 6     |
+| **SNS**             | Push notifications             | 6     |
 
 ## Quick Reference: Key NestJS Microservice Concepts
 
-| Concept | Description |
-|---------|-------------|
-| **Transport** | Communication layer between services (Redis, RMQ, gRPC, NATS, Kafka) |
-| **@MessagePattern()** | Request-response handler — caller waits for a response |
-| **@EventPattern()** | Fire-and-forget handler — caller doesn't wait |
-| **ClientProxy** | Client used in the gateway to send messages to microservices |
-| **ClientsModule** | Registers microservice clients in a module |
-| **Hybrid App** | A single NestJS app that serves both HTTP and microservice transports |
+| Concept               | Description                                                           |
+| --------------------- | --------------------------------------------------------------------- |
+| **Transport**         | Communication layer between services (Redis, RMQ, gRPC, NATS, Kafka)  |
+| **@MessagePattern()** | Request-response handler — caller waits for a response                |
+| **@EventPattern()**   | Fire-and-forget handler — caller doesn't wait                         |
+| **ClientProxy**       | Client used in the gateway to send messages to microservices          |
+| **ClientsModule**     | Registers microservice clients in a module                            |
+| **Hybrid App**        | A single NestJS app that serves both HTTP and microservice transports |

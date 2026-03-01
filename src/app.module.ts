@@ -18,6 +18,8 @@ import { EventsModule } from './modules/events/events.module';
 import { AIModule } from './modules/ai/aiModule';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
+import { ExcercisesService } from './modules/excercises/excercises/excercises.service';
+import { ExcercisesModule } from './modules/excercises/excercises/excercises.module';
 
 @Module({
   imports: [
@@ -44,8 +46,9 @@ import { AppService } from './app.service';
     CacheModule,
     EventsModule,
     AIModule,
+    ExcercisesModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, ExcercisesService],
 })
-export class AppModule { }
+export class AppModule {}
