@@ -26,6 +26,8 @@ const events_module_1 = require("./modules/events/events.module");
 const aiModule_1 = require("./modules/ai/aiModule");
 const app_controller_1 = require("./app.controller");
 const app_service_1 = require("./app.service");
+const excercises_service_1 = require("./modules/excercises/excercises/excercises.service");
+const excercises_module_1 = require("./modules/excercises/excercises/excercises.module");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
@@ -54,8 +56,9 @@ exports.AppModule = AppModule = __decorate([
             cache_module_1.CacheModule,
             events_module_1.EventsModule,
             aiModule_1.AIModule,
+            excercises_module_1.ExcercisesModule,
         ],
         controllers: [app_controller_1.AppController],
-        providers: [app_service_1.AppService],
+        providers: [app_service_1.AppService, excercises_service_1.ExcercisesService],
     })
 ], AppModule);

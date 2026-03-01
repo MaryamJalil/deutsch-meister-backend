@@ -63,6 +63,24 @@ type Example {
   translation: String!
 }
 
+"""Type of exercise presented to the learner"""
+enum ExcerciseType {
+  FILL_IN_THE_BLANK
+  LISTENING_COMPREHENSION
+  MULTIPLE_CHOICE
+  SENTENCE_ORDERING
+}
+
+type Exercise {
+  audioFile: String
+  createdAt: DateTime!
+  hint: String
+  id: Int!
+  lessonId: Int!
+  question: String!
+  type: ExcerciseType!
+}
+
 type FlashcardObject {
   back: String!
   example: String
@@ -75,6 +93,12 @@ input GenerateExamplesInput {
   sourceLanguage: String!
   targetLanguage: String!
   word: String!
+}
+
+input GenerateExercisesInput {
+  count: Int
+  lessonId: Int!
+  type: ExcerciseType
 }
 
 input GenerateLessonInput {
@@ -186,6 +210,7 @@ type Mutation {
   deleteModule(id: Int!): Module!
   deleteVocabulary(id: Int!): Vocabulary!
   generateExamples(input: GenerateExamplesInput!): [GeneratedExampleSentence!]!
+  generateExercises(input: GenerateExercisesInput!): [Exercise!]!
   generateFlashcards(count: Int! = 10, level: String! = "A1", text: String!): [FlashcardObject!]!
   generateLessonOutline(input: GenerateLessonInput!): GeneratedLesson!
   generateQuiz(input: GenerateQuizInput!): [GeneratedQuizQuestion!]!

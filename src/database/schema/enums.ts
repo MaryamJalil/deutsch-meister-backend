@@ -10,3 +10,10 @@ export const levelNameEnum = pgEnum('level_name', [
   'C1',
   'C2',
 ]);
+
+export const exerciseTypeEnum = pgEnum('excercise_type', [
+  'MULTIPLE_CHOICE',
+  'FILL_IN_THE_BLANK',
+  'SENTENCE_ORDERING',
+  'LISTENING_COMPREHENSION',
+]);

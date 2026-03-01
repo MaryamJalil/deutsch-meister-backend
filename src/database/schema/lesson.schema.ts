@@ -12,12 +12,10 @@ import { levels } from './level.schema';
 import { modules } from './module.schema';
 import { customType } from 'drizzle-orm/pg-core';
 
-const vector = customType<{
-  data: number[];
-  driverData: string;
-}>({
+// Use JSON column for embeddings instead of vector
+const jsonVector = customType<{ data: number[]; driverData: string }>({
   dataType() {
-    return 'vector(1536)';
+    return 'jsonb';
   },
 });
 
@@ -39,7 +37,8 @@ export const lessons = pgTable(
       .references(() => levels.id),
 
     moduleId: integer('module_id').references(() => modules.id),
-    embedding: vector('embedding', { dimensions: 1536 }),
+
+    embedding: jsonVector('embedding'), // store embeddings as JSON
 
     createdAt: timestamp('created_at').notNull().defaultNow(),
 
