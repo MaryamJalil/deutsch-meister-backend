@@ -370,4 +370,36 @@ The text_to_read is what would be spoken aloud. The question tests comprehension
     if (!jsonMatch) throw new Error('Invalid JSON for listening exercises');
     return JSON.parse(jsonMatch[0]);
   }
+  async explainGrammarMistake(
+    userText: string,
+    correctedText: string,
+    level: string,
+  ): Promise<{ correction: string; explanation: string; rule: string }> {
+    const prompt = `
+A ${level} German learner wrote:
+"${userText}"
+
+The correct version is:
+"${correctedText}"
+
+Explain the grammar mistake in a friendly, educational way.
+
+Return ONLY valid JSON:
+{
+  "correction": "${correctedText}",
+  "explanation": "...",
+  "rule": "..."
+}
+`;
+    const completion = await this.getClient().chat.completions.create({
+      model: 'llama-3.1-8b-instant',
+      messages: [{ role: 'user', content: prompt }],
+      temperature: 0.3,
+    });
+    const text = completion.choices[0]?.message?.content ?? '';
+    const jsonMatch = text.match(/\{[\s\S]*\}/);
+    if (!jsonMatch)
+      throw new Error('Invalid JSON for grammar mistake explanation');
+    return JSON.parse(jsonMatch[0]);
+  }
 }

@@ -68,6 +68,12 @@ class GeneratedQuizQuestion {
   @Field({ nullable: true }) explanation?: string;
 }
 
+@ObjectType()
+class GrammarCorrectionResult {
+  @Field() correction!: string;
+  @Field() explanation!: string;
+  @Field() rule!: string;
+}
 @InputType()
 class GenerateQuizInput {
   @Field() text!: string;
@@ -161,5 +167,14 @@ export class AIResolver {
     @Args('level', { defaultValue: 'A2' }) level: string,
   ) {
     return this.generator.paraphraseText(text, level);
+  }
+
+  @Query(() => GrammarCorrectionResult)
+  async explainMistakes(
+    @Args('userText') userText: string,
+    @Args('correctedText') correctedText: string,
+    @Args('level', { defaultValue: 'A1' }) level: string,
+  ) {
+    return this.generator.explainGrammarMistake(userText, correctedText, level);
   }
 }
