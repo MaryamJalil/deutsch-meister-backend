@@ -147,6 +147,12 @@ type GeneratedVocabularyItem {
   word: String!
 }
 
+type GrammarCorrectionResult {
+  correction: String!
+  explanation: String!
+  rule: String!
+}
+
 type Lesson {
   content: String
   createdAt: DateTime!
@@ -240,6 +246,7 @@ type Query {
   examples: [Example!]!
   examplesByLesson(lessonId: Int!): [Example!]!
   explainGrammar(concept: String!, level: String!, sourceLanguage: String! = "English", targetLanguage: String! = "German"): String!
+  explainMistakes(correctedText: String!, level: String! = "A1", userText: String!): GrammarCorrectionResult!
   lesson(id: Int!): Lesson
   lessons: [Lesson!]!
   lessonsByLevel(levelId: Int!): [Lesson!]!

@@ -153,6 +153,23 @@ __decorate([
 GeneratedQuizQuestion = __decorate([
     (0, graphql_1.ObjectType)()
 ], GeneratedQuizQuestion);
+let GrammarCorrectionResult = class GrammarCorrectionResult {
+};
+__decorate([
+    (0, graphql_1.Field)(),
+    __metadata("design:type", String)
+], GrammarCorrectionResult.prototype, "correction", void 0);
+__decorate([
+    (0, graphql_1.Field)(),
+    __metadata("design:type", String)
+], GrammarCorrectionResult.prototype, "explanation", void 0);
+__decorate([
+    (0, graphql_1.Field)(),
+    __metadata("design:type", String)
+], GrammarCorrectionResult.prototype, "rule", void 0);
+GrammarCorrectionResult = __decorate([
+    (0, graphql_1.ObjectType)()
+], GrammarCorrectionResult);
 let GenerateQuizInput = class GenerateQuizInput {
 };
 __decorate([
@@ -228,6 +245,9 @@ let AIResolver = class AIResolver {
     async paraphraseText(text, level) {
         return this.generator.paraphraseText(text, level);
     }
+    async explainMistakes(userText, correctedText, level) {
+        return this.generator.explainGrammarMistake(userText, correctedText, level);
+    }
 };
 exports.AIResolver = AIResolver;
 __decorate([
@@ -301,6 +321,15 @@ __decorate([
     __metadata("design:paramtypes", [String, String]),
     __metadata("design:returntype", Promise)
 ], AIResolver.prototype, "paraphraseText", null);
+__decorate([
+    (0, graphql_1.Query)(() => GrammarCorrectionResult),
+    __param(0, (0, graphql_1.Args)('userText')),
+    __param(1, (0, graphql_1.Args)('correctedText')),
+    __param(2, (0, graphql_1.Args)('level', { defaultValue: 'A1' })),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, String, String]),
+    __metadata("design:returntype", Promise)
+], AIResolver.prototype, "explainMistakes", null);
 exports.AIResolver = AIResolver = __decorate([
     (0, graphql_1.Resolver)(),
     __metadata("design:paramtypes", [aiContentGenerator_service_1.AIContentGeneratorService,
