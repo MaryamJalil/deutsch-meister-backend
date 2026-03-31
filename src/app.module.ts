@@ -20,6 +20,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { ExcercisesService } from './modules/excercises/excercises/excercises.service';
 import { ExcercisesModule } from './modules/excercises/excercises/excercises.module';
+import { PaymentsModule } from './modules/payments/payments.module';
 
 @Module({
   imports: [
@@ -47,6 +48,7 @@ import { ExcercisesModule } from './modules/excercises/excercises/excercises.mod
     EventsModule,
     AIModule,
     ExcercisesModule,
+    PaymentsModule,
   ],
   controllers: [AppController],
   providers: [AppService, ExcercisesService],

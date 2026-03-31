@@ -17,3 +17,16 @@ export const exerciseTypeEnum = pgEnum('excercise_type', [
   'SENTENCE_ORDERING',
   'LISTENING_COMPREHENSION',
 ]);
+
+export const subscriptionPlanEnum = pgEnum('subscription_plan', [
+  'FREE',
+  'BASIC',
+  'PREMIUM',
+]);
+
+export const subscriptionStatusEnum = pgEnum('subscription_status', [
+  'ACTIVE',
+  'CANCELED',
+  'PAST_DUE',
+  'TRIALING',
+]);

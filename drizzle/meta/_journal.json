@@ -8,6 +8,13 @@
       "when": 1772369275975,
       "tag": "0000_real_tarantula",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1774991943509,
+      "tag": "0001_mysterious_wendigo",
+      "breakpoints": true
     }
   ]
 }
