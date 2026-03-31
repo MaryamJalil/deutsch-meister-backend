@@ -7,11 +7,19 @@ type AuthPayload {
   refreshToken: String!
 }
 
+type CheckoutSession {
+  url: String!
+}
+
 type Course {
   id: Int!
   language: String!
   levels: [Level]
   title: String!
+}
+
+input CreateCheckoutSessionInput {
+  plan: SubscriptionPlan!
 }
 
 input CreateCourseInput {
@@ -203,6 +211,8 @@ type Module {
 }
 
 type Mutation {
+  cancelSubscription: Subscription!
+  createCheckoutSession(input: CreateCheckoutSessionInput!): CheckoutSession!
   createCourse(input: CreateCourseInput!): Course!
   createExample(input: CreateExampleInput!): Example!
   createLesson(input: CreateLessonInput!): Lesson!
@@ -257,6 +267,7 @@ type Query {
   module(id: Int!): Module
   modules: [Module!]!
   modulesByLevel(levelId: Int!): [Module!]!
+  mySubscription: Subscription
   phonetic(language: String! = "German", text: String!): PhoneticResult!
   searchVocabulary(query: String!): [Vocabulary!]!
   summarizeText(targetLanguage: String! = "German", text: String!): String!
@@ -277,6 +288,32 @@ enum Role {
   ADMIN
   STUDENT
   TEACHER
+}
+
+type Subscription {
+  createdAt: DateTime!
+  currentPeriodEnd: DateTime
+  id: Int!
+  plan: SubscriptionPlan!
+  status: SubscriptionStatus!
+  stripeCustomerId: String
+  stripeSubscriptionId: String
+  userId: Int!
+}
+
+"""Available subscription plans"""
+enum SubscriptionPlan {
+  BASIC
+  FREE
+  PREMIUM
+}
+
+"""Current status of a Stripe subscription"""
+enum SubscriptionStatus {
+  ACTIVE
+  CANCELED
+  PAST_DUE
+  TRIALING
 }
 
 type TranslationResponse {

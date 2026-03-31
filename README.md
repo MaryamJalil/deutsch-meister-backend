@@ -697,3 +697,90 @@ jobs:
 | **ClientProxy**       | Client used in the gateway to send messages to microservices          |
 | **ClientsModule**     | Registers microservice clients in a module                            |
 | **Hybrid App**        | A single NestJS app that serves both HTTP and microservice transports |
+
+Payments Module — Step by Step
+
+1. Module Structure (payments.module.ts)
+   Three pieces registered together:
+
+PaymentsWebhookController — REST HTTP endpoint (Stripe calls this)
+PaymentsService — all business logic
+PaymentsResolver — GraphQL API (your frontend calls this) 2. GraphQL API — what your frontend calls (payments.resolver.ts)
+Three operations, all require a logged-in user (GqlAuthGuard):
+
+Operation Type What it does
+createCheckoutSession(input) Mutation Returns a Stripe-hosted payment URL
+cancelSubscription Mutation Cancels the user's active subscription
+mySubscription Query Returns the user's current subscription row
+The @CurrentUser() decorator pulls the user ID from the JWT so the user can only touch their own data.
+
+3. GraphQL Types — the data shapes (subscription.model.ts)
+   Subscription — what the DB row looks like exposed to GraphQL (id, plan, status, stripeCustomerId, currentPeriodEnd, etc.)
+   CheckoutSession — just { url: string }, the Stripe redirect URL
+   CreateCheckoutSessionInput — only needs plan (FREE / BASIC / PREMIUM)
+4. Business Logic (payments.service.ts)
+   4a. Stripe initialization
+
+constructor() → new Stripe(STRIPE_SECRET_KEY, { apiVersion })
+If STRIPE_SECRET_KEY is missing, it logs a warning but doesn't crash (uses a placeholder).
+
+4b. createCheckoutSession(userId, plan)
+
+Frontend calls mutation → service → Stripe API → returns redirect URL
+Rejects FREE plan (no payment needed)
+Looks up the price ID from env vars (STRIPE_BASIC_PRICE_ID / STRIPE_PREMIUM_PRICE_ID)
+Creates a Stripe Checkout session with mode: 'subscription'
+Embeds userId and plan in metadata (used later in the webhook)
+Returns { url } — frontend redirects the user to this Stripe-hosted page
+4c. handleWebhook(rawBody, sig) — the most important part
+
+Stripe POSTs to your server after payment events. There are 3 events handled:
+
+checkout.session.completed (user just paid):
+
+Verifies the webhook signature (security — rejects tampered requests)
+Reads userId and plan from session metadata
+Upserts the subscriptions DB row — if user already has one: update it; if not: insert
+customer.subscription.updated (plan changed, payment failed, etc.):
+
+Maps Stripe's status string (active, past_due, etc.) to your SubscriptionStatus enum
+Updates status and currentPeriodEnd in DB (period end now read from sub.items.data[0].current_period_end)
+customer.subscription.deleted (subscription cancelled on Stripe side):
+
+Sets status to CANCELED in DB
+4d. cancelSubscription(userId)
+
+Looks up user's subscription in DB to get stripeSubscriptionId
+Calls stripe.subscriptions.cancel(id) — tells Stripe to stop billing
+Updates DB status to CANCELED
+Returns the updated row
+4e. getSubscription(userId)
+Simple DB lookup — returns the user's subscription row or null.
+
+5. Webhook Controller (payments.webhook.controller.ts)
+
+POST /stripe/webhook
+Stripe calls this URL, not your frontend
+Reads the raw request body (must be raw bytes, not parsed JSON — required for signature verification)
+Reads the stripe-signature header Stripe sends
+Passes both to paymentsService.handleWebhook()
+Important: This route needs special setup in main.ts to get the raw body buffer before NestJS's JSON parser processes it.
+
+Overall Flow Diagram
+
+User clicks "Upgrade"
+│
+▼
+GraphQL: createCheckoutSession(plan: PREMIUM)
+│
+▼
+Stripe Checkout page (hosted by Stripe)
+│ user enters card
+▼
+Stripe → POST /stripe/webhook (checkout.session.completed)
+│
+▼
+DB: subscriptions row upserted with ACTIVE status
+│
+▼
+GraphQL: mySubscription → returns updated plan/status

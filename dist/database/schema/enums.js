@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.exerciseTypeEnum = exports.levelNameEnum = exports.roleEnum = void 0;
+exports.subscriptionStatusEnum = exports.subscriptionPlanEnum = exports.exerciseTypeEnum = exports.levelNameEnum = exports.roleEnum = void 0;
 const pg_core_1 = require("drizzle-orm/pg-core");
 exports.roleEnum = (0, pg_core_1.pgEnum)('role', ['ADMIN', 'STUDENT', 'TEACHER']);
 exports.levelNameEnum = (0, pg_core_1.pgEnum)('level_name', [
@@ -16,4 +16,15 @@ exports.exerciseTypeEnum = (0, pg_core_1.pgEnum)('excercise_type', [
     'FILL_IN_THE_BLANK',
     'SENTENCE_ORDERING',
     'LISTENING_COMPREHENSION',
+]);
+exports.subscriptionPlanEnum = (0, pg_core_1.pgEnum)('subscription_plan', [
+    'FREE',
+    'BASIC',
+    'PREMIUM',
+]);
+exports.subscriptionStatusEnum = (0, pg_core_1.pgEnum)('subscription_status', [
+    'ACTIVE',
+    'CANCELED',
+    'PAST_DUE',
+    'TRIALING',
 ]);
