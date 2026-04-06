@@ -24,6 +24,10 @@ let PaymentsResolver = class PaymentsResolver {
         this.paymentsService = paymentsService;
     }
     async createCheckoutSession(user, input) {
+        if (!input.plan) {
+            throw new common_1.BadRequestException('Plan is required');
+        }
+        console.log(input.plan);
         return this.paymentsService.createCheckoutSession(user.id, input.plan);
     }
     async cancelSubscription(user) {
@@ -38,7 +42,7 @@ __decorate([
     (0, graphql_1.Mutation)(() => subscription_model_1.CheckoutSession),
     (0, common_1.UseGuards)(gql_auth_guard_1.GqlAuthGuard),
     __param(0, (0, current_user_decorator_1.CurrentUser)()),
-    __param(1, (0, graphql_1.Args)('input')),
+    __param(1, (0, graphql_1.Args)('input', { type: () => subscription_model_1.CreateCheckoutSessionInput })),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object, subscription_model_1.CreateCheckoutSessionInput]),
     __metadata("design:returntype", Promise)

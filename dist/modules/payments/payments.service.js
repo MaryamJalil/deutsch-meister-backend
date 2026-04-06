@@ -52,6 +52,24 @@ let PaymentsService = PaymentsService_1 = class PaymentsService {
             cancel_url: process.env.STRIPE_CANCEL_URL ?? 'http://localhost:3000/cancel',
             metadata: { userId: String(userId), plan },
         });
+        // Upsert a pending subscription so the record exists before webhook fires
+        const [existing] = await drizzle_1.db
+            .select()
+            .from(subscription_schema_1.subscriptions)
+            .where((0, drizzle_orm_1.eq)(subscription_schema_1.subscriptions.userId, userId));
+        if (existing) {
+            await drizzle_1.db
+                .update(subscription_schema_1.subscriptions)
+                .set({ plan, status: subscriptionStatus_enum_1.SubscriptionStatus.TRIALING, updatedAt: new Date() })
+                .where((0, drizzle_orm_1.eq)(subscription_schema_1.subscriptions.id, existing.id));
+        }
+        else {
+            await drizzle_1.db.insert(subscription_schema_1.subscriptions).values({
+                userId,
+                plan,
+                status: subscriptionStatus_enum_1.SubscriptionStatus.TRIALING,
+            });
+        }
         return { url: session.url ?? '' };
     }
     async handleWebhook(rawBody, sig) {

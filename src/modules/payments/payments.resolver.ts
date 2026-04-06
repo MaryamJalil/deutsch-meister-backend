@@ -1,5 +1,5 @@
 import { Resolver, Mutation, Query, Args } from '@nestjs/graphql';
-import { UseGuards } from '@nestjs/common';
+import { BadRequestException, UseGuards } from '@nestjs/common';
 import { PaymentsService } from './payments.service';
 import {
   Subscription,
@@ -17,8 +17,13 @@ export class PaymentsResolver {
   @UseGuards(GqlAuthGuard)
   async createCheckoutSession(
     @CurrentUser() user: { id: number },
-    @Args('input') input: CreateCheckoutSessionInput,
+    @Args('input', { type: () => CreateCheckoutSessionInput })
+    input: CreateCheckoutSessionInput,
   ): Promise<CheckoutSession> {
+    if (!input.plan) {
+      throw new BadRequestException('Plan is required');
+    }
+    console.log(input.plan);
     return this.paymentsService.createCheckoutSession(user.id, input.plan);
   }
 
