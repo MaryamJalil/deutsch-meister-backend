@@ -1,4 +1,5 @@
 import { ObjectType, Field, Int, InputType } from '@nestjs/graphql';
+import { IsEnum } from 'class-validator';
 import { SubscriptionPlan } from '../../common/enums/subscriptionPlan.enum';
 import { SubscriptionStatus } from '../../common/enums/subscriptionStatus.enum';
 
@@ -37,6 +38,7 @@ export class CheckoutSession {
 
 @InputType()
 export class CreateCheckoutSessionInput {
+  @IsEnum(SubscriptionPlan)
   @Field(() => SubscriptionPlan)
   plan!: SubscriptionPlan;
 }

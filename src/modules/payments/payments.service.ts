@@ -54,6 +54,25 @@ export class PaymentsService {
       metadata: { userId: String(userId), plan },
     });
 
+    // Upsert a pending subscription so the record exists before webhook fires
+    const [existing] = await db
+      .select()
+      .from(subscriptions)
+      .where(eq(subscriptions.userId, userId));
+
+    if (existing) {
+      await db
+        .update(subscriptions)
+        .set({ plan, status: SubscriptionStatus.TRIALING, updatedAt: new Date() })
+        .where(eq(subscriptions.id, existing.id));
+    } else {
+      await db.insert(subscriptions).values({
+        userId,
+        plan,
+        status: SubscriptionStatus.TRIALING,
+      });
+    }
+
     return { url: session.url ?? '' };
   }
 

@@ -11,6 +11,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CreateCheckoutSessionInput = exports.CheckoutSession = exports.Subscription = void 0;
 const graphql_1 = require("@nestjs/graphql");
+const class_validator_1 = require("class-validator");
 const subscriptionPlan_enum_1 = require("../../common/enums/subscriptionPlan.enum");
 const subscriptionStatus_enum_1 = require("../../common/enums/subscriptionStatus.enum");
 let Subscription = class Subscription {
@@ -65,6 +66,7 @@ let CreateCheckoutSessionInput = class CreateCheckoutSessionInput {
 };
 exports.CreateCheckoutSessionInput = CreateCheckoutSessionInput;
 __decorate([
+    (0, class_validator_1.IsEnum)(subscriptionPlan_enum_1.SubscriptionPlan),
     (0, graphql_1.Field)(() => subscriptionPlan_enum_1.SubscriptionPlan),
     __metadata("design:type", String)
 ], CreateCheckoutSessionInput.prototype, "plan", void 0);
